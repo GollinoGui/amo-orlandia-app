@@ -1,6 +1,6 @@
 import { useThemeColor } from '@/hooks/useThemeColor';
 import React, { useState } from 'react';
-import { Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Linking, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 interface Servico {
   id: number;
@@ -10,11 +10,13 @@ interface Servico {
   cor: string;
   endereco?: string;
   telefone?: string;
+  horario?: string;
   responsavel?: string;
   descricao: string;
-  horario?: string;
   servicos?: string[];
   comoAcessar?: string;
+  isExternalLink?: boolean;
+  url?: string;
 }
 
 export default function ServicosPublicosScreen() {
@@ -46,8 +48,6 @@ export default function ServicosPublicosScreen() {
       ],
       comoAcessar: 'Procure o CRAS diretamente no endereço ou entre em contato pelo telefone para agendar atendimento. O atendimento é gratuito e destinado a famílias em situação de vulnerabilidade social.'
     },
-    // Adicione este objeto no array servicos, após o CRAS:
-
     {
       id: 2,
       nome: 'Centro Odontológico',
@@ -68,7 +68,6 @@ export default function ServicosPublicosScreen() {
       ],
       comoAcessar: 'Entre em contato pelos telefones disponíveis para agendar sua consulta. O atendimento é gratuito para munícipes de Orlândia. Leve documento de identidade e comprovante de residência.'
     },
-
     {
       id: 3,
       nome: 'Conselho Tutelar',
@@ -229,7 +228,7 @@ export default function ServicosPublicosScreen() {
       descricao: 'A Secretaria Municipal de Infraestrutura Urbana é responsável pela manutenção, conservação e desenvolvimento da infraestrutura urbana de Orlândia, garantindo a qualidade dos serviços públicos essenciais.',
       servicos: [
         'Manutenção de vias públicas e calçamento',
-        'Limpeza urbana e coleta de lixo',
+                'Limpeza urbana e coleta de lixo',
         'Manutenção de praças e jardins públicos',
         'Obras de infraestrutura urbana',
         'Serviços de iluminação pública',
@@ -304,10 +303,24 @@ export default function ServicosPublicosScreen() {
       ],
       comoAcessar: 'Entre em contato pelo telefone (16) 3820-8225 ou compareça ao endereço para denúncias, solicitações de fiscalização, licenciamento sanitário ou orientações sobre normas sanitárias. Atendimento destinado à sociedade em geral.'
     },
-        // ... outros serviços
+    {
+      id: 14,
+      nome: 'Rede Protetiva Orlândia',
+      subtitulo: 'Blog oficial da Rede Protetiva',
+      icone: '🌐',
+      cor: '#E74C3C',
+      isExternalLink: true,
+      url: 'https://redeprotetivaorlandia.blogspot.com/',
+      descricao: 'Acesse o blog oficial da Rede Protetiva de Orlândia para informações atualizadas sobre serviços, projetos e ações da rede de proteção social do município.'
+    }
   ];
 
   const abrirModal = (servico: Servico) => {
+    if (servico.isExternalLink && servico.url) {
+      Linking.openURL(servico.url);
+      return;
+    }
+    
     setServicoSelecionado(servico);
     setModalVisible(true);
   };
@@ -320,10 +333,11 @@ export default function ServicosPublicosScreen() {
   return (
     <View style={[styles.container, { backgroundColor }]}>
       <ScrollView style={styles.scrollView}>
-        <Text style={[styles.title, { color: '#39BF24' }]}>
-          🏥 Serviços Públicos de Orlândia
+        <Text style={[styles.title, { color: textColor }]}>🏥 Serviços Públicos</Text>
+        <Text style={[styles.subtitle, { color: textColor }]}>
+          Encontre informações sobre os serviços públicos disponíveis em Orlândia
         </Text>
-        
+
         <View style={styles.servicesGrid}>
           {servicos.map((servico) => (
             <TouchableOpacity
@@ -331,26 +345,27 @@ export default function ServicosPublicosScreen() {
               style={[
                 styles.serviceCard,
                 { 
-                  backgroundColor: cardColor,
-                  borderLeftColor: servico.cor 
+                  backgroundColor: servico.cor + '15',
+                  borderLeftColor: servico.cor,
                 }
               ]}
               onPress={() => abrirModal(servico)}
+              activeOpacity={0.8}
             >
               <View style={styles.cardContent}>
-                <View style={[styles.iconContainer, { backgroundColor: servico.cor + '20' }]}>
-                  <Text style={styles.icon}>{servico.icone}</Text>
+                <View style={[styles.iconContainer, { backgroundColor: servico.cor + '25' }]}>
+                  <Text style={styles.serviceIcon}>{servico.icone}</Text>
                 </View>
-                <View style={styles.textContent}>
+                <View style={styles.textContainer}>
                   <Text style={[styles.serviceName, { color: textColor }]}>
                     {servico.nome}
                   </Text>
                   <Text style={[styles.serviceSubtitle, { color: textColor }]}>
                     {servico.subtitulo}
                   </Text>
-                  {servico.telefone && (
-                    <Text style={[styles.serviceInfo, { color: servico.cor }]}>
-                      📞 {servico.telefone}
+                  {servico.isExternalLink && (
+                    <Text style={[styles.externalLinkIndicator, { color: servico.cor }]}>
+                      🌐 Link externo
                     </Text>
                   )}
                 </View>
@@ -361,7 +376,7 @@ export default function ServicosPublicosScreen() {
         </View>
       </ScrollView>
 
-      {/* Modal */}
+      {/* Modal de detalhes */}
       <Modal
         animationType="slide"
         transparent={true}
@@ -370,50 +385,99 @@ export default function ServicosPublicosScreen() {
       >
         <View style={styles.modalOverlay}>
           <View style={[styles.modalContent, { backgroundColor: cardColor }]}>
-            {servicoSelecionado && (
-              <>
-                <View style={[styles.modalHeader, { backgroundColor: servicoSelecionado.cor }]}>
-                  <Text style={styles.modalIcon}>{servicoSelecionado.icone}</Text>
-                  <Text style={styles.modalTitle}>{servicoSelecionado.nome}</Text>
-                  <Text style={styles.modalSubtitle}>{servicoSelecionado.subtitulo}</Text>
-                </View>
-                
-                <ScrollView style={styles.modalBody}>
-                  <Text style={[styles.modalDescription, { color: textColor }]}>
-                    {servicoSelecionado.descricao}
-                  </Text>
-                  
-                  {servicoSelecionado.endereco && (
-                    <View style={styles.infoSection}>
-                      <Text style={[styles.infoLabel, { color: servicoSelecionado.cor }]}>
-                        📍 Endereço:
+            <ScrollView style={styles.modalScrollView}>
+              {servicoSelecionado && (
+                <>
+                  <View style={styles.modalHeader}>
+                    <Text style={styles.modalIcon}>{servicoSelecionado.icone}</Text>
+                    <Text style={[styles.modalTitle, { color: textColor }]}>
+                      {servicoSelecionado.nome}
+                    </Text>
+                    <Text style={[styles.modalSubtitle, { color: textColor }]}>
+                      {servicoSelecionado.subtitulo}
+                    </Text>
+                  </View>
+
+                  <View style={styles.modalBody}>
+                    {servicoSelecionado.endereco && (
+                      <View style={styles.infoItem}>
+                        <Text style={styles.infoIcon}>📍</Text>
+                        <Text style={[styles.infoText, { color: textColor }]}>
+                          {servicoSelecionado.endereco}
+                        </Text>
+                      </View>
+                    )}
+
+                    {servicoSelecionado.telefone && (
+                      <View style={styles.infoItem}>
+                        <Text style={styles.infoIcon}>📱</Text>
+                        <Text style={[styles.infoText, { color: textColor }]}>
+                          {servicoSelecionado.telefone}
+                        </Text>
+                      </View>
+                    )}
+
+                    {servicoSelecionado.horario && (
+                      <View style={styles.infoItem}>
+                        <Text style={styles.infoIcon}>🕐</Text>
+                        <Text style={[styles.infoText, { color: textColor }]}>
+                          {servicoSelecionado.horario}
+                        </Text>
+                      </View>
+                    )}
+
+                    {servicoSelecionado.responsavel && (
+                      <View style={styles.infoItem}>
+                        <Text style={styles.infoIcon}>👤</Text>
+                        <Text style={[styles.infoText, { color: textColor }]}>
+                          {servicoSelecionado.responsavel}
+                        </Text>
+                      </View>
+                    )}
+
+                    <View style={styles.descriptionSection}>
+                      <Text style={[styles.sectionTitle, { color: servicoSelecionado.cor }]}>
+                        📋 Descrição
                       </Text>
-                      <Text style={[styles.infoText, { color: textColor }]}>
-                        {servicoSelecionado.endereco}
+                      <Text style={[styles.descriptionText, { color: textColor }]}>
+                        {servicoSelecionado.descricao}
                       </Text>
                     </View>
-                  )}
-                  
-                  {servicoSelecionado.telefone && (
-                    <View style={styles.infoSection}>
-                      <Text style={[styles.infoLabel, { color: servicoSelecionado.cor }]}>
-                        📞 Telefone:
-                      </Text>
-                      <Text style={[styles.infoText, { color: textColor }]}>
-                        {servicoSelecionado.telefone}
-                      </Text>
-                    </View>
-                  )}
-                </ScrollView>
-                
-                <TouchableOpacity
-                  style={[styles.closeButton, { backgroundColor: servicoSelecionado.cor }]}
-                  onPress={fecharModal}
-                >
-                  <Text style={styles.closeButtonText}>Fechar</Text>
-                </TouchableOpacity>
-              </>
-            )}
+
+                    {servicoSelecionado.servicos && servicoSelecionado.servicos.length > 0 && (
+                      <View style={styles.servicesSection}>
+                        <Text style={[styles.sectionTitle, { color: servicoSelecionado.cor }]}>
+                          🔧 Serviços Oferecidos
+                        </Text>
+                        {servicoSelecionado.servicos.map((servico, index) => (
+                          <Text key={index} style={[styles.serviceItem, { color: textColor }]}>
+                            • {servico}
+                          </Text>
+                        ))}
+                      </View>
+                    )}
+
+                    {servicoSelecionado.comoAcessar && (
+                      <View style={styles.accessSection}>
+                        <Text style={[styles.sectionTitle, { color: servicoSelecionado.cor }]}>
+                          🚪 Como Acessar
+                        </Text>
+                        <Text style={[styles.accessText, { color: textColor }]}>
+                          {servicoSelecionado.comoAcessar}
+                        </Text>
+                      </View>
+                    )}
+                  </View>
+                </>
+              )}
+            </ScrollView>
+
+            <TouchableOpacity
+              style={[styles.closeButton, { backgroundColor: servicoSelecionado?.cor || '#39BF24' }]}
+              onPress={fecharModal}
+            >
+              <Text style={styles.closeButtonText}>Fechar</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>
@@ -433,7 +497,13 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
+    marginBottom: 10,
+  },
+  subtitle: {
+    fontSize: 16,
+    textAlign: 'center',
     marginBottom: 25,
+    opacity: 0.8,
   },
   servicesGrid: {
     gap: 15,
@@ -441,7 +511,7 @@ const styles = StyleSheet.create({
   serviceCard: {
     borderRadius: 15,
     borderLeftWidth: 4,
-    elevation: 3,
+    elevation: 2,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -460,25 +530,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginRight: 15,
   },
-  icon: {
-    fontSize: 24,
+  serviceIcon: {
+    fontSize: 22,
   },
-  textContent: {
+  textContainer: {
     flex: 1,
   },
   serviceName: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '600',
     marginBottom: 4,
   },
   serviceSubtitle: {
     fontSize: 13,
-    opacity: 0.8,
-    marginBottom: 4,
+    opacity: 0.7,
   },
-  serviceInfo: {
+  externalLinkIndicator: {
     fontSize: 12,
     fontWeight: '500',
+    marginTop: 4,
   },
   arrow: {
     width: 0,
@@ -499,61 +569,93 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     width: '100%',
-    maxHeight: '85%',
+    maxHeight: '90%',
     borderRadius: 20,
-    overflow: 'hidden',
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+  },
+  modalScrollView: {
+    maxHeight: '85%',
   },
   modalHeader: {
-    padding: 25,
     alignItems: 'center',
+    padding: 25,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(0, 0, 0, 0.1)',
   },
   modalIcon: {
     fontSize: 40,
     marginBottom: 10,
   },
   modalTitle: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: 'bold',
-    color: '#fff',
     textAlign: 'center',
     marginBottom: 5,
   },
   modalSubtitle: {
-    fontSize: 16,
-    color: 'rgba(255,255,255,0.9)',
+    fontSize: 14,
     textAlign: 'center',
+    opacity: 0.7,
   },
   modalBody: {
     padding: 20,
-    maxHeight: 400,
   },
-  modalDescription: {
-    fontSize: 16,
-    lineHeight: 24,
-    marginBottom: 20,
-    textAlign: 'justify',
-  },
-  infoSection: {
+  infoItem: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
     marginBottom: 15,
+    paddingHorizontal: 10,
   },
-  infoLabel: {
+  infoIcon: {
     fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 8,
+    marginRight: 12,
+    marginTop: 2,
+    width: 20,
   },
   infoText: {
     fontSize: 15,
+    flex: 1,
     lineHeight: 22,
-    marginLeft: 10,
   },
-  bulletPoint: {
+  descriptionSection: {
+    marginTop: 20,
+    marginBottom: 20,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  descriptionText: {
+    fontSize: 14,
+    lineHeight: 22,
+    textAlign: 'justify',
+  },
+  servicesSection: {
+    marginBottom: 20,
+  },
+  serviceItem: {
     fontSize: 14,
     lineHeight: 20,
-    marginLeft: 15,
-    marginBottom: 4,
+    marginBottom: 5,
+    paddingLeft: 10,
+  },
+  accessSection: {
+    marginBottom: 10,
+  },
+  accessText: {
+    fontSize: 14,
+    lineHeight: 22,
+    textAlign: 'justify',
   },
   closeButton: {
+    margin: 20,
     padding: 15,
+    borderRadius: 10,
     alignItems: 'center',
   },
   closeButtonText: {
@@ -562,3 +664,4 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
+
