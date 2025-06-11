@@ -130,6 +130,18 @@ export default function RootLayout() {
             headerLeft: createHeaderLeft()
           }} 
         />
+       
+
+          <Stack.Screen 
+            name="associe-se" 
+            options={{ 
+              title: 'Associe-se à AMO',
+              headerStyle: { backgroundColor: '#9EBF26' },
+              headerTintColor: '#fff',
+              headerTitleStyle: { fontWeight: 'bold' }
+            }} 
+          />
+
         <Stack.Screen name="+not-found" />
       </Stack>
       <StatusBar style="auto" />

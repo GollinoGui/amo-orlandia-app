@@ -69,7 +69,15 @@ export  function HomeScreen() {
       emoji: '📞',
       route: 'contato',
       color: '#F2C335'
-    }
+    },
+      {
+    id: 9, // ou o próximo número disponível
+    title: 'Associe-se à AMO',
+    subtitle: 'Torne-se um associado da AMO Orlândia',
+    emoji: '🤝',
+    route: '/associe-se',
+    color: '#9EBF26'
+      },
   ];
 
   return (
