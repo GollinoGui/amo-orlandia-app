@@ -216,3 +216,5 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
 });
+// No final do arquivo, adicione:
+export default AtuacaoAmoScreen;

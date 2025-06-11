@@ -58,3 +58,5 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
   },
 });
+// No final do arquivo, adicione:
+export default DescarteIrregularScreen;
