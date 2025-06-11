@@ -1,5 +1,5 @@
 // 🌐 Configure o IP do seu backend aqui
-const API_BASE_URL = 'http://192.168.1.100:3000/api';
+const API_BASE_URL = 'http://localhost:3000/api';
 
 interface FormularioReservaData {
   nome: string;
