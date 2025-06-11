@@ -1,13 +1,9 @@
-import { useThemeColor } from '@/hooks/useThemeColor';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-export function HomeScreen() {
+export  function HomeScreen() {
   const router = useRouter();
-  const backgroundColor = useThemeColor({}, 'background');
-  const textColor = useThemeColor({}, 'text');
 
   const menuItems = [
     {
@@ -15,7 +11,7 @@ export function HomeScreen() {
       title: 'Descarte Irregular',
       subtitle: 'Denuncie descartes irregulares',
       emoji: '📸',
-      route: '/descarte-irregular',
+      route: 'descarte-irregular',
       color: '#39BF24'
     },
     {
@@ -23,7 +19,7 @@ export function HomeScreen() {
       title: 'Política de Reserva de Móveis',
       subtitle: 'Descarte móveis de forma sustentável',
       emoji: '🪑',
-      route: '/politica-reserva',
+      route: 'politica-reserva',
       color: '#72BF24'
     },
     {
@@ -31,7 +27,7 @@ export function HomeScreen() {
       title: 'Projeto Limpai',
       subtitle: 'Combate ao descarte irregular',
       emoji: '🧹',
-      route: '/projeto-limpai',
+      route: 'projeto-limpai',
       color: '#9EBF26'
     },
     {
@@ -39,7 +35,7 @@ export function HomeScreen() {
       title: 'Atuação da AMO',
       subtitle: 'Conheça nossa área de atuação',
       emoji: '💼',
-      route: '/atuacao-amo',
+      route: 'atuacao-amo',
       color: '#F2C335'
     },
     {
@@ -47,7 +43,7 @@ export function HomeScreen() {
       title: 'Serviços Públicos',
       subtitle: 'Informações sobre serviços',
       emoji: '🏥',
-      route: '/servicos-publicos',
+      route: 'servicos-publicos',
       color: '#39BF24'
     },
     {
@@ -55,7 +51,7 @@ export function HomeScreen() {
       title: 'Quem Somos',
       subtitle: 'Conheça a AMO Orlândia',
       emoji: '👥',
-      route: '/quem-somos',
+      route: 'quem-somos',
       color: '#72BF24'
     },
     {
@@ -63,7 +59,7 @@ export function HomeScreen() {
       title: 'O que Fazemos',
       subtitle: 'Nossas atividades e projetos',
       emoji: '⚡',
-      route: '/o-que-fazemos',
+      route: 'o-que-fazemos',
       color: '#9EBF26'
     },
     {
@@ -71,22 +67,19 @@ export function HomeScreen() {
       title: 'Contate-nos',
       subtitle: 'Entre em contato conosco',
       emoji: '📞',
-      route: '/contato',
+      route: 'contato',
       color: '#F2C335'
     }
   ];
 
   return (
-    <ScrollView style={[styles.container, { backgroundColor }]}>
-      {/* Header com logo e título */}
-      <LinearGradient
-        colors={['#39BF24', '#72BF24']}
-        style={styles.header}
-      >
+    <ScrollView style={styles.container}>
+      {/* Header */}
+      <View style={styles.header}>
         <View style={styles.logoContainer}>
           {/* Logo da AMO */}
           <Image 
-            source={require('../../assets/images/logo.jpg')} // Ajuste o caminho se necessário
+            source={require('../../assets/images/logo.jpg')}
             style={styles.logo}
             resizeMode="contain"
           />
@@ -96,11 +89,10 @@ export function HomeScreen() {
             Associação de Moradores de Orlândia
           </Text>
         </View>
-      </LinearGradient>
+      </View>
 
-      {/* Menu de opções */}
       <View style={styles.menuContainer}>
-        {menuItems.map((item, index) => (
+        {menuItems.map((item) => (
           <TouchableOpacity
             key={item.id}
             style={[
@@ -111,37 +103,24 @@ export function HomeScreen() {
               }
             ]}
             onPress={() => router.push(item.route as any)}
-            activeOpacity={0.8}
           >
             <View style={styles.buttonContent}>
               <View style={[styles.iconContainer, { backgroundColor: item.color + '25' }]}>
                 <Text style={styles.emoji}>{item.emoji}</Text>
               </View>
               <View style={styles.textContainer}>
-                <Text style={[styles.buttonTitle, { color: textColor }]}>
-                  {item.title}
-                </Text>
-                <Text style={[styles.buttonSubtitle, { color: textColor }]}>
-                  {item.subtitle}
-                </Text>
+                <Text style={styles.buttonTitle}>{item.title}</Text>
+                <Text style={styles.buttonSubtitle}>{item.subtitle}</Text>
               </View>
-              <View style={[styles.arrow, { borderLeftColor: item.color }]} />
             </View>
           </TouchableOpacity>
         ))}
       </View>
 
-      {/* Footer com informações de contato */}
       <View style={styles.footer}>
-        <Text style={[styles.footerText, { color: textColor }]}>
-          📍 Av. Cinco, 48 A - Orlândia/SP
-        </Text>
-        <Text style={[styles.footerText, { color: textColor }]}>
-          📱 WhatsApp: (16) 99173-7383
-        </Text>
-        <Text style={[styles.footerText, { color: textColor }]}>
-          📷 @amo.orlandia
-        </Text>
+        <Text style={styles.footerText}>📍 Av. Cinco, 48 A - Orlândia/SP</Text>
+        <Text style={styles.footerText}>📱 WhatsApp: (16) 99173-7383</Text>
+        <Text style={styles.footerText}>📷 @amo.orlandia</Text>
       </View>
     </ScrollView>
   );
@@ -150,11 +129,13 @@ export function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#fff',
   },
   header: {
     paddingTop: 60,
     paddingBottom: 30,
     paddingHorizontal: 20,
+    backgroundColor: '#39BF24',
     borderBottomLeftRadius: 25,
     borderBottomRightRadius: 25,
   },
@@ -218,19 +199,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     marginBottom: 4,
+    color: '#333',
   },
   buttonSubtitle: {
     fontSize: 13,
     opacity: 0.7,
-  },
-  arrow: {
-    width: 0,
-    height: 0,
-    borderLeftWidth: 8,
-    borderTopWidth: 6,
-    borderBottomWidth: 6,
-    borderTopColor: 'transparent',
-    borderBottomColor: 'transparent',
+    color: '#666',
   },
   footer: {
     padding: 20,
@@ -241,5 +215,6 @@ const styles = StyleSheet.create({
   footerText: {
     fontSize: 14,
     opacity: 0.8,
+    color: '#666',
   },
 });

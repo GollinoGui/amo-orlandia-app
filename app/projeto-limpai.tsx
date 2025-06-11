@@ -1,4 +1,4 @@
-import { ProjetoLimpaiScreen } from './screens/ProjetoLimpaAi';
+import { ProjetoLimpaiScreen } from './screens/ProjetoLimpaiScreen';
 
 export default function ProjetoLimpai() {
   return <ProjetoLimpaiScreen />;

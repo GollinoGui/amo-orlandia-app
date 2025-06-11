@@ -1,7 +1,7 @@
 import React from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
-export  function QuemSomosScreen() {
+export function QuemSomosScreen() {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.content}>

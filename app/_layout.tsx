@@ -1,7 +1,8 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { Text, TouchableOpacity } from 'react-native';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
@@ -16,6 +17,35 @@ export default function RootLayout() {
     return null;
   }
 
+  // Função para criar o botão de voltar customizado
+  const createHeaderLeft = () => {
+    const router = useRouter();
+    return () => (
+      <TouchableOpacity 
+        onPress={() => router.push('/')}
+        style={{ 
+          marginLeft: 15,
+          backgroundColor: 'rgba(0, 0, 0, 0.18)',
+          borderRadius: 40,
+          width: 50,
+          height: 30,
+          justifyContent: 'center',
+          alignItems: 'center'
+        }}
+        activeOpacity={0.7}
+      >
+        <Text style={{ 
+          color: '#fff', 
+          fontSize: 30,
+          fontWeight: 'bold',
+          textAlign: 'center',
+          lineHeight: 20,
+          marginLeft: 4 // Pequeno ajuste para centralizar melhor
+        }}>←</Text>
+      </TouchableOpacity>
+    );
+  };
+
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack>
@@ -26,7 +56,8 @@ export default function RootLayout() {
             title: 'Quem Somos',
             headerStyle: { backgroundColor: '#39BF24' },
             headerTintColor: '#fff',
-            headerTitleStyle: { fontWeight: 'bold' }
+            headerTitleStyle: { fontWeight: 'bold' },
+            headerLeft: createHeaderLeft()
           }} 
         />
         <Stack.Screen 
@@ -35,7 +66,8 @@ export default function RootLayout() {
             title: 'O que Fazemos',
             headerStyle: { backgroundColor: '#72BF24' },
             headerTintColor: '#fff',
-            headerTitleStyle: { fontWeight: 'bold' }
+            headerTitleStyle: { fontWeight: 'bold' },
+            headerLeft: createHeaderLeft()
           }} 
         />
         <Stack.Screen 
@@ -44,7 +76,8 @@ export default function RootLayout() {
             title: 'Atuação da AMO',
             headerStyle: { backgroundColor: '#F2C335' },
             headerTintColor: '#fff',
-            headerTitleStyle: { fontWeight: 'bold' }
+            headerTitleStyle: { fontWeight: 'bold' },
+            headerLeft: createHeaderLeft()
           }} 
         />
         <Stack.Screen 
@@ -53,7 +86,8 @@ export default function RootLayout() {
             title: 'Política de Reserva',
             headerStyle: { backgroundColor: '#72BF24' },
             headerTintColor: '#fff',
-            headerTitleStyle: { fontWeight: 'bold' }
+            headerTitleStyle: { fontWeight: 'bold' },
+            headerLeft: createHeaderLeft()
           }} 
         />
         <Stack.Screen 
@@ -62,7 +96,8 @@ export default function RootLayout() {
             title: 'Projeto Limpai',
             headerStyle: { backgroundColor: '#9EBF26' },
             headerTintColor: '#fff',
-            headerTitleStyle: { fontWeight: 'bold' }
+            headerTitleStyle: { fontWeight: 'bold' },
+            headerLeft: createHeaderLeft()
           }} 
         />
         <Stack.Screen 
@@ -71,7 +106,8 @@ export default function RootLayout() {
             title: 'Contate-nos',
             headerStyle: { backgroundColor: '#F2C335' },
             headerTintColor: '#fff',
-            headerTitleStyle: { fontWeight: 'bold' }
+            headerTitleStyle: { fontWeight: 'bold' },
+            headerLeft: createHeaderLeft()
           }} 
         />
         <Stack.Screen 
@@ -80,7 +116,8 @@ export default function RootLayout() {
             title: 'Descarte Irregular',
             headerStyle: { backgroundColor: '#39BF24' },
             headerTintColor: '#fff',
-            headerTitleStyle: { fontWeight: 'bold' }
+            headerTitleStyle: { fontWeight: 'bold' },
+            headerLeft: createHeaderLeft()
           }} 
         />
         <Stack.Screen 
@@ -89,7 +126,8 @@ export default function RootLayout() {
             title: 'Serviços Públicos',
             headerStyle: { backgroundColor: '#39BF24' },
             headerTintColor: '#fff',
-            headerTitleStyle: { fontWeight: 'bold' }
+            headerTitleStyle: { fontWeight: 'bold' },
+            headerLeft: createHeaderLeft()
           }} 
         />
         <Stack.Screen name="+not-found" />
