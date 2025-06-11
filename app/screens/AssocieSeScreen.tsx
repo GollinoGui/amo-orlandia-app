@@ -1,6 +1,6 @@
 import { useThemeColor } from '@/hooks/useThemeColor';
 import React, { useState } from 'react';
-import { Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import apiService from '../services/apiService';
 
 export function AssocieSeScreen() {
@@ -21,9 +21,37 @@ export function AssocieSeScreen() {
     motivoAssociacao: '',
     comoConheceu: ''
   });
+    const patrocinadores = [
+        'MORLAN - Juntos por uma Orlândia sustentável',
+        'UNIMED - Cuidando do meio ambiente',
+        'INTELLI - Por uma cidade mais limpa'
+      ];
 
-  const [erro, setErro] = useState('');
-  const [enviando, setEnviando] = useState(false);
+      const mostrarSucesso = (mensagem: string) => {
+          if (Platform.OS === 'web') {
+            // WEB: Usar estado para mostrar banner
+            setSucesso(mensagem);
+            setTimeout(() => setSucesso(''), 5000);
+          } else {
+            // MOBILE: Usar Alert
+            Alert.alert('🎉 Sucesso!', mensagem, [
+              { text: '✅ OK', onPress: () => limparFormulario() }
+            ]);
+          }
+        };
+        const mostrarErro = (mensagem: string) => {
+            if (Platform.OS === 'web') {
+              // WEB: Usar estado para mostrar banner
+              setErro(mensagem);
+            } else {
+              // MOBILE: Usar Alert
+              Alert.alert('❌ Erro', mensagem);
+            }
+          };
+        
+      const [erro, setErro] = useState('');
+      const [sucesso, setSucesso] = useState('');
+      const [enviando, setEnviando] = useState(false);
 
   // 🆕 VALIDAÇÃO REAL DE CPF
   const validarCPF = (cpf: string): boolean => {
@@ -423,14 +451,23 @@ export function AssocieSeScreen() {
       const resultado = await apiService.enviarFormularioAssociacao(formData);
 
       if (resultado.success) {
-        Alert.alert(
-          'Sucesso! 🎉',
-          'Sua solicitação de associação foi enviada com sucesso! Entraremos em contato em breve.',
-          [{ text: 'OK', onPress: () => limparFormulario() }]
-        );
-      } else {
-        setErro(`❌ ${resultado.message}`);
-      }
+        const patrocinadorAleatorio = patrocinadores[Math.floor(Math.random() * patrocinadores.length)];
+                
+                const mensagemSucesso = `Seu formulário foi enviado com sucesso!\n\n💝 Cortesia da:\n${patrocinadorAleatorio}`;
+                
+                mostrarSucesso(mensagemSucesso);
+                
+                // Se for web, limpar formulário após delay
+                if (Platform.OS === 'web') {
+                  setTimeout(() => {
+                    limparFormulario();
+                  }, 5000);
+                }
+                
+              } else {
+                mostrarErro(resultado.message);
+              }
+
 
     } catch (error) {
       console.error('❌ [ASSOCIACAO] Erro ao enviar formulário:', error);
@@ -465,6 +502,13 @@ export function AssocieSeScreen() {
         <Text style={[styles.description, { color: textColor }]}>
           Faça parte da AMO Orlândia! Preencha o formulário abaixo para se tornar um associado e contribuir para o desenvolvimento da nossa cidade.
         </Text>
+
+        {sucesso ? (
+          <View style={[styles.messageContainer, styles.successContainer]}>
+            <Text style={styles.successMessageText}>{sucesso}</Text>
+          </View>
+        ) : null}
+
 
         {/* Mensagem de erro geral */}
         {erro ? (
@@ -738,11 +782,29 @@ const styles = StyleSheet.create({
   },
   messageContainer: {
     padding: 15,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#f5c6cb',
-    backgroundColor: '#f8d7da',
+    borderRadius: 10,
     marginBottom: 20,
+    borderWidth: 2,
+  },
+  errorContainer: {
+    backgroundColor: '#ffebee',
+    borderColor: '#f44336',
+  },
+  successContainer: {
+    backgroundColor: '#e8f5e8',
+    borderColor: '#4caf50',
+  },
+  errorMessageText: {
+    color: '#d32f2f',
+    fontSize: 16,
+    textAlign: 'center',
+    fontWeight: '600',
+  },
+  successMessageText: {
+    color: '#2e7d32',
+    fontSize: 16,
+    textAlign: 'center',
+    fontWeight: '600',
   },
   messageText: {
     fontSize: 16,

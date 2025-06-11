@@ -25,10 +25,10 @@ export function PoliticaReservaScreen() {
   const [enviando, setEnviando] = useState(false);
 
   const patrocinadores = [
-    'MORLAN - Juntos por uma Orlândia sustentável',
-    'Empresa Parceira - Cuidando do meio ambiente',
-    'Patrocinador Local - Por uma cidade mais limpa'
-  ];
+        'MORLAN - Juntos por uma Orlândia sustentável',
+        'UNIMED - Cuidando do meio ambiente',
+        'INTELLI - Por uma cidade mais limpa'
+      ];
 
   // ✅ FUNÇÕES DE VALIDAÇÃO (universais)
   const validarNome = (nome: string) => {

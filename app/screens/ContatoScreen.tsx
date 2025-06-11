@@ -554,5 +554,5 @@ const styles = StyleSheet.create({
   },
 });
 
-// No final do arquivo, adicione:
+
 export default ContatoScreen;
