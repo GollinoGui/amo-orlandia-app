@@ -1,8 +1,8 @@
 import { useThemeColor } from '@/hooks/useThemeColor';
 import * as ImagePicker from 'expo-image-picker';
 import React, { useState } from 'react';
-import { Alert, Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import apiService from '../services/apiService'; // 👈 NOVO IMPORT
+import { Alert, Image, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import apiService from '../services/apiService';
 
 export function PoliticaReservaScreen() {
   const backgroundColor = useThemeColor({}, 'background');
@@ -21,7 +21,8 @@ export function PoliticaReservaScreen() {
   });
 
   const [erro, setErro] = useState('');
-  const [enviando, setEnviando] = useState(false); // 👈 NOVO ESTADO
+  const [sucesso, setSucesso] = useState('');
+  const [enviando, setEnviando] = useState(false);
 
   const patrocinadores = [
     'MORLAN - Juntos por uma Orlândia sustentável',
@@ -29,7 +30,7 @@ export function PoliticaReservaScreen() {
     'Patrocinador Local - Por uma cidade mais limpa'
   ];
 
-  // ... todas as funções de validação permanecem iguais ...
+  // ✅ FUNÇÕES DE VALIDAÇÃO (universais)
   const validarNome = (nome: string) => {
     const regex = /^[a-zA-ZÀ-ÿ\s]+$/;
     return regex.test(nome) && nome.trim().length >= 2;
@@ -57,16 +58,17 @@ export function PoliticaReservaScreen() {
     return texto.slice(0, 200);
   };
 
+  // ✅ HANDLERS DE INPUT (universais)
   const handleNomeChange = (texto: string) => {
     const textoLimpo = texto.replace(/[^a-zA-ZÀ-ÿ\s]/g, '');
     setFormData({...formData, nome: textoLimpo});
-    setErro('');
+    limparMensagens();
   };
 
   const handleTelefoneChange = (texto: string) => {
     const telefoneFormatado = formatarTelefone(texto);
     setFormData({...formData, telefone: telefoneFormatado});
-    setErro('');
+    limparMensagens();
   };
 
   const handleTelefoneContatoChange = (texto: string) => {
@@ -77,134 +79,263 @@ export function PoliticaReservaScreen() {
   const handleEnderecoChange = (texto: string) => {
     const enderecoLimitado = limitarEndereco(texto);
     setFormData({...formData, endereco: enderecoLimitado});
-    setErro('');
+    limparMensagens();
   };
 
-  // ... todas as funções de foto permanecem iguais ...
-  const tirarFoto = async () => {
-    try {
-      const { status } = await ImagePicker.requestCameraPermissionsAsync();
-      
-      if (status !== 'granted') {
-        setErro('Precisamos de permissão para acessar a câmera.');
-        return;
-      }
+  const limparMensagens = () => {
+    setErro('');
+    setSucesso('');
+  };
 
+  // 🔧 SISTEMA DE FOTO UNIVERSAL (Web + Mobile)
+  const escolherFotoWeb = (): Promise<string | null> => {
+    return new Promise((resolve) => {
+      console.log('🌐 [WEB] Abrindo seletor de arquivo...');
+      
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      
+      input.onchange = (event: any) => {
+        const file = event.target.files[0];
+        if (file) {
+          console.log('✅ [WEB] Arquivo selecionado:', file.name);
+          
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const imageUri = e.target?.result as string;
+            console.log('✅ [WEB] Imagem carregada');
+            resolve(imageUri);
+          };
+          reader.onerror = () => {
+            console.error('❌ [WEB] Erro ao ler arquivo');
+            resolve(null);
+          };
+          reader.readAsDataURL(file);
+        } else {
+          resolve(null);
+        }
+      };
+      
+      input.oncancel = () => {
+        console.log('❌ [WEB] Usuário cancelou');
+        resolve(null);
+      };
+      
+      input.click();
+    });
+  };
+
+  const tirarFotoMobile = async (): Promise<string | null> => {
+    try {
+      console.log('📷 [MOBILE] Abrindo câmera...');
+      
       const result = await ImagePicker.launchCameraAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
         aspect: [4, 3],
-        quality: 0.7,
+        quality: 0.8,
       });
 
-      if (!result.canceled && result.assets[0]) {
-        setFormData({...formData, fotoMovel: result.assets[0].uri});
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        const imageUri = result.assets[0].uri;
+        console.log('✅ [MOBILE] Foto capturada:', imageUri);
+        return imageUri;
       }
+      
+      return null;
     } catch (error) {
-      setErro('Não foi possível tirar a foto. Tente novamente.');
+      console.error('❌ [MOBILE] Erro ao tirar foto:', error);
+      return null;
     }
   };
 
-  const escolherFoto = async () => {
+  const escolherFotoMobile = async (): Promise<string | null> => {
     try {
-      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      console.log('🖼️ [MOBILE] Abrindo galeria...');
       
-      if (status !== 'granted') {
-        setErro('Precisamos de permissão para acessar a galeria.');
-        return;
-      }
-
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
         aspect: [4, 3],
-        quality: 0.7,
+        quality: 0.8,
       });
 
-      if (!result.canceled && result.assets[0]) {
-        setFormData({...formData, fotoMovel: result.assets[0].uri});
+      if (!result.canceled && result.assets && result.assets.length > 0) {
+        const imageUri = result.assets[0].uri;
+        console.log('✅ [MOBILE] Foto escolhida:', imageUri);
+        return imageUri;
       }
+      
+      return null;
     } catch (error) {
-      setErro('Não foi possível escolher a foto. Tente novamente.');
+      console.error('❌ [MOBILE] Erro ao escolher foto:', error);
+      return null;
     }
   };
 
-  const mostrarOpcoesFoto = () => {
-    Alert.alert(
-      'Adicionar Foto do Móvel',
-      'Como você gostaria de adicionar a foto?',
-      [
-        { text: 'Câmera', onPress: tirarFoto },
-        { text: 'Galeria', onPress: escolherFoto },
-        { text: 'Cancelar', style: 'cancel' }
-      ]
-    );
+  // 🎯 FUNÇÃO PRINCIPAL DE FOTO (Universal)
+  const adicionarFoto = async () => {
+    console.log('🔧 [UNIVERSAL] Platform:', Platform.OS);
+    limparMensagens();
+    
+    try {
+      let imageUri: string | null = null;
+      
+      if (Platform.OS === 'web') {
+        // WEB: Apenas galeria
+        imageUri = await escolherFotoWeb();
+        
+      } else {
+        // MOBILE: Mostrar opções (Câmera ou Galeria)
+        const opcao = await new Promise<'camera' | 'gallery' | null>((resolve) => {
+          Alert.alert(
+            '📷 Adicionar Foto',
+            'Como você gostaria de adicionar a foto?',
+            [
+              {
+                text: '📷 Câmera',
+                onPress: () => resolve('camera')
+              },
+              {
+                text: '🖼️ Galeria',
+                onPress: () => resolve('gallery')
+              },
+              {
+                text: '❌ Cancelar',
+                style: 'cancel',
+                onPress: () => resolve(null)
+              }
+            ]
+          );
+        });
+        
+        if (opcao === 'camera') {
+          // Verificar permissão da câmera
+          const permission = await ImagePicker.requestCameraPermissionsAsync();
+          if (permission.status === 'granted') {
+            imageUri = await tirarFotoMobile();
+          } else {
+            setErro('❌ Permissão da câmera negada');
+            return;
+          }
+        } else if (opcao === 'gallery') {
+          // Verificar permissão da galeria
+          const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+          if (permission.status === 'granted') {
+            imageUri = await escolherFotoMobile();
+          } else {
+            setErro('❌ Permissão da galeria negada');
+            return;
+          }
+        }
+      }
+      
+      // Processar resultado
+      if (imageUri) {
+        setFormData({...formData, fotoMovel: imageUri});
+        setSucesso('✅ Foto adicionada com sucesso!');
+        
+        // Limpar mensagem de sucesso após 3 segundos
+        setTimeout(() => setSucesso(''), 3000);
+      }
+      
+    } catch (error) {
+      console.error('❌ [UNIVERSAL] Erro ao adicionar foto:', error);
+      setErro('❌ Erro ao adicionar foto. Tente novamente.');
+    }
   };
 
   const removerFoto = () => {
+    console.log('🗑️ [UNIVERSAL] Removendo foto');
     setFormData({...formData, fotoMovel: null});
+    setSucesso('🗑️ Foto removida com sucesso!');
+    setTimeout(() => setSucesso(''), 2000);
   };
 
-  // 🚀 NOVA FUNÇÃO - Enviar para o backend
+  // 🚀 SISTEMA DE NOTIFICAÇÃO UNIVERSAL
+  const mostrarSucesso = (mensagem: string) => {
+    if (Platform.OS === 'web') {
+      // WEB: Usar estado para mostrar banner
+      setSucesso(mensagem);
+      setTimeout(() => setSucesso(''), 5000);
+    } else {
+      // MOBILE: Usar Alert
+      Alert.alert('🎉 Sucesso!', mensagem, [
+        { text: '✅ OK', onPress: () => limparFormulario() }
+      ]);
+    }
+  };
+
+  const mostrarErro = (mensagem: string) => {
+    if (Platform.OS === 'web') {
+      // WEB: Usar estado para mostrar banner
+      setErro(mensagem);
+    } else {
+      // MOBILE: Usar Alert
+      Alert.alert('❌ Erro', mensagem);
+    }
+  };
+
+  // 📧 FUNÇÃO DE ENVIO UNIVERSAL
   const handleSubmit = async () => {
-    setErro('');
+    limparMensagens();
     setEnviando(true);
     
     try {
-      console.log('=== INÍCIO DA VALIDAÇÃO ===');
+      console.log('=== [UNIVERSAL] VALIDAÇÕES ===');
 
-      // Todas as validações permanecem iguais
+      // Validações
       if (!formData.nome.trim()) {
-        setErro('Por favor, preencha seu nome.');
+        mostrarErro('Por favor, preencha seu nome.');
         setEnviando(false);
         return;
       }
 
       if (!validarNome(formData.nome)) {
-        setErro('Nome deve conter apenas letras e ter pelo menos 2 caracteres.');
+        mostrarErro('Nome deve conter apenas letras e ter pelo menos 2 caracteres.');
         setEnviando(false);
         return;
       }
 
       if (!formData.telefone.trim()) {
-        setErro('Por favor, preencha seu telefone.');
+        mostrarErro('Por favor, preencha seu telefone.');
         setEnviando(false);
         return;
       }
 
       if (!validarTelefone(formData.telefone)) {
-        setErro('Telefone deve ter 10 ou 11 dígitos. Formato: (16) 99999-9999');
+        mostrarErro('Telefone deve ter 10 ou 11 dígitos. Formato: (16) 99999-9999');
         setEnviando(false);
         return;
       }
 
       if (!formData.endereco.trim()) {
-        setErro('Por favor, preencha o endereço.');
+        mostrarErro('Por favor, preencha o endereço.');
         setEnviando(false);
         return;
       }
 
       if (formData.endereco.trim().length < 10) {
-        setErro('Endereço deve ter pelo menos 10 caracteres com detalhes e referências.');
+        mostrarErro('Endereço deve ter pelo menos 10 caracteres com detalhes e referências.');
         setEnviando(false);
         return;
       }
 
       if (!formData.diasEspera) {
-        setErro('Por favor, selecione quantos dias você pode esperar.');
+        mostrarErro('Por favor, selecione quantos dias você pode esperar.');
         setEnviando(false);
         return;
       }
 
       if (!formData.aptoDoacao) {
-        setErro('Por favor, informe se o objeto está apto para doação.');
+        mostrarErro('Por favor, informe se o objeto está apto para doação.');
         setEnviando(false);
         return;
       }
 
-      console.log('=== ENVIANDO PARA O BACKEND ===');
+      console.log('=== [UNIVERSAL] ENVIANDO ===');
 
-      // 🚀 ENVIAR PARA O BACKEND
       const resultado = await apiService.enviarFormularioReserva({
         nome: formData.nome,
         telefone: formData.telefone,
@@ -215,22 +346,29 @@ export function PoliticaReservaScreen() {
         fotoMovel: formData.fotoMovel || undefined
       });
 
+       console.log('📧 [UNIVERSAL] Resultado:', resultado);
+
       if (resultado.success) {
-        // Seleciona patrocinador aleatório para a mensagem
         const patrocinadorAleatorio = patrocinadores[Math.floor(Math.random() * patrocinadores.length)];
         
-        Alert.alert(
-          'Sucesso! ✅',
-          `Seu formulário foi enviado com sucesso e foi uma cortesia da ${patrocinadorAleatorio}`,
-          [{ text: 'OK', onPress: () => limparFormulario() }]
-        );
+        const mensagemSucesso = `Seu formulário foi enviado com sucesso!\n\n💝 Cortesia da:\n${patrocinadorAleatorio}`;
+        
+        mostrarSucesso(mensagemSucesso);
+        
+        // Se for web, limpar formulário após delay
+        if (Platform.OS === 'web') {
+          setTimeout(() => {
+            limparFormulario();
+          }, 5000);
+        }
+        
       } else {
-        setErro(`❌ ${resultado.message}`);
+        mostrarErro(resultado.message);
       }
 
     } catch (error) {
-      console.error('Erro ao enviar formulário:', error);
-      setErro('❌ Erro de conexão. Verifique sua internet e tente novamente.');
+      console.error('❌ [UNIVERSAL] Erro:', error);
+      mostrarErro('Erro de conexão. Verifique sua internet e tente novamente.');
     } finally {
       setEnviando(false);
     }
@@ -246,7 +384,7 @@ export function PoliticaReservaScreen() {
       aptoDoacao: '',
       fotoMovel: null
     });
-    setErro('');
+    limparMensagens();
   };
 
   return (
@@ -260,26 +398,21 @@ export function PoliticaReservaScreen() {
         
         <Text style={[styles.subtitle, { color: textColor }]}>Vamos começar:</Text>
 
-        {/* Mensagem de erro/sucesso */}
+        {/* 🔧 SISTEMA DE MENSAGENS UNIVERSAL */}
         {erro ? (
-          <View style={[
-            styles.messageContainer, 
-            { 
-              backgroundColor: erro.includes('SUCESSO') ? '#d4edda' : '#f8d7da',
-              borderColor: erro.includes('SUCESSO') ? '#c3e6cb' : '#f5c6cb'
-            }
-          ]}>
-            <Text style={[
-              styles.messageText,
-              { color: erro.includes('SUCESSO') ? '#155724' : '#721c24' }
-            ]}>
-              {erro}
-            </Text>
+          <View style={[styles.messageContainer, styles.errorContainer]}>
+            <Text style={styles.errorMessageText}>❌ {erro}</Text>
+          </View>
+        ) : null}
+
+        {sucesso ? (
+          <View style={[styles.messageContainer, styles.successContainer]}>
+            <Text style={styles.successMessageText}>✅ {sucesso}</Text>
           </View>
         ) : null}
 
         <View style={styles.form}>
-          {/* Todos os campos do formulário permanecem iguais... */}
+          {/* Nome */}
           <Text style={[styles.label, { color: textColor }]}>Seu nome: *</Text>
           <TextInput
             style={[styles.input, { borderColor: primaryColor, color: textColor }]}
@@ -291,9 +424,10 @@ export function PoliticaReservaScreen() {
             editable={!enviando}
           />
           {formData.nome.length > 0 && !validarNome(formData.nome) && (
-            <Text style={styles.errorText}>Nome deve conter apenas letras</Text>
+            <Text style={styles.fieldErrorText}>Nome deve conter apenas letras</Text>
           )}
 
+          {/* Telefone */}
           <Text style={[styles.label, { color: textColor }]}>
             Seu telefone: * ({contarDigitosTelefone(formData.telefone)}/11)
           </Text>
@@ -308,9 +442,10 @@ export function PoliticaReservaScreen() {
             editable={!enviando}
           />
           {formData.telefone.length > 0 && !validarTelefone(formData.telefone) && (
-            <Text style={styles.errorText}>Telefone deve ter 10 ou 11 dígitos</Text>
+            <Text style={styles.fieldErrorText}>Telefone deve ter 10 ou 11 dígitos</Text>
           )}
 
+          {/* Telefone de contato */}
           <Text style={[styles.label, { color: textColor }]}>
             Um telefone de contato, parente ou vizinho: ({contarDigitosTelefone(formData.telefoneContato)}/11)
           </Text>
@@ -325,6 +460,7 @@ export function PoliticaReservaScreen() {
             editable={!enviando}
           />
 
+          {/* Endereço */}
           <Text style={[styles.label, { color: textColor }]}>
             Endereço exato e referências próximas: * ({formData.endereco.length}/200)
           </Text>
@@ -340,11 +476,14 @@ export function PoliticaReservaScreen() {
             editable={!enviando}
           />
           {formData.endereco.length > 0 && formData.endereco.length < 10 && (
-            <Text style={styles.errorText}>Endereço deve ter pelo menos 10 caracteres</Text>
+            <Text style={styles.fieldErrorText}>Endereço deve ter pelo menos 10 caracteres</Text>
           )}
 
-          {/* Campo de Foto */}
-          <Text style={[styles.label, { color: textColor }]}>Foto do móvel/objeto (opcional):</Text>
+          {/* 🔧 CAMPO DE FOTO UNIVERSAL */}
+          <Text style={[styles.label, { color: textColor }]}>
+            Foto do móvel/objeto (opcional):
+            {Platform.OS === 'web' ? ' 🌐' : ' 📱'}
+          </Text>
           
           {formData.fotoMovel ? (
             <View style={styles.fotoContainer}>
@@ -352,10 +491,12 @@ export function PoliticaReservaScreen() {
               <View style={styles.fotoButtons}>
                 <TouchableOpacity
                   style={[styles.fotoButton, { backgroundColor: primaryColor }]}
-                  onPress={mostrarOpcoesFoto}
+                  onPress={adicionarFoto}
                   disabled={enviando}
                 >
-                  <Text style={styles.fotoButtonText}>📷 Trocar Foto</Text>
+                  <Text style={styles.fotoButtonText}>
+                    📷 Trocar {Platform.OS === 'web' ? 'Arquivo' : 'Foto'}
+                  </Text>
                 </TouchableOpacity>
                 
                 <TouchableOpacity
@@ -363,26 +504,35 @@ export function PoliticaReservaScreen() {
                   onPress={removerFoto}
                   disabled={enviando}
                 >
-                                    <Text style={styles.fotoButtonText}>🗑️ Remover</Text>
+                  <Text style={styles.fotoButtonText}>🗑️ Remover</Text>
                 </TouchableOpacity>
               </View>
             </View>
           ) : (
             <TouchableOpacity
               style={[styles.addFotoButton, { borderColor: primaryColor }]}
-              onPress={mostrarOpcoesFoto}
+              onPress={adicionarFoto}
               disabled={enviando}
             >
-              <Text style={styles.addFotoIcon}>📷</Text>
+              <Text style={styles.addFotoIcon}>
+                {Platform.OS === 'web' ? '📁' : '📷'}
+              </Text>
               <Text style={[styles.addFotoText, { color: textColor }]}>
-                Adicionar foto do móvel
+                {Platform.OS === 'web' 
+                  ? 'Escolher arquivo de imagem' 
+                  : 'Adicionar foto do móvel'
+                }
               </Text>
               <Text style={[styles.addFotoSubtext, { color: textColor }]}>
-                Toque para tirar uma foto ou escolher da galeria
+                {Platform.OS === 'web'
+                  ? 'Clique para selecionar uma imagem do seu computador'
+                  : 'Toque para tirar uma foto ou escolher da galeria'
+                }
               </Text>
             </TouchableOpacity>
           )}
 
+          {/* Dias de espera */}
           <Text style={[styles.label, { color: textColor }]}>
             Quantos dias você consegue ficar com esse objeto até a AMO ir retirar? *
           </Text>
@@ -399,7 +549,7 @@ export function PoliticaReservaScreen() {
                 ]}
                 onPress={() => {
                   setFormData({...formData, diasEspera: opcao});
-                  setErro('');
+                  limparMensagens();
                 }}
                 disabled={enviando}
               >
@@ -415,6 +565,7 @@ export function PoliticaReservaScreen() {
             ))}
           </View>
 
+          {/* Apto para doação */}
           <Text style={[styles.label, { color: textColor }]}>
             Seu objeto/móvel está apto a ser doado a uma família carente? *
           </Text>
@@ -431,7 +582,7 @@ export function PoliticaReservaScreen() {
                 ]}
                 onPress={() => {
                   setFormData({...formData, aptoDoacao: opcao});
-                  setErro('');
+                  limparMensagens();
                 }}
                 disabled={enviando}
               >
@@ -447,6 +598,7 @@ export function PoliticaReservaScreen() {
             ))}
           </View>
 
+          {/* Botão de envio */}
           <TouchableOpacity
             style={[
               styles.submitButton, 
@@ -463,6 +615,13 @@ export function PoliticaReservaScreen() {
               {enviando ? 'Enviando... ⏳' : 'Enviar formulário ✅'}
             </Text>
           </TouchableOpacity>
+
+          {/* 🔧 INDICADOR DE PLATAFORMA */}
+          <View style={styles.platformIndicator}>
+            <Text style={[styles.platformText, { color: textColor }]}>
+              {Platform.OS === 'web' ? '🌐 Versão Web' : '📱 Versão Mobile'}
+            </Text>
+          </View>
         </View>
       </View>
     </ScrollView>
@@ -500,16 +659,32 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginBottom: 20,
   },
+  // 🔧 ESTILOS DE MENSAGENS UNIVERSAIS
   messageContainer: {
     padding: 15,
-    borderRadius: 8,
-    borderWidth: 1,
+    borderRadius: 10,
     marginBottom: 20,
+    borderWidth: 2,
   },
-  messageText: {
+  errorContainer: {
+    backgroundColor: '#ffebee',
+    borderColor: '#f44336',
+  },
+  successContainer: {
+    backgroundColor: '#e8f5e8',
+    borderColor: '#4caf50',
+  },
+  errorMessageText: {
+    color: '#d32f2f',
     fontSize: 16,
     textAlign: 'center',
-    fontWeight: '500',
+    fontWeight: '600',
+  },
+  successMessageText: {
+    color: '#2e7d32',
+    fontSize: 16,
+    textAlign: 'center',
+    fontWeight: '600',
   },
   form: {
     gap: 15,
@@ -565,13 +740,13 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
-  errorText: {
+  fieldErrorText: {
     color: '#E74C3C',
     fontSize: 12,
     marginTop: 5,
     marginLeft: 5,
   },
-  // Estilos para foto
+  // 🔧 ESTILOS DE FOTO UNIVERSAIS
   fotoContainer: {
     alignItems: 'center',
     marginBottom: 10,
@@ -591,7 +766,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 8,
     borderRadius: 8,
-    flex: 1,
+        flex: 1,
     alignItems: 'center',
   },
   fotoButtonText: {
@@ -621,5 +796,19 @@ const styles = StyleSheet.create({
     fontSize: 12,
     opacity: 0.7,
     textAlign: 'center',
+    lineHeight: 16,
+  },
+  // 🔧 INDICADOR DE PLATAFORMA
+  platformIndicator: {
+    alignItems: 'center',
+    marginTop: 20,
+    padding: 10,
+    backgroundColor: 'rgba(57, 191, 36, 0.1)',
+    borderRadius: 8,
+  },
+  platformText: {
+    fontSize: 12,
+    opacity: 0.8,
+    fontWeight: '500',
   },
 });

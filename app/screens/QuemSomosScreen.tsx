@@ -10,7 +10,7 @@ export function QuemSomosScreen() {
         <View style={styles.card}>
           <Text style={styles.subtitle}>🏛️ AMO Orlândia</Text>
           <Text style={styles.text}>
-            A AMO (Associação de Moradores de Orlândia) é uma entidade apartidária que atua em defesa da qualidade de vida dos cidadãos de Orlândia.
+            A AMO (Associação de Moradores de Orlândia) é uma entidade apartidária que busca difundir cidadania, COM SEUS DIREITOS E DEVERES; Inserir o cidadão de bem no conhecimento político e nas decisões do poder público, fiscalizando, propondo idéias e soluções.
           </Text>
         </View>
 

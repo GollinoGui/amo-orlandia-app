@@ -1,5 +1,3 @@
-const API_BASE_URL = 'http://localhost:3000/api';
-
 interface FormularioReservaData {
   nome: string;
   telefone: string;
@@ -10,51 +8,30 @@ interface FormularioReservaData {
   fotoMovel?: string;
 }
 
-interface FormularioContatoData {
+interface ContatoData {
   nome: string;
   telefone: string;
   email?: string;
   mensagem: string;
 }
 
+interface ApiResponse {
+  success: boolean;
+  message: string;
+}
+
 class ApiService {
-  // Enviar formulário de reserva de móveis
-  async enviarFormularioReserva(data: FormularioReservaData): Promise<{ success: boolean; message: string }> {
-    try {
-      const formData = new FormData();
-      
-      // Adicionar campos de texto
-      formData.append('nome', data.nome);
-      formData.append('telefone', data.telefone);
-      if (data.telefoneContato) formData.append('telefoneContato', data.telefoneContato);
-      formData.append('endereco', data.endereco);
-      formData.append('diasEspera', data.diasEspera);
-      formData.append('aptoDoacao', data.aptoDoacao);
-      
-      // Adicionar foto se existir
-      if (data.fotoMovel) {
-        const response = await fetch(data.fotoMovel);
-        const blob = await response.blob();
-        formData.append('fotoMovel', blob, 'foto-movel.jpg');
-      }
-
-      const response = await fetch(`${API_BASE_URL}/email/reserva`, {
-        method: 'POST',
-        body: formData,
-      });
-
-      const result = await response.json();
-      return result;
-    } catch (error) {
-      console.error('Erro ao enviar formulário de reserva:', error);
-      return { success: false, message: 'Erro de conexão. Tente novamente.' };
-    }
+  // 🌐 SEU IP CONFIGURADO
+  private getBaseUrl(): string {
+    return 'http://26.15.255.29:3000/api'; // 👈 SEU IP REAL
   }
 
-  // Enviar formulário de contato
-  async enviarFormularioContato(data: FormularioContatoData): Promise<{ success: boolean; message: string }> {
+  async enviarFormularioReserva(data: FormularioReservaData): Promise<ApiResponse> {
     try {
-      const response = await fetch(`${API_BASE_URL}/email/contato`, {
+      const baseUrl = this.getBaseUrl();
+      console.log('📧 [API] Enviando reserva para:', baseUrl);
+      
+      const response = await fetch(`${baseUrl}/email/reserva`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -63,21 +40,63 @@ class ApiService {
       });
 
       const result = await response.json();
-      return result;
+      
+      if (response.ok) {
+        console.log('✅ [API] Reserva enviada:', result);
+        return result;
+      } else {
+        console.error('❌ [API] Erro do servidor:', result);
+        return result;
+      }
     } catch (error) {
-      console.error('Erro ao enviar formulário de contato:', error);
-      return { success: false, message: 'Erro de conexão. Tente novamente.' };
+      console.error('❌ [API] Erro de conexão:', error);
+      return {
+        success: false,
+        message: 'Erro de conexão com o servidor'
+      };
     }
   }
 
-  // Testar conexão com o backend
+  async enviarFormularioContato(data: ContatoData): Promise<ApiResponse> {
+    try {
+      const baseUrl = this.getBaseUrl();
+      console.log('📧 [API] Enviando contato para:', baseUrl);
+      
+      const response = await fetch(`${baseUrl}/email/contato`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+      
+      if (response.ok) {
+        console.log('✅ [API] Contato enviado:', result);
+        return result;
+      } else {
+        console.error('❌ [API] Erro do servidor:', result);
+        return result;
+      }
+    } catch (error) {
+      console.error('❌ [API] Erro de conexão:', error);
+      return {
+        success: false,
+        message: 'Erro de conexão com o servidor'
+      };
+    }
+  }
+
   async testarConexao(): Promise<boolean> {
     try {
-      const response = await fetch(`${API_BASE_URL}/health`);
+      const baseUrl = this.getBaseUrl();
+      const response = await fetch(`${baseUrl}/health`);
       const result = await response.json();
-      return result.status === 'OK';
+      console.log('✅ [API] Backend conectado:', result);
+      return true;
     } catch (error) {
-      console.error('Erro ao testar conexão:', error);
+      console.error('❌ [API] Backend desconectado:', error);
       return false;
     }
   }

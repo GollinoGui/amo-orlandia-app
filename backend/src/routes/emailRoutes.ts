@@ -1,42 +1,112 @@
-import { Router } from 'express';
-import emailController from '../controllers/emailController';
-import upload from '../middleware/uploadMiddleware';
+import express from 'express';
+import emailService from '../services/emailService';
 
-const router = Router();
+const router = express.Router();
 
-// Rota para enviar formulário de política de reserva (com upload de foto)
-router.post('/reserva', upload.single('fotoMovel'), emailController.enviarFormularioReserva);
-
-// Rota para enviar formulário de contato
-router.post('/contato', emailController.enviarFormularioContato);
-
-// Rota para testar conexão de email
-router.get('/test', emailController.testarConexao);
-
-// 🧪 NOVA ROTA - Teste de envio de email
-router.get('/test-send', async (req, res) => {
+// Rota para formulário de reserva
+router.post('/reserva', async (req, res) => {
   try {
-    const emailService = require('../services/emailService').default;
+    console.log('🔍 [DEBUG] Rota /reserva chamada');
+    console.log('🔍 [DEBUG] Headers:', req.headers);
+    console.log('🔍 [DEBUG] Body recebido:', req.body);
     
-    const testData = {
-      nome: 'Teste AMO',
-      telefone: '(16) 99999-9999',
-      email: 'teste@teste.com',
-      mensagem: 'Este é um teste de envio de email do backend AMO Orlândia!'
-    };
-
-    const enviado = await emailService.enviarFormularioContato(testData);
+    const { nome, telefone, telefoneContato, endereco, diasEspera, aptoDoacao, fotoMovel } = req.body;
     
-    if (enviado) {
-      res.json({ success: true, message: 'Email de teste enviado com sucesso!' });
-    } else {
-      res.json({ success: false, message: 'Falha ao enviar email de teste' });
+    // Validações básicas
+    if (!nome || !telefone || !endereco || !diasEspera || !aptoDoacao) {
+      console.log('❌ [DEBUG] Validação falhou:', { nome: !!nome, telefone: !!telefone, endereco: !!endereco, diasEspera: !!diasEspera, aptoDoacao: !!aptoDoacao });
+      return res.status(400).json({
+        success: false,
+        message: 'Campos obrigatórios não preenchidos'
+      });
     }
+    
+    console.log('✅ [DEBUG] Validações passaram, tentando enviar email...');
+    
+    // Enviar email
+    const emailEnviado = await emailService.enviarFormularioReserva({
+      nome,
+      telefone,
+      telefoneContato,
+      endereco,
+      diasEspera,
+      aptoDoacao,
+      fotoMovel
+    });
+    
+    console.log('🔍 [DEBUG] Resultado do email:', emailEnviado);
+    
+    if (emailEnviado) {
+      console.log('✅ [DEBUG] Email enviado com sucesso');
+      res.json({
+        success: true,
+        message: 'Formulário enviado com sucesso!'
+      });
+    } else {
+      console.log('❌ [DEBUG] Falha ao enviar email');
+      res.status(500).json({
+        success: false,
+        message: 'Erro ao enviar email. Tente novamente.'
+      });
+    }
+    
   } catch (error) {
-    console.error('Erro no teste de email:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Erro no teste de envio de email'
+    console.error('❌ [DEBUG] Erro na rota:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erro interno do servidor'
+    });
+  }
+});
+
+// Rota para formulário de contato
+router.post('/contato', async (req, res) => {
+  try {
+    console.log('🔍 [DEBUG] Rota /contato chamada');
+    console.log('🔍 [DEBUG] Body recebido:', req.body);
+    
+    const { nome, telefone, email, mensagem } = req.body;
+    
+    // Validações básicas
+    if (!nome || !telefone || !mensagem) {
+      console.log('❌ [DEBUG] Validação contato falhou:', { nome: !!nome, telefone: !!telefone, mensagem: !!mensagem });
+      return res.status(400).json({
+        success: false,
+        message: 'Campos obrigatórios não preenchidos'
+      });
+    }
+    
+    console.log('✅ [DEBUG] Validações contato passaram, tentando enviar email...');
+    
+    // Enviar email
+    const emailEnviado = await emailService.enviarFormularioContato({
+      nome,
+      telefone,
+      email,
+      mensagem
+    });
+    
+    console.log('🔍 [DEBUG] Resultado do email contato:', emailEnviado);
+    
+    if (emailEnviado) {
+      console.log('✅ [DEBUG] Email contato enviado com sucesso');
+      res.json({
+        success: true,
+        message: 'Mensagem enviada com sucesso!'
+      });
+    } else {
+      console.log('❌ [DEBUG] Falha ao enviar email contato');
+      res.status(500).json({
+        success: false,
+        message: 'Erro ao enviar email. Tente novamente.'
+      });
+    }
+    
+  } catch (error) {
+    console.error('❌ [DEBUG] Erro na rota contato:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erro interno do servidor'
     });
   }
 });

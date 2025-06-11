@@ -21,25 +21,72 @@ class EmailService {
   private transporter;
 
   constructor() {
-    this.transporter = nodemailer.createTransport({  // 👈 CORRIGIDO: createTransport
-      host: process.env.EMAIL_HOST,
-      port: parseInt(process.env.EMAIL_PORT || '587'),
-      secure: false,
+    console.log('🔧 [EMAIL] Inicializando EmailService...');
+    
+    // 🔍 DIAGNÓSTICO DETALHADO
+    console.log('🔍 [EMAIL] Credenciais:');
+    console.log('  - EMAIL_USER:', process.env.EMAIL_USER || '❌ NÃO DEFINIDO');
+    console.log('  - EMAIL_PASS:', process.env.EMAIL_PASS ? '✅ DEFINIDO' : '❌ NÃO DEFINIDO');
+    console.log('  - EMAIL_HOST:', process.env.EMAIL_HOST || '❌ NÃO DEFINIDO');
+    console.log('  - EMAIL_PORT:', process.env.EMAIL_PORT || '❌ NÃO DEFINIDO');
+
+    // Verificar se as credenciais existem
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+      console.error('❌ [EMAIL] ERRO: Credenciais de email não configuradas!');
+      console.error('❌ [EMAIL] Verifique se o arquivo .env existe em backend/.env');
+      throw new Error('Credenciais de email não configuradas');
+    }
+
+    // 🔧 CONFIGURAÇÃO MAIS ROBUSTA
+    this.transporter = nodemailer.createTransport({
+      service: 'gmail',
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
       },
+      debug: true,
+      logger: true
     });
+
+    console.log('✅ [EMAIL] Transporter criado com sucesso');
   }
 
   // Verificar conexão com o servidor de email
   async verificarConexao(): Promise<boolean> {
     try {
+      console.log('🧪 [EMAIL] Verificando conexão...');
+      
       await this.transporter.verify();
-      console.log('✅ Conexão com servidor de email estabelecida');
+      console.log('✅ [EMAIL] Conexão estabelecida com sucesso!');
       return true;
     } catch (error) {
-      console.error('❌ Erro na conexão com servidor de email:', error);
+      console.error('❌ [EMAIL] Erro na conexão:', error);
+      return false;
+    }
+  }
+
+  // 🧪 MÉTODO DE TESTE SIMPLES
+  async enviarEmailTeste(): Promise<boolean> {
+    try {
+      console.log('🧪 [EMAIL] Enviando email de teste...');
+      
+      const mailOptions = {
+        from: process.env.EMAIL_FROM,
+        to: process.env.EMAIL_TO,
+        subject: '🧪 Teste AMO Orlândia - ' + new Date().toLocaleString('pt-BR'),
+        html: `
+          <h2>🧪 Email de Teste</h2>
+          <p>Este é um email de teste do sistema AMO Orlândia.</p>
+          <p><strong>Data/Hora:</strong> ${new Date().toLocaleString('pt-BR')}</p>
+          <p><strong>Status:</strong> ✅ Sistema funcionando!</p>
+        `
+      };
+
+      const result = await this.transporter.sendMail(mailOptions);
+      console.log('✅ [EMAIL] Email de teste enviado:', result.messageId);
+      return true;
+    } catch (error) {
+      console.error('❌ [EMAIL] Erro ao enviar email de teste:', error);
       return false;
     }
   }
@@ -47,6 +94,7 @@ class EmailService {
   // Enviar formulário de política de reserva
   async enviarFormularioReserva(data: EmailData): Promise<boolean> {
     try {
+      console.log('📧 [EMAIL] Enviando formulário de reserva...');
       const htmlContent = this.gerarHTMLReserva(data);
       
       const mailOptions = {
@@ -54,17 +102,13 @@ class EmailService {
         to: process.env.EMAIL_TO,
         subject: `🪑 Nova Solicitação de Reserva de Móvel - ${data.nome}`,
         html: htmlContent,
-        attachments: data.fotoMovel ? [{
-          filename: 'foto-movel.jpg',
-          path: data.fotoMovel
-        }] : []
       };
 
       const result = await this.transporter.sendMail(mailOptions);
-      console.log('✅ Email de reserva enviado:', result.messageId);
+      console.log('✅ [EMAIL] Email de reserva enviado:', result.messageId);
       return true;
     } catch (error) {
-      console.error('❌ Erro ao enviar email de reserva:', error);
+      console.error('❌ [EMAIL] Erro ao enviar email de reserva:', error);
       return false;
     }
   }
@@ -72,6 +116,7 @@ class EmailService {
   // Enviar formulário de contato
   async enviarFormularioContato(data: ContatoData): Promise<boolean> {
     try {
+      console.log('📧 [EMAIL] Enviando formulário de contato...');
       const htmlContent = this.gerarHTMLContato(data);
       
       const mailOptions = {
@@ -83,10 +128,10 @@ class EmailService {
       };
 
       const result = await this.transporter.sendMail(mailOptions);
-      console.log('✅ Email de contato enviado:', result.messageId);
+      console.log('✅ [EMAIL] Email de contato enviado:', result.messageId);
       return true;
     } catch (error) {
-      console.error('❌ Erro ao enviar email de contato:', error);
+      console.error('❌ [EMAIL] Erro ao enviar email de contato:', error);
       return false;
     }
   }
@@ -152,13 +197,6 @@ class EmailService {
               <span class="label">💝 Apto para Doação:</span>
               <span class="value">${data.aptoDoacao}</span>
             </div>
-            
-            ${data.fotoMovel ? `
-            <div class="field">
-              <span class="label">📷 Foto:</span>
-              <span class="value">Anexada ao email</span>
-            </div>
-            ` : ''}
             
             <div class="highlight">
               <strong>⚠️ Ação Necessária:</strong> Entre em contato com o solicitante para agendar a retirada do móvel.
