@@ -25,7 +25,7 @@ export  function HomeScreen() {
     {
       id: 3,
       title: 'Projeto Limpai',
-      subtitle: 'Combate ao descarte irregular',
+      subtitle: 'Por uma Orlandia mais limpa.',
       emoji: '🧹',
       route: 'projeto-limpai',
       color: '#9EBF26'
