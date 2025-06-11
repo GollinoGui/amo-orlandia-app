@@ -138,7 +138,8 @@ export default function RootLayout() {
               title: 'Associe-se à AMO',
               headerStyle: { backgroundColor: '#9EBF26' },
               headerTintColor: '#fff',
-              headerTitleStyle: { fontWeight: 'bold' }
+              headerTitleStyle: { fontWeight: 'bold' },
+              headerLeft: createHeaderLeft()
             }} 
           />
 
