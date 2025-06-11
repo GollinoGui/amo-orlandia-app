@@ -116,6 +116,12 @@ export function ContatoScreen() {
       }
     }
   };
+    const patrocinadores = [
+    'MORLAN - Juntos por uma Orlândia sustentável',
+    'Empresa Parceira - Cuidando do meio ambiente',
+    'Patrocinador Local - Por uma cidade mais limpa'
+    ];
+
 
   // 🚀 SISTEMA DE NOTIFICAÇÃO UNIVERSAL
   const mostrarSucesso = (mensagem: string) => {
@@ -200,8 +206,10 @@ export function ContatoScreen() {
       console.log('📧 [UNIVERSAL] Resultado contato:', resultado);
 
       if (resultado.success) {
-        const mensagemSucesso = 'Sua mensagem foi enviada com sucesso!\n\nEntraremos em contato em breve.';
+        const patrocinadorAleatorio = patrocinadores[Math.floor(Math.random() * patrocinadores.length)];
+        const mensagemSucesso = `Sua mensagem foi enviada com sucesso!\n\n💝 Cortesia da:\n${patrocinadorAleatorio}`;
         mostrarSucesso(mensagemSucesso);
+
         
         // Se for web, limpar formulário após delay
         if (Platform.OS === 'web') {
