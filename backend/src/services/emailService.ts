@@ -23,39 +23,26 @@ class EmailService {
   constructor() {
     console.log('🔧 [EMAIL] Inicializando EmailService...');
     
-    // 🔍 DIAGNÓSTICO DETALHADO
-    console.log('🔍 [EMAIL] Credenciais:');
-    console.log('  - EMAIL_USER:', process.env.EMAIL_USER || '❌ NÃO DEFINIDO');
-    console.log('  - EMAIL_PASS:', process.env.EMAIL_PASS ? '✅ DEFINIDO' : '❌ NÃO DEFINIDO');
-    console.log('  - EMAIL_HOST:', process.env.EMAIL_HOST || '❌ NÃO DEFINIDO');
-    console.log('  - EMAIL_PORT:', process.env.EMAIL_PORT || '❌ NÃO DEFINIDO');
-
     // Verificar se as credenciais existem
     if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
       console.error('❌ [EMAIL] ERRO: Credenciais de email não configuradas!');
-      console.error('❌ [EMAIL] Verifique se o arquivo .env existe em backend/.env');
       throw new Error('Credenciais de email não configuradas');
     }
 
-    // 🔧 CONFIGURAÇÃO MAIS ROBUSTA
     this.transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
       },
-      debug: true,
-      logger: true
     });
 
     console.log('✅ [EMAIL] Transporter criado com sucesso');
   }
 
-  // Verificar conexão com o servidor de email
   async verificarConexao(): Promise<boolean> {
     try {
       console.log('🧪 [EMAIL] Verificando conexão...');
-      
       await this.transporter.verify();
       console.log('✅ [EMAIL] Conexão estabelecida com sucesso!');
       return true;
@@ -65,7 +52,6 @@ class EmailService {
     }
   }
 
-  // 🧪 MÉTODO DE TESTE SIMPLES
   async enviarEmailTeste(): Promise<boolean> {
     try {
       console.log('🧪 [EMAIL] Enviando email de teste...');
@@ -91,18 +77,30 @@ class EmailService {
     }
   }
 
-  // Enviar formulário de política de reserva
+  // 📸 ENVIAR FORMULÁRIO COM IMAGEM
   async enviarFormularioReserva(data: EmailData): Promise<boolean> {
     try {
       console.log('📧 [EMAIL] Enviando formulário de reserva...');
+      console.log('📸 [EMAIL] Foto anexada:', data.fotoMovel ? 'SIM' : 'NÃO');
+      
       const htmlContent = this.gerarHTMLReserva(data);
       
-      const mailOptions = {
+      const mailOptions: any = {
         from: process.env.EMAIL_FROM,
         to: process.env.EMAIL_TO,
         subject: `🪑 Nova Solicitação de Reserva de Móvel - ${data.nome}`,
         html: htmlContent,
       };
+
+      // 📸 ADICIONAR ANEXO SE HOUVER FOTO
+      if (data.fotoMovel) {
+        mailOptions.attachments = [{
+          filename: `foto-movel-${data.nome.replace(/\s+/g, '-')}.jpg`,
+          path: data.fotoMovel,
+          cid: 'foto-movel' // Para usar no HTML se quiser
+        }];
+        console.log('📎 [EMAIL] Anexo adicionado:', data.fotoMovel);
+      }
 
       const result = await this.transporter.sendMail(mailOptions);
       console.log('✅ [EMAIL] Email de reserva enviado:', result.messageId);
@@ -113,7 +111,6 @@ class EmailService {
     }
   }
 
-  // Enviar formulário de contato
   async enviarFormularioContato(data: ContatoData): Promise<boolean> {
     try {
       console.log('📧 [EMAIL] Enviando formulário de contato...');
@@ -136,7 +133,7 @@ class EmailService {
     }
   }
 
-  // Gerar HTML para email de reserva
+  // 📸 HTML ATUALIZADO COM SUPORTE A IMAGEM
   private gerarHTMLReserva(data: EmailData): string {
     return `
       <!DOCTYPE html>
@@ -152,6 +149,7 @@ class EmailService {
           .label { font-weight: bold; color: #39BF24; }
           .value { margin-left: 10px; }
           .highlight { background: #e8f5e8; padding: 10px; border-left: 4px solid #39BF24; margin: 15px 0; }
+          .foto-info { background: #fff3cd; padding: 15px; border-radius: 8px; margin: 15px 0; text-align: center; }
         </style>
       </head>
       <body>
@@ -198,6 +196,18 @@ class EmailService {
               <span class="value">${data.aptoDoacao}</span>
             </div>
             
+            ${data.fotoMovel ? `
+            <div class="foto-info">
+              <h3>📸 Foto do Móvel</h3>
+              <p>✅ Foto anexada ao email!</p>
+              <p><small>Verifique os anexos deste email para visualizar a foto do móvel.</small></p>
+            </div>
+            ` : `
+            <div class="foto-info">
+              <p>📷 Nenhuma foto foi enviada</p>
+            </div>
+            `}
+            
             <div class="highlight">
               <strong>⚠️ Ação Necessária:</strong> Entre em contato com o solicitante para agendar a retirada do móvel.
             </div>
@@ -208,7 +218,6 @@ class EmailService {
     `;
   }
 
-  // Gerar HTML para email de contato
   private gerarHTMLContato(data: ContatoData): string {
     return `
       <!DOCTYPE html>
@@ -218,7 +227,7 @@ class EmailService {
         <style>
           body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
           .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-          .header { background: #F2C335; color: white; padding: 20px; text-align: center; border-radius: 10px 10px 0 0; }
+                    .header { background: #F2C335; color: white; padding: 20px; text-align: center; border-radius: 10px 10px 0 0; }
           .content { background: #f9f9f9; padding: 20px; border-radius: 0 0 10px 10px; }
           .field { margin-bottom: 15px; }
           .label { font-weight: bold; color: #F2C335; }
@@ -273,3 +282,4 @@ class EmailService {
 }
 
 export default new EmailService();
+

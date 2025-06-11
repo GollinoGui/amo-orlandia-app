@@ -21,22 +21,44 @@ interface ApiResponse {
 }
 
 class ApiService {
-  // 🌐 SEU IP CONFIGURADO
   private getBaseUrl(): string {
-    return 'http://26.15.255.29:3000/api'; // 👈 SEU IP REAL
+    return 'http://26.15.255.29:3000/api';
   }
 
+  // 📸 MÉTODO ATUALIZADO PARA ENVIAR IMAGEM
   async enviarFormularioReserva(data: FormularioReservaData): Promise<ApiResponse> {
     try {
       const baseUrl = this.getBaseUrl();
       console.log('📧 [API] Enviando reserva para:', baseUrl);
       
+      // 📸 CRIAR FORMDATA PARA ENVIAR ARQUIVO
+      const formData = new FormData();
+      
+      // Adicionar campos de texto
+      formData.append('nome', data.nome);
+      formData.append('telefone', data.telefone);
+      if (data.telefoneContato) formData.append('telefoneContato', data.telefoneContato);
+      formData.append('endereco', data.endereco);
+      formData.append('diasEspera', data.diasEspera);
+      formData.append('aptoDoacao', data.aptoDoacao);
+      
+      // 📸 ADICIONAR FOTO SE EXISTIR
+      if (data.fotoMovel) {
+        console.log('📸 [API] Adicionando foto:', data.fotoMovel);
+        
+        // Criar blob da imagem
+        const response = await fetch(data.fotoMovel);
+        const blob = await response.blob();
+        
+        // Adicionar ao FormData
+        formData.append('fotoMovel', blob, 'foto-movel.jpg');
+      }
+
+      // 📤 ENVIAR COM FORMDATA
       const response = await fetch(`${baseUrl}/email/reserva`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
+        body: formData, // 👈 FormData, não JSON
+        // NÃO definir Content-Type, deixar o browser definir automaticamente
       });
 
       const result = await response.json();
