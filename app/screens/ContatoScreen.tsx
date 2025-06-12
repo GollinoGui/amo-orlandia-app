@@ -122,8 +122,8 @@ export function ContatoScreen() {
 
   const patrocinadores = [
     'MORLAN - Juntos por uma Orlândia sustentável',
-    'Empresa Parceira - Cuidando do meio ambiente',
-    'Patrocinador Local - Por uma cidade mais limpa'
+    'INTELLI  - Cuidando do meio ambiente',
+    'UNIMED - Por uma cidade mais limpa'
   ];
 
   // 🚀 NOTIFICAÇÕES
