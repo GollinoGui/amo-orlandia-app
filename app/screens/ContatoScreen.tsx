@@ -1,4 +1,5 @@
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { Picker } from '@react-native-picker/picker';
 import React, { useState } from 'react';
 import { Alert, Linking, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import apiService from '../services/apiService';
@@ -9,10 +10,18 @@ export function ContatoScreen() {
   const primaryColor = '#F2C335';
   const cardColor = useThemeColor({}, 'card');
 
+  const assuntosFrequentes = [
+    "Mal atendimento",
+    "Demora no serviço",
+    "Dificuldade de acesso",
+    "Outro"
+  ];
+
   const [formData, setFormData] = useState({
     nome: '',
     telefone: '',
     email: '',
+    assunto: '',
     mensagem: ''
   });
 
@@ -20,7 +29,7 @@ export function ContatoScreen() {
   const [sucesso, setSucesso] = useState('');
   const [enviando, setEnviando] = useState(false);
 
-  // ✅ FUNÇÕES DE VALIDAÇÃO UNIVERSAIS
+  // ✅ VALIDAÇÕES
   const validarNome = (nome: string) => {
     const regex = /^[a-zA-ZÀ-ÿ\s]+$/;
     return regex.test(nome) && nome.trim().length >= 2;
@@ -41,7 +50,7 @@ export function ContatoScreen() {
   };
 
   const validarEmail = (email: string) => {
-    if (!email.trim()) return true; // Email é opcional
+    if (!email.trim()) return true;
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return regex.test(email);
   };
@@ -50,7 +59,7 @@ export function ContatoScreen() {
     return telefone.replace(/\D/g, '').length;
   };
 
-  // ✅ HANDLERS UNIVERSAIS
+  // ✅ HANDLERS
   const limparMensagens = () => {
     setErro('');
     setSucesso('');
@@ -78,20 +87,17 @@ export function ContatoScreen() {
     limparMensagens();
   };
 
-  // 🔗 FUNÇÕES DE CONTATO EXTERNO UNIVERSAIS
+  // 🔗 CONTATOS EXTERNOS
   const abrirWhatsApp = async () => {
     const numero = '5516991737383';
     const mensagem = 'Olá! Gostaria de entrar em contato com a AMO Orlândia.';
     const url = `whatsapp://send?phone=${numero}&text=${encodeURIComponent(mensagem)}`;
     
     try {
-      console.log('📱 [UNIVERSAL] Abrindo WhatsApp...');
       await Linking.openURL(url);
     } catch (error) {
-      console.error('❌ [UNIVERSAL] Erro ao abrir WhatsApp:', error);
-      
       if (Platform.OS === 'web') {
-        setSucesso('💬 WhatsApp: (16) 99173-7383 - Copie este número!');
+        setSucesso('💬 WhatsApp: (16) 99173-7383');
         setTimeout(() => setSucesso(''), 5000);
       } else {
         Alert.alert('Erro', 'WhatsApp não instalado. Número: (16) 99173-7383');
@@ -103,27 +109,24 @@ export function ContatoScreen() {
     const url = 'https://www.instagram.com/amo.orlandia/';
     
     try {
-      console.log('📷 [UNIVERSAL] Abrindo Instagram...');
       await Linking.openURL(url);
     } catch (error) {
-      console.error('❌ [UNIVERSAL] Erro ao abrir Instagram:', error);
-      
       if (Platform.OS === 'web') {
-        setSucesso('📷 Instagram: @amo.orlandia - Acesse manualmente!');
+        setSucesso('📷 Instagram: @amo.orlandia');
         setTimeout(() => setSucesso(''), 5000);
       } else {
-        Alert.alert('Erro', 'Não foi possível abrir o Instagram. Procure por: @amo.orlandia');
+        Alert.alert('Erro', 'Não foi possível abrir o Instagram. Procure: @amo.orlandia');
       }
     }
   };
-    const patrocinadores = [
+
+  const patrocinadores = [
     'MORLAN - Juntos por uma Orlândia sustentável',
     'Empresa Parceira - Cuidando do meio ambiente',
     'Patrocinador Local - Por uma cidade mais limpa'
-    ];
+  ];
 
-
-  // 🚀 SISTEMA DE NOTIFICAÇÃO UNIVERSAL
+  // 🚀 NOTIFICAÇÕES
   const mostrarSucesso = (mensagem: string) => {
     if (Platform.OS === 'web') {
       setSucesso(mensagem);
@@ -143,87 +146,97 @@ export function ContatoScreen() {
     }
   };
 
-  // 📧 FUNÇÃO DE ENVIO UNIVERSAL
+  // 📧 ENVIO PRINCIPAL
   const handleSubmit = async () => {
     limparMensagens();
     setEnviando(true);
     
     try {
-      console.log('=== [UNIVERSAL] VALIDAÇÕES CONTATO ===');
+      console.log('=== [CONTATO] INICIANDO ENVIO ===');
+      console.log('📱 [CONTATO] Plataforma:', Platform.OS);
 
       // Validações
       if (!formData.nome.trim()) {
         mostrarErro('Por favor, preencha seu nome.');
-        setEnviando(false);
         return;
       }
 
       if (!validarNome(formData.nome)) {
         mostrarErro('Nome deve conter apenas letras e ter pelo menos 2 caracteres.');
-        setEnviando(false);
         return;
       }
 
       if (!formData.telefone.trim()) {
         mostrarErro('Por favor, preencha seu telefone.');
-        setEnviando(false);
         return;
       }
 
       if (!validarTelefone(formData.telefone)) {
-        mostrarErro('Telefone deve ter 10 ou 11 dígitos. Formato: (16) 99999-9999');
-        setEnviando(false);
+        mostrarErro('Telefone deve ter 10 ou 11 dígitos.');
         return;
       }
 
       if (formData.email && !validarEmail(formData.email)) {
-        mostrarErro('Email inválido. Formato: exemplo@email.com');
-        setEnviando(false);
+        mostrarErro('Email inválido.');
+        return;
+      }
+
+      if (!formData.assunto) {
+        mostrarErro('Por favor, selecione um assunto.');
         return;
       }
 
       if (!formData.mensagem.trim()) {
         mostrarErro('Por favor, escreva sua mensagem.');
-        setEnviando(false);
         return;
       }
 
       if (formData.mensagem.trim().length < 10) {
         mostrarErro('Mensagem deve ter pelo menos 10 caracteres.');
-        setEnviando(false);
         return;
       }
 
-      console.log('=== [UNIVERSAL] ENVIANDO CONTATO ===');
+      console.log('=== [CONTATO] DADOS VALIDADOS ===');
+      console.log('📤 [CONTATO] Enviando:', formData);
 
+      // 🧪 TESTE DE CONEXÃO PRIMEIRO
+      console.log('🧪 [CONTATO] Testando conexão...');
+      const conexaoOk = await apiService.testarConexao();
+      
+      if (!conexaoOk) {
+        mostrarErro('Sem conexão com o servidor. Verifique sua internet.');
+        return;
+      }
+
+      console.log('✅ [CONTATO] Conexão OK, enviando formulário...');
+
+      // Enviar formulário
       const resultado = await apiService.enviarFormularioContato({
         nome: formData.nome,
         telefone: formData.telefone,
         email: formData.email || undefined,
+        assunto: formData.assunto,
         mensagem: formData.mensagem
       });
 
-      console.log('📧 [UNIVERSAL] Resultado contato:', resultado);
+      console.log('📧 [CONTATO] Resultado:', resultado);
 
       if (resultado.success) {
         const patrocinadorAleatorio = patrocinadores[Math.floor(Math.random() * patrocinadores.length)];
         const mensagemSucesso = `Sua mensagem foi enviada com sucesso!\n\n💝 Cortesia da:\n${patrocinadorAleatorio}`;
         mostrarSucesso(mensagemSucesso);
 
-        
-        // Se for web, limpar formulário após delay
         if (Platform.OS === 'web') {
           setTimeout(() => {
             limparFormulario();
           }, 5000);
         }
-        
       } else {
         mostrarErro(resultado.message);
       }
 
     } catch (error) {
-      console.error('❌ [UNIVERSAL] Erro contato:', error);
+      console.error('❌ [CONTATO] Erro:', error);
       mostrarErro('Erro de conexão. Verifique sua internet e tente novamente.');
     } finally {
       setEnviando(false);
@@ -235,6 +248,7 @@ export function ContatoScreen() {
       nome: '',
       telefone: '',
       email: '',
+      assunto: '',
       mensagem: ''
     });
     limparMensagens();
@@ -244,12 +258,11 @@ export function ContatoScreen() {
     <ScrollView style={[styles.container, { backgroundColor }]}>
       <View style={[styles.card, { backgroundColor: cardColor }]}>
         <Text style={[styles.title, { color: primaryColor }]}>📞 Contate-nos</Text>
-        
         <Text style={[styles.description, { color: textColor }]}>
-          Estamos sempre atendendo através do nosso formulário de contato. Preencha os dados abaixo e descreva o que você necessita.
+          Estamos sempre atendendo através do nosso formulário de contato.
         </Text>
 
-        {/* 🔧 SISTEMA DE MENSAGENS UNIVERSAL */}
+        {/* 🔧 MENSAGENS */}
         {erro ? (
           <View style={[styles.messageContainer, styles.errorContainer]}>
             <Text style={styles.errorMessageText}>❌ {erro}</Text>
@@ -345,10 +358,10 @@ export function ContatoScreen() {
           {/* Email */}
           <Text style={[styles.label, { color: textColor }]}>Email (opcional):</Text>
           <TextInput
-                        style={[styles.input, { borderColor: primaryColor, color: textColor }]}
+            style={[styles.input, { borderColor: primaryColor, color: textColor }]}
             value={formData.email}
             onChangeText={handleEmailChange}
-            placeholder="seu@email.com"
+                        placeholder="seu@email.com"
             placeholderTextColor={textColor + '80'}
             keyboardType="email-address"
             autoCapitalize="none"
@@ -356,6 +369,52 @@ export function ContatoScreen() {
           />
           {formData.email.length > 0 && !validarEmail(formData.email) && (
             <Text style={styles.fieldErrorText}>Email inválido</Text>
+          )}
+
+          {/* Assunto */}
+          <Text style={[styles.label, { color: textColor }]}>Assunto: *</Text>
+          {Platform.OS === 'web' ? (
+            <select
+              value={formData.assunto}
+              onChange={e => setFormData({ ...formData, assunto: e.target.value })}
+              disabled={enviando}
+              style={{
+                marginBottom: 15,
+                borderRadius: 8,
+                padding: 12,
+                fontSize: 16,
+                width: '100%',
+                borderColor: primaryColor,
+                borderWidth: 1,
+                color: textColor,
+                backgroundColor: cardColor,
+              }}
+            >
+              <option value="">Selecione o assunto</option>
+              {assuntosFrequentes.map(a => (
+                <option key={a} value={a}>{a}</option>
+              ))}
+            </select>
+          ) : (
+            <Picker
+              selectedValue={formData.assunto || ""}
+              onValueChange={(itemValue: string) => setFormData({ ...formData, assunto: itemValue || "" })}
+              enabled={!enviando}
+              style={{
+                marginBottom: 15,
+                backgroundColor: cardColor,
+                borderRadius: 8,
+                color: textColor,
+              }}
+              itemStyle={{
+                color: textColor,
+              }}
+            >
+              <Picker.Item label="Selecione o assunto" value="" />
+              {assuntosFrequentes.map(a => (
+                <Picker.Item key={a} label={a} value={a} />
+              ))}
+            </Picker>
           )}
 
           {/* Mensagem */}
@@ -433,7 +492,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     lineHeight: 22,
   },
-  // 🔧 ESTILOS DE MENSAGENS UNIVERSAIS
+  // 🔧 ESTILOS DE MENSAGENS
   messageContainer: {
     padding: 15,
     borderRadius: 10,
@@ -547,7 +606,6 @@ const styles = StyleSheet.create({
     marginTop: 5,
     marginLeft: 5,
   },
-  // 🔧 INDICADOR DE PLATAFORMA
   platformIndicator: {
     alignItems: 'center',
     marginTop: 20,
@@ -562,5 +620,5 @@ const styles = StyleSheet.create({
   },
 });
 
-
 export default ContatoScreen;
+

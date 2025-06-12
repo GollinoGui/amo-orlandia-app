@@ -1,11 +1,12 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
+import fs from 'fs';
 import multer from 'multer';
 import path from 'path';
 import emailService from '../services/emailService';
 
 const router = express.Router();
 
-// Configuração do multer para upload de arquivos
+// Configuração do multer
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, path.join(__dirname, '../../uploads'));
@@ -18,7 +19,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ 
   storage: storage,
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
+  limits: { fileSize: 10 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     if (file.mimetype.startsWith('image/')) {
       cb(null, true);
@@ -28,20 +29,19 @@ const upload = multer({
   }
 });
 
-// Rota para formulário de reserva (com upload de foto)
-router.post('/reserva', upload.single('fotoMovel'), async (req, res) => {
+// 🪑 RESERVA
+router.post('/reserva', upload.single('fotoMovel'), async (req: Request, res: Response) => {
   try {
-    console.log('📧 [RESERVA] Recebendo formulário de reserva...');
-    console.log('📋 [RESERVA] Dados:', req.body);
-    console.log('📸 [RESERVA] Arquivo:', req.file);
-
+    console.log('📧 [RESERVA] Dados recebidos:', req.body);
+    
     const { nome, telefone, telefoneContato, endereco, diasEspera, aptoDoacao } = req.body;
 
     if (!nome || !telefone || !endereco || !diasEspera || !aptoDoacao) {
-      return res.status(400).json({
+      res.status(400).json({
         success: false,
-        message: 'Todos os campos obrigatórios devem ser preenchidos'
+        message: 'Campos obrigatórios não preenchidos'
       });
+      return;
     }
 
     const emailEnviado = await emailService.enviarFormularioReserva({
@@ -55,16 +55,16 @@ router.post('/reserva', upload.single('fotoMovel'), async (req, res) => {
     });
 
     if (emailEnviado) {
-      console.log('✅ [RESERVA] Email enviado com sucesso!');
+      console.log('✅ [RESERVA] Email enviado');
       res.json({
         success: true,
-        message: 'Formulário de reserva enviado com sucesso!'
+        message: 'Formulário enviado com sucesso!'
       });
     } else {
-      console.log('❌ [RESERVA] Falha ao enviar email');
+      console.log('❌ [RESERVA] Falha no email');
       res.status(500).json({
         success: false,
-        message: 'Erro ao enviar email. Tente novamente.'
+        message: 'Erro ao enviar email'
       });
     }
 
@@ -77,39 +77,62 @@ router.post('/reserva', upload.single('fotoMovel'), async (req, res) => {
   }
 });
 
-// Rota para formulário de contato
-router.post('/contato', async (req, res) => {
+// 📞 CONTATO
+router.post('/contato', async (req: Request, res: Response) => {
   try {
-    console.log('📧 [CONTATO] Recebendo formulário de contato...');
-    console.log('📋 [CONTATO] Dados:', req.body);
+    console.log('📞 [CONTATO] Dados recebidos:', req.body);
+    
+    const { nome, telefone, email, mensagem, assunto } = req.body;
 
-    const { nome, telefone, email, mensagem } = req.body;
-
-    if (!nome || !telefone || !mensagem) {
-      return res.status(400).json({
+    if (!nome || !telefone || !mensagem || !assunto) {
+      res.status(400).json({
         success: false,
-        message: 'Nome, telefone e mensagem são obrigatórios'
+        message: 'Campos obrigatórios não preenchidos'
       });
+      return;
     }
 
+    // Gerenciar contador
+    const dataDir = path.join(__dirname, '../data');
+    if (!fs.existsSync(dataDir)) {
+      fs.mkdirSync(dataDir, { recursive: true });
+    }
+
+    const dataPath = path.join(dataDir, 'contatos.json');
+    let contadores: Record<string, number> = {};
+    
+    if (fs.existsSync(dataPath)) {
+      try {
+        contadores = JSON.parse(fs.readFileSync(dataPath, 'utf-8'));
+      } catch (e) {
+        contadores = {};
+      }
+    }
+
+    contadores[assunto] = (contadores[assunto] || 0) + 1;
+    fs.writeFileSync(dataPath, JSON.stringify(contadores, null, 2));
+
+    // Enviar email
     const emailEnviado = await emailService.enviarFormularioContato({
       nome,
       telefone,
-      email,
-      mensagem
+      email: email || undefined,
+      mensagem,
+      assunto,
+      totalAssunto: contadores[assunto]
     });
 
     if (emailEnviado) {
-      console.log('✅ [CONTATO] Email enviado com sucesso!');
+      console.log('✅ [CONTATO] Email enviado');
       res.json({
         success: true,
-        message: 'Mensagem de contato enviada com sucesso!'
+        message: 'Mensagem enviada com sucesso!'
       });
     } else {
-      console.log('❌ [CONTATO] Falha ao enviar email');
+      console.log('❌ [CONTATO] Falha no email');
       res.status(500).json({
         success: false,
-        message: 'Erro ao enviar email. Tente novamente.'
+        message: 'Erro ao enviar mensagem'
       });
     }
 
@@ -122,58 +145,40 @@ router.post('/contato', async (req, res) => {
   }
 });
 
-// 🆕 Rota para formulário de associação
-router.post('/associacao', async (req, res) => {
+// 🤝 ASSOCIAÇÃO
+router.post('/associacao', async (req: Request, res: Response) => {
   try {
-    console.log('📧 [ASSOCIACAO] Recebendo formulário de associação...');
-    console.log('📋 [ASSOCIACAO] Dados:', req.body);
-
+    console.log('🤝 [ASSOCIACAO] Dados recebidos:', req.body);
+    
     const {
-      nomeCompleto,
-      cpf,
-      rg,
-      dataNascimento,
-      telefone,
-      email,
-      enderecoCompleto,
-      profissao,
-      motivoAssociacao,
-      comoConheceu
+      nomeCompleto, cpf, rg, dataNascimento, telefone, email,
+      enderecoCompleto, profissao, motivoAssociacao, comoConheceu
     } = req.body;
 
-    // Validações básicas
     if (!nomeCompleto || !cpf || !rg || !dataNascimento || !telefone || !email) {
-      return res.status(400).json({
+      res.status(400).json({
         success: false,
-        message: 'Todos os campos obrigatórios devem ser preenchidos'
+        message: 'Campos obrigatórios não preenchidos'
       });
+      return;
     }
 
-    // Enviar email
     const emailEnviado = await emailService.enviarFormularioAssociacao({
-      nomeCompleto,
-      cpf,
-      rg,
-      dataNascimento,
-      telefone,
-      email,
-      enderecoCompleto,
-      profissao,
-      motivoAssociacao,
-      comoConheceu
+      nomeCompleto, cpf, rg, dataNascimento, telefone, email,
+      enderecoCompleto, profissao, motivoAssociacao, comoConheceu
     });
 
     if (emailEnviado) {
-      console.log('✅ [ASSOCIACAO] Email enviado com sucesso!');
+      console.log('✅ [ASSOCIACAO] Email enviado');
       res.json({
         success: true,
-        message: 'Formulário de associação enviado com sucesso!'
+        message: 'Formulário enviado com sucesso!'
       });
     } else {
-      console.log('❌ [ASSOCIACAO] Falha ao enviar email');
+      console.log('❌ [ASSOCIACAO] Falha no email');
       res.status(500).json({
         success: false,
-        message: 'Erro ao enviar email. Tente novamente.'
+        message: 'Erro ao enviar email'
       });
     }
 

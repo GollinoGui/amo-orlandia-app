@@ -15,6 +15,8 @@ interface ContatoData {
   telefone: string;
   email?: string;
   mensagem: string;
+  assunto: string;
+  totalAssunto: number;
 }
 
 interface AssociacaoData {
@@ -122,26 +124,36 @@ class EmailService {
   }
 
   async enviarFormularioContato(data: ContatoData): Promise<boolean> {
-    try {
-      console.log('📧 [EMAIL] Enviando formulário de contato...');
-      const htmlContent = this.gerarHTMLContato(data);
-      
-      const mailOptions = {
-        from: process.env.EMAIL_FROM,
-        to: process.env.EMAIL_TO,
-        subject: `📞 Nova Mensagem de Contato - ${data.nome}`,
-        html: htmlContent,
-        replyTo: data.email || undefined
-      };
+  try {
+    console.log('📧 [EMAIL] Iniciando envio de contato...');
+    console.log('📧 [EMAIL] Dados recebidos:', JSON.stringify(data, null, 2));
+    
+    const htmlContent = this.gerarHTMLContato(data);
+    console.log('📧 [EMAIL] HTML gerado com sucesso');
+    
+    const mailOptions = {
+      from: process.env.EMAIL_FROM,
+      to: process.env.EMAIL_TO,
+      subject: `📞 Nova Mensagem de Contato - ${data.nome}`,
+      html: htmlContent,
+      replyTo: data.email || undefined
+    };
 
-      const result = await this.transporter.sendMail(mailOptions);
-      console.log('✅ [EMAIL] Email de contato enviado:', result.messageId);
-      return true;
-    } catch (error) {
-      console.error('❌ [EMAIL] Erro ao enviar email de contato:', error);
-      return false;
-    }
+    console.log('📧 [EMAIL] Opções do email:', {
+      from: mailOptions.from,
+      to: mailOptions.to,
+      subject: mailOptions.subject,
+      hasReplyTo: !!mailOptions.replyTo
+    });
+
+    const result = await this.transporter.sendMail(mailOptions);
+    console.log('✅ [EMAIL] Email de contato enviado:', result.messageId);
+    return true;
+  } catch (error) {
+    console.error('❌ [EMAIL] Erro detalhado ao enviar email de contato:', error);
+    return false;
   }
+}
 
   async enviarFormularioAssociacao(data: AssociacaoData): Promise<boolean> {
     try {
@@ -245,65 +257,67 @@ class EmailService {
 
   private gerarHTMLContato(data: ContatoData): string {
     return `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <meta charset="utf-8">
-        <style>
-          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-          .header { background: #F2C335; color: white; padding: 20px; text-align: center; border-radius: 10px 10px 0 0; }
-          .content { background: #f9f9f9; padding: 20px; border-radius: 0 0 10px 10px; }
-          .field { margin-bottom: 15px; }
-          .label { font-weight: bold; color: #F2C335; }
-          .value { margin-left: 10px; }
-          .message { background: white; padding: 15px; border-radius: 5px; border-left: 4px solid #F2C335; }
-          .highlight { background: #fff3cd; padding: 10px; border-left: 4px solid #F2C335; margin: 15px 0; }
-        </style>
-      </head>
-      <body>
-        <div class="container">
-          <div class="header">
-            <h1>📞 Nova Mensagem de Contato</h1>
-            <p>AMO Orlândia - Formulário de Contato</p>
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: #F2C335; color: white; padding: 20px; text-align: center; border-radius: 10px 10px 0 0; }
+        .content { background: #f9f9f9; padding: 20px; border-radius: 0 0 10px 10px; }
+        .field { margin-bottom: 15px; }
+        .label { font-weight: bold; color: #F2C335; }
+        .value { margin-left: 10px; }
+        .message { background: white; padding: 15px; border-radius: 5px; border-left: 4px solid #F2C335; }
+        .highlight { background: #fff3cd; padding: 10px; border-left: 4px solid #F2C335; margin: 15px 0; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>📞 Nova Mensagem de Contato</h1>
+          <p>AMO Orlândia - Formulário de Contato</p>
+        </div>
+        
+        <div class="content">
+          <div class="highlight">
+            <strong>Data/Hora:</strong> ${new Date().toLocaleString('pt-BR')}
           </div>
-          
-          <div class="content">
-            <div class="highlight">
-              <strong>Data/Hora:</strong> ${new Date().toLocaleString('pt-BR')}
-            </div>
-            
-            <div class="field">
-              <span class="label">👤 Nome:</span>
-              <span class="value">${data.nome}</span>
-            </div>
-            
-            <div class="field">
-              <span class="label">📱 Telefone:</span>
-              <span class="value">${data.telefone}</span>
-            </div>
-            
-            ${data.email ? `
-            <div class="field">
-              <span class="label">📧 Email:</span>
-              <span class="value">${data.email}</span>
-            </div>
-            ` : ''}
-            
-            <div class="field">
-              <span class="label">💬 Mensagem:</span>
-              <div class="message">${data.mensagem.replace(/\n/g, '<br>')}</div>
-            </div>
-            
-            <div class="highlight">
-              <strong>⚠️ Ação Necessária:</strong> Responder ao contato do solicitante.
-            </div>
+          <div class="field">
+            <span class="label">👤 Nome:</span>
+            <span class="value">${data.nome}</span>
+          </div>
+          <div class="field">
+            <span class="label">📱 Telefone:</span>
+            <span class="value">${data.telefone}</span>
+          </div>
+          ${data.email ? `
+          <div class="field">
+            <span class="label">📧 Email:</span>
+            <span class="value">${data.email}</span>
+          </div>
+          ` : ''}
+          <div class="field">
+            <span class="label">🏷️ Assunto:</span>
+            <span class="value">${data.assunto}</span>
+          </div>
+          <div class="field">
+            <span class="label">💬 Mensagem:</span>
+            <div class="message">${data.mensagem.replace(/\n/g, '<br>')}</div>
+          </div>
+          <div class="highlight">
+            <strong>Este assunto já recebeu <span style="color:#F2C335">${data.totalAssunto}</span> mensagem(ns).</strong>
+          </div>
+          <div class="highlight">
+            <strong>⚠️ Ação Necessária:</strong> Responder ao contato do solicitante.
           </div>
         </div>
-      </body>
-      </html>
-    `;
-  }
+      </div>
+    </body>
+    </html>
+  `;
+}
 
   private gerarHTMLAssociacao(data: AssociacaoData): string {
     return `

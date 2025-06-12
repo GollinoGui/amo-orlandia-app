@@ -106,3 +106,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
+// No final do arquivo:
+export default QuemSomosScreen; // ou o nome da sua função/componente

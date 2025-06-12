@@ -1,4 +1,6 @@
 import { Request, Response } from 'express';
+import fs from 'fs';
+import path from 'path';
 import emailService from '../services/emailService';
 
 interface MulterRequest extends Request {
@@ -17,10 +19,11 @@ class EmailController {
 
       // Validações básicas
       if (!nome || !telefone || !endereco || !diasEspera || !aptoDoacao) {
-        return res.status(400).json({
+        res.status(400).json({
           success: false,
           message: 'Campos obrigatórios não preenchidos'
         });
+        return;
       }
 
       // Preparar dados do email
@@ -60,31 +63,68 @@ class EmailController {
     }
   }
 
-  // Enviar formulário de contato
-  async enviarFormularioContato(req: Request, res: Response) {
+   enviarFormularioContato = async (req: Request, res: Response): Promise<void> => {
+    console.log('🔥 Controller de contato chamado');
     try {
       console.log('📞 Recebendo formulário de contato...');
       console.log('Body:', req.body);
 
-      const { nome, telefone, email, mensagem } = req.body;
+      const { nome, telefone, email, mensagem, assunto } = req.body;
 
       // Validações básicas
       if (!nome || !telefone || !mensagem) {
-        return res.status(400).json({
+        res.status(400).json({
           success: false,
-          message: 'Campos obrigatórios não preenchidos'
+          message: 'Campos obrigatórios não preenchidos (nome, telefone, mensagem)'
         });
+        return;
       }
 
-      // Preparar dados do email
+      // Criar diretório se não existir
+      const dataDir = path.join(__dirname, '../data');
+      if (!fs.existsSync(dataDir)) {
+        fs.mkdirSync(dataDir, { recursive: true });
+      }
+
+      // Salvar contato no arquivo
+      const dataPath = path.join(dataDir, 'contatos.json');
+      let contadores: Record<string, number> = {};
+      
+      if (fs.existsSync(dataPath)) {
+        try {
+          const fileContent = fs.readFileSync(dataPath, 'utf-8');
+          contadores = JSON.parse(fileContent);
+        } catch (parseError) {
+          console.log('⚠️ Erro ao ler arquivo de contatos, criando novo');
+          contadores = {};
+        }
+      }
+
+      // Usar assunto padrão se não fornecido
+      const assuntoFinal = assunto || 'Contato Geral';
+      
+      // Atualiza o contador do assunto
+      contadores[assuntoFinal] = (contadores[assuntoFinal] || 0) + 1;
+      
+      try {
+        fs.writeFileSync(dataPath, JSON.stringify(contadores, null, 2));
+      } catch (writeError) {
+        console.error('❌ Erro ao salvar contador:', writeError);
+      }
+
+      // Prepara dados do email
       const emailData = {
         nome,
         telefone,
         email: email || undefined,
-        mensagem
+        mensagem,
+        assunto: assuntoFinal,
+        totalAssunto: contadores[assuntoFinal]
       };
 
-      // Enviar email
+      console.log('📧 Enviando email de contato com dados:', emailData);
+
+      // ✅ CORREÇÃO PRINCIPAL - Chama a função CORRETA!
       const emailEnviado = await emailService.enviarFormularioContato(emailData);
 
       if (emailEnviado) {
@@ -138,4 +178,5 @@ class EmailController {
   }
 }
 
-export default new EmailController();
+const emailController = new EmailController();
+export default emailController;

@@ -4,54 +4,56 @@ import express from 'express';
 import os from 'os';
 import path from 'path';
 
-// 🔧 CARREGAR .env ANTES DE TUDO
+// 🔧 CARREGAR .env
 const envPath = path.join(__dirname, '../.env');
-console.log('🔍 [ENV] Tentando carregar .env de:', envPath);
+console.log('🔍 [ENV] Carregando .env de:', envPath);
 
 const result = dotenv.config({ path: envPath });
 if (result.error) {
   console.error('❌ [ENV] Erro ao carregar .env:', result.error);
-  console.log('🔍 [ENV] Tentando carregar .env do diretório atual...');
   dotenv.config(); // Fallback
 } else {
-  console.log('✅ [ENV] Arquivo .env carregado com sucesso!');
+  console.log('✅ [ENV] Arquivo .env carregado!');
 }
 
-// 🔍 DIAGNÓSTICO - Verificar variáveis
-console.log('🔍 [DEBUG] Verificando variáveis de ambiente:');
-console.log('EMAIL_USER:', process.env.EMAIL_USER ? '✅ CONFIGURADO' : '❌ NÃO ENCONTRADO');
-console.log('EMAIL_PASS:', process.env.EMAIL_PASS ? '✅ CONFIGURADO' : '❌ NÃO ENCONTRADO');
-console.log('EMAIL_HOST:', process.env.EMAIL_HOST || '❌ NÃO ENCONTRADO');
-console.log('EMAIL_PORT:', process.env.EMAIL_PORT || '❌ NÃO ENCONTRADO');
-console.log('EMAIL_FROM:', process.env.EMAIL_FROM || '❌ NÃO ENCONTRADO');
-console.log('EMAIL_TO:', process.env.EMAIL_TO || '❌ NÃO ENCONTRADO');
-
-// Importar rotas e serviços DEPOIS de carregar o .env
+// Importar após carregar .env
 import emailRoutes from './routes/emailRoutes';
 import emailService from './services/emailService';
 
 const app = express();
 const PORT = parseInt(process.env.PORT || '3000', 10);
 
-// 🌐 CORS CONFIGURADO PARA ACESSO REMOTO
+// 🌐 CORS MAIS PERMISSIVO
 app.use(cors({
-  origin: true,
+  origin: '*', // ⬅️ MAIS PERMISSIVO
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+  optionsSuccessStatus: 200 // ⬅️ PARA BROWSERS ANTIGOS
 }));
+
+// 🔧 MIDDLEWARE PARA LOGS
+app.use((req, res, next) => {
+  console.log(`📡 [${new Date().toISOString()}] ${req.method} ${req.url}`);
+  console.log('📋 [HEADERS]:', req.headers);
+  if (req.body && Object.keys(req.body).length > 0) {
+    console.log('📦 [BODY]:', req.body);
+  }
+  next();
+});
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Servir arquivos estáticos (uploads)
+// Servir arquivos estáticos
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
-// Rotas
+// 🔧 ROTAS
 app.use('/api/email', emailRoutes);
 
-// Rota de teste básica
+// 🧪 ROTA DE SAÚDE MELHORADA
 app.get('/api/health', (req, res) => {
+  console.log('🏥 [HEALTH] Verificação de saúde solicitada');
   res.json({ 
     status: 'OK', 
     message: 'AMO Orlândia Backend funcionando!',
@@ -67,8 +69,7 @@ app.get('/api/health', (req, res) => {
 // 🧪 ROTA DE TESTE DE EMAIL
 app.get('/api/test-email', async (req, res) => {
   try {
-    console.log('🧪 [TEST] Testando conexão de email...');
-    
+    console.log('🧪 [TEST] Testando email...');
     const conexaoOk = await emailService.verificarConexao();
     
     if (conexaoOk) {
@@ -88,7 +89,7 @@ app.get('/api/test-email', async (req, res) => {
       });
     }
   } catch (error) {
-    console.error('❌ [TEST] Erro no teste de email:', error);
+    console.error('❌ [TEST] Erro:', error);
     res.status(500).json({
       success: false,
       message: 'Erro no teste de email',
@@ -97,57 +98,7 @@ app.get('/api/test-email', async (req, res) => {
   }
 });
 
-// 🧪 ROTA PARA ENVIAR EMAIL DE TESTE
-app.get('/api/send-test-email', async (req, res) => {
-  try {
-    console.log('🧪 [TEST] Tentando enviar email de teste...');
-    
-    const emailEnviado = await emailService.enviarEmailTeste();
-    
-    if (emailEnviado) {
-      res.json({
-        success: true,
-        message: 'Email de teste enviado com sucesso! Verifique sua caixa de entrada.'
-      });
-    } else {
-      res.status(500).json({
-        success: false,
-        message: 'Falha ao enviar email de teste'
-      });
-    }
-  } catch (error) {
-    console.error('❌ [TEST] Erro ao enviar email de teste:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Erro ao enviar email de teste',
-      error: error instanceof Error ? error.message : 'Erro desconhecido'
-    });
-  }
-});
-
-// 🔧 ROTA PARA LISTAR TODAS AS ROTAS
-app.get('/api/routes', (req, res) => {
-  const routes: string[] = [];
-  
-  app._router.stack.forEach((middleware: any) => {
-    if (middleware.route) {
-      routes.push(`${Object.keys(middleware.route.methods)[0].toUpperCase()} ${middleware.route.path}`);
-    } else if (middleware.name === 'router') {
-      middleware.handle.stack.forEach((handler: any) => {
-        if (handler.route) {
-          routes.push(`${Object.keys(handler.route.methods)[0].toUpperCase()} /api/email${handler.route.path}`);
-        }
-      });
-    }
-  });
-  
-  res.json({
-    message: 'Rotas disponíveis:',
-    routes: routes
-  });
-});
-
-// Middleware de erro global
+// 🔧 MIDDLEWARE DE ERRO GLOBAL
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error('❌ [ERROR] Erro global:', err);
   res.status(500).json({
@@ -157,7 +108,7 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
   });
 });
 
-// 🌐 FUNÇÃO PARA OBTER IP LOCAL
+// 🌐 FUNÇÃO PARA OBTER IP
 function getLocalIP(): string {
   const interfaces = os.networkInterfaces();
   for (const name of Object.keys(interfaces)) {
@@ -170,33 +121,26 @@ function getLocalIP(): string {
   return 'localhost';
 }
 
-// Iniciar servidor
+// 🚀 INICIAR SERVIDOR
 app.listen(PORT, '0.0.0.0', async () => {
   const localIP = getLocalIP();
   
   console.log(`🚀 Servidor rodando na porta ${PORT}`);
   console.log(`🌐 Acesso local: http://localhost:${PORT}`);
   console.log(`🌐 Acesso remoto: http://${localIP}:${PORT}`);
-  console.log(`📧 Email configurado: ${process.env.EMAIL_USER}`);
+  console.log(`📧 Email: ${process.env.EMAIL_USER}`);
   
-  // Listar rotas disponíveis
+  // Listar rotas
   console.log('📋 Rotas disponíveis:');
-  console.log(`   GET  http://${localIP}:${PORT}/api/health`);
-  console.log(`   GET  http://${localIP}:${PORT}/api/test-email`);
-  console.log(`   GET  http://${localIP}:${PORT}/api/send-test-email`);
-  console.log(`   GET  http://${localIP}:${PORT}/api/routes`);
-  console.log(`   POST http://${localIP}:${PORT}/api/email/reserva`);
-  console.log(`   POST http://${localIP}:${PORT}/api/email/contato`);
+  console.log(`   GET  http://localhost:${PORT}/api/health`);
+  console.log(`   POST http://localhost:${PORT}/api/email/reserva`);
+  console.log(`   POST http://localhost:${PORT}/api/email/contato`);
+  console.log(`   POST http://localhost:${PORT}/api/email/associacao`);
   
-  // Testar email na inicialização
-  console.log('🧪 Testando conexão de email...');
+  // Testar email
   try {
     const emailOk = await emailService.verificarConexao();
-    if (emailOk) {
-      console.log('✅ Email configurado corretamente!');
-    } else {
-      console.log('❌ Problema na configuração de email!');
-    }
+    console.log(emailOk ? '✅ Email OK!' : '❌ Email com problema!');
   } catch (error) {
     console.log('❌ Erro ao testar email:', error);
   }

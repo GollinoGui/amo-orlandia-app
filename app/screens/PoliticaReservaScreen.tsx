@@ -812,3 +812,5 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
 });
+// No final do arquivo:
+export default PoliticaReservaScreen; // ou o nome da sua função/componente

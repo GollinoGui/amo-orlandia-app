@@ -226,3 +226,5 @@ const styles = StyleSheet.create({
     color: '#666',
   },
 });
+// No final do arquivo:
+export default HomeScreen; // ou o nome da sua função/componente

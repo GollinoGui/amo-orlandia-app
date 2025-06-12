@@ -186,3 +186,5 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
 });
+// No final do arquivo:
+export default ProjetoLimpaiScreen; // ou o nome da sua função/componente
