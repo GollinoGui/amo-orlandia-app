@@ -24,28 +24,34 @@ export default function RootLayout() {
       <TouchableOpacity 
         onPress={() => router.push('/')}
         style={{ 
-          marginLeft: 15,
+          marginLeft: Platform.OS === 'ios' ? 10 : 15,
+          marginTop: Platform.OS === 'ios' ? -8 : -5,
           backgroundColor: 'rgba(0, 0, 0, 0.18)',
-          borderRadius: 40,
-          width: 50,
-          height: 30,
+          borderRadius: 25,
+          width: Platform.OS === 'ios' ? 45 : 50,
+          height: Platform.OS === 'ios' ? 45 : 50,
           justifyContent: 'center',
-          alignItems: 'center'
+          alignItems: 'center',
+          ...(Platform.OS === 'ios' && {
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.25,
+            shadowRadius: 3.84,
+          }),
+          ...(Platform.OS === 'android' && {
+            elevation: 5,
+          })
         }}
         activeOpacity={0.7}
-        // 🔧 ADICIONE ESTAS PROPS PARA iOS
-        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-        accessible={true}
-        accessibilityLabel="Voltar para início"
-        accessibilityRole="button"
       >
         <Text style={{ 
           color: '#fff', 
-          fontSize: 30,
+          fontSize: Platform.OS === 'ios' ? 24 : 30,
           fontWeight: 'bold',
           textAlign: 'center',
-          lineHeight: 20,
-          marginLeft: 4
+          lineHeight: Platform.OS === 'ios' ? 24 : 30,
+          marginTop: Platform.OS === 'ios' ? -2 : 0,
+          marginLeft: Platform.OS === 'ios' ? 2 : 4,
         }}>←</Text>
       </TouchableOpacity>
     );
@@ -54,13 +60,11 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack
-        // 🔧 CONFIGURAÇÕES GLOBAIS PARA iOS
         screenOptions={{
           headerShown: true,
           gestureEnabled: true,
           animation: Platform.OS === 'ios' ? 'slide_from_right' : 'fade',
           presentation: 'card',
-          // 🔧 FORÇA INTERATIVIDADE NO iOS
           headerBackVisible: false,
           headerTitleAlign: 'center',
         }}
@@ -69,7 +73,6 @@ export default function RootLayout() {
           name="index" 
           options={{ 
             headerShown: false,
-            // 🔧 CONFIGURAÇÕES ESPECÍFICAS PARA TELA INICIAL
             gestureEnabled: false,
             animation: 'none',
           }} 
@@ -86,7 +89,6 @@ export default function RootLayout() {
               fontSize: Platform.OS === 'ios' ? 18 : 16,
             },
             headerLeft: createHeaderLeft(),
-            // 🔧 FORÇA INTERATIVIDADE
             gestureEnabled: true,
             presentation: 'card',
           }} 
@@ -123,23 +125,22 @@ export default function RootLayout() {
             presentation: 'card',
           }} 
         />
+
         <Stack.Screen 
-            name="debug-ios" 
-            options={{ 
-              title: '🚨 Debug iOS',
-              headerStyle: { backgroundColor: '#FF6B6B' },
-              headerTintColor: '#fff',
-              headerTitleStyle: { 
-                fontWeight: 'bold',
-                fontSize: Platform.OS === 'ios' ? 18 : 16,
-              },
-              headerLeft: createHeaderLeft(),
-              gestureEnabled: true,
-              presentation: 'card',
-            }} 
-          />
-  
-  
+          name="debug-ios" 
+          options={{ 
+            title: '🚨 Debug iOS',
+            headerStyle: { backgroundColor: '#FF6B6B' },
+            headerTintColor: '#fff',
+            headerTitleStyle: { 
+              fontWeight: 'bold',
+              fontSize: Platform.OS === 'ios' ? 18 : 16,
+            },
+            headerLeft: createHeaderLeft(),
+            gestureEnabled: true,
+            presentation: 'card',
+          }} 
+        />
         
         <Stack.Screen 
           name="politica-reserva" 
@@ -156,7 +157,40 @@ export default function RootLayout() {
             presentation: 'card',
           }} 
         />
-        
+
+        {/* ✅ ROTAS DE EVENTOS ADICIONADAS */}
+        <Stack.Screen 
+          name="eventos" 
+          options={{ 
+            title: 'Eventos AMO',
+            headerStyle: { backgroundColor: '#F2C335' },
+            headerTintColor: '#fff',
+            headerTitleStyle: { 
+              fontWeight: 'bold',
+              fontSize: Platform.OS === 'ios' ? 18 : 16,
+            },
+            headerLeft: createHeaderLeft(),
+            gestureEnabled: true,
+            presentation: 'card',
+          }} 
+        />
+
+        <Stack.Screen 
+          name="evento-detalhes" 
+          options={{ 
+            title: 'Detalhes do Evento',
+            headerStyle: { backgroundColor: '#9EBF26' },
+            headerTintColor: '#fff',
+            headerTitleStyle: { 
+              fontWeight: 'bold',
+              fontSize: Platform.OS === 'ios' ? 18 : 16,
+            },
+            headerLeft: createHeaderLeft(),
+            gestureEnabled: true,
+            presentation: 'card',
+          }} 
+        />
+
         <Stack.Screen 
           name="projeto-limpai" 
           options={{ 
@@ -251,7 +285,6 @@ export default function RootLayout() {
       
       <StatusBar 
         style="auto" 
-        // 🔧 CONFIGURAÇÕES ESPECÍFICAS PARA iOS
         backgroundColor={Platform.OS === 'android' ? '#39BF24' : undefined}
         translucent={Platform.OS === 'android'}
       />

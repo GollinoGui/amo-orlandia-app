@@ -23,12 +23,12 @@ export  function HomeScreen() {
       color: '#72BF24'
     },
     {
-      id: 3,
-      title: 'Projeto Limpai',
-      subtitle: 'Por uma Orlandia mais limpa.',
-      emoji: '🧹',
-      route: 'projeto-limpai',
-      color: '#9EBF26'
+       id: 3,
+      title: 'Eventos AMO',
+      subtitle: 'Participe dos nossos eventos',
+      emoji: '📅',
+      route: 'eventos',
+      color: '#F2C335'
     },
     {
       id: 4,
@@ -85,7 +85,6 @@ export  function HomeScreen() {
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.logoContainer}>
-          {/* Logo da AMO */}
           <Image 
             source={require('../../assets/images/logo.jpg')}
             style={styles.logo}
@@ -146,43 +145,52 @@ const styles = StyleSheet.create({
     backgroundColor: '#39BF24',
     borderBottomLeftRadius: 25,
     borderBottomRightRadius: 25,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
   logoContainer: {
     alignItems: 'center',
   },
   logo: {
-    width: 120,
-    height: 120,
+    width: 100,
+    height: 100,
+    borderRadius: 50,
     marginBottom: 15,
-    borderRadius: 60,
     borderWidth: 3,
-    borderColor: 'rgba(255,255,255,0.3)',
-    backgroundColor: 'rgba(255,255,255,0.1)',
+    borderColor: '#fff',
   },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
     color: '#fff',
     textAlign: 'center',
-    marginBottom: 8,
+    marginBottom: 5,
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
   },
   subtitle: {
     fontSize: 16,
-    color: 'rgba(255,255,255,0.9)',
+    color: 'rgba(255, 255, 255, 0.9)',
     textAlign: 'center',
+    fontWeight: '500',
   },
   menuContainer: {
     padding: 20,
-    gap: 15,
+    paddingTop: 30,
   },
   menuButton: {
+    marginBottom: 15,
     borderRadius: 15,
-    borderLeftWidth: 4,
+    borderLeftWidth: 5,
     elevation: 2,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowRadius: 2,
   },
   buttonContent: {
     flexDirection: 'row',
@@ -190,40 +198,43 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   iconContainer: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 15,
   },
   emoji: {
-    fontSize: 22,
+    fontSize: 28,
   },
   textContainer: {
     flex: 1,
   },
   buttonTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 4,
+    fontSize: 18,
+    fontWeight: 'bold',
     color: '#333',
+    marginBottom: 4,
   },
   buttonSubtitle: {
-    fontSize: 13,
-    opacity: 0.7,
+    fontSize: 14,
     color: '#666',
+    lineHeight: 18,
   },
   footer: {
-    padding: 20,
+    backgroundColor: '#f8f9fa',
+    padding: 25,
+    marginTop: 20,
     alignItems: 'center',
-    gap: 8,
-    marginBottom: 20,
+    borderTopWidth: 1,
+    borderTopColor: '#e9ecef',
   },
   footerText: {
     fontSize: 14,
-    opacity: 0.8,
     color: '#666',
+    marginBottom: 8,
+    textAlign: 'center',
   },
 });
 // No final do arquivo:
