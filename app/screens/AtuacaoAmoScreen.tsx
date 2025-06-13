@@ -14,7 +14,7 @@ interface DiretorMembro {
   nome: string;
   cargo: string;
   conselho: string;
-  foto?: any; // ✅ MUDANÇA: any para aceitar require()
+  
   contato?: string;
 }
 
@@ -107,13 +107,13 @@ export function AtuacaoAmoScreen() {
       nome: 'UNIMED',
       // logo: require('../../assets/images/parceiros/unimed.png'), // ✅ COMENTADO
       descricao: 'Cuidando da saúde da nossa comunidade',
-      site: 'https://unimed.com.br'
+      site: 'https://www.unimedaltamogiana.com.br/'
     },
     {
-      nome: 'INTELLITEM',
+      nome: 'INTELLI',
       // logo: require('../../assets/images/parceiros/intellitem.png'), // ✅ COMENTADO
       descricao: 'Tecnologia a serviço da comunidade',
-      site: 'https://intellitem.com.br'
+      site: 'https://www.intelli.com.br/'
     },
     {
       nome: 'Parceiro em Potencial 1',
@@ -149,10 +149,10 @@ export function AtuacaoAmoScreen() {
 
   // 🏢 FOTOS DA SEDE - ✅ USANDO LOGO COMO PLACEHOLDER
   const fotosSede = [
-    require('../../assets/images/logo.jpg'), // ✅ PLACEHOLDER
-    require('../../assets/images/logo.jpg'), // ✅ PLACEHOLDER
-    require('../../assets/images/logo.jpg'), // ✅ PLACEHOLDER
-    require('../../assets/images/logo.jpg'), // ✅ PLACEHOLDER
+    require('../../assets/images/sede.png'), // ✅ PLACEHOLDER
+    require('../../assets/images/sede.png'), // ✅ PLACEHOLDER
+    require('../../assets/images/sede.png'), // ✅ PLACEHOLDER
+    require('../../assets/images/sede.png'), // ✅ PLACEHOLDER
   ];
 
   const [fotoSelecionada, setFotoSelecionada] = useState(0);
