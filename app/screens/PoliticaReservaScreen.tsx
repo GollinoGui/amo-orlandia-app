@@ -194,15 +194,15 @@ export function PoliticaReservaScreen() {
             'Como você gostaria de adicionar a foto?',
             [
               {
-                text: '📷 Câmera',
+                text: ' Câmera',
                 onPress: () => resolve('camera')
               },
               {
-                text: '🖼️ Galeria',
+                text: ' Galeria',
                 onPress: () => resolve('gallery')
               },
               {
-                text: '❌ Cancelar',
+                text: ' Cancelar',
                 style: 'cancel',
                 onPress: () => resolve(null)
               }
@@ -616,12 +616,6 @@ export function PoliticaReservaScreen() {
             </Text>
           </TouchableOpacity>
 
-          {/* 🔧 INDICADOR DE PLATAFORMA */}
-          <View style={styles.platformIndicator}>
-            <Text style={[styles.platformText, { color: textColor }]}>
-              {Platform.OS === 'web' ? '🌐 Versão Web' : '📱 Versão Mobile'}
-            </Text>
-          </View>
         </View>
       </View>
     </ScrollView>
@@ -798,14 +792,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 16,
   },
-  // 🔧 INDICADOR DE PLATAFORMA
-  platformIndicator: {
-    alignItems: 'center',
-    marginTop: 20,
-    padding: 10,
-    backgroundColor: 'rgba(57, 191, 36, 0.1)',
-    borderRadius: 8,
-  },
+  
   platformText: {
     fontSize: 12,
     opacity: 0.8,

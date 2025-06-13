@@ -29,10 +29,9 @@ interface FormularioContatoData {
   assunto: string;
 }
 
+
 interface FormularioAssociacaoData {
   nomeCompleto: string;
-  cpf: string;
-  rg: string;
   dataNascimento: string;
   telefone: string;
   email: string;
@@ -60,34 +59,55 @@ class ApiService {
       throw error;
     }
   }
+  
+
+  // 🔧 MÉTODO DE TESTE DE CONECTIVIDADE
+  async testarConectividade(): Promise<boolean> {
+  try {
+    console.log('🧪 [API] Testando conectividade...');
+    console.log('🔗 [API] URL base:', API_BASE_URL);
+    
+    const response = await this.fetchWithTimeout(`${API_BASE_URL}/health`, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+      },
+    }, 10000);
+    
+    console.log('📊 [API] Status conectividade:', response.status);
+    return response.ok;
+  } catch (error) {
+    console.error('❌ [API] Erro conectividade:', error);
+    return false;
+  }
+} 
 
   // 🧪 TESTE DE CONEXÃO
   async testarConexao(): Promise<boolean> {
-    try {
-      console.log('🧪 [API] Testando conexão:', API_BASE_URL);
-      console.log('🧪 [API] Plataforma:', Platform.OS);
-      
-      const response = await this.fetchWithTimeout(`${API_BASE_URL}/health`, {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-        },
-      }, 10000); // 10s timeout para teste
-      
-      if (!response.ok) {
-        console.error('❌ [API] Status não OK:', response.status);
-        return false;
-      }
-
-      const result = await response.json() as { message: string };
-      console.log('✅ [API] Conexão OK:', result.message);
-      return true;
-    } catch (error) {
-      console.error('❌ [API] Erro de conexão:', error);
+  try {
+    console.log('🧪 [API] Testando conexão:', API_BASE_URL);
+    console.log('🧪 [API] Plataforma:', Platform.OS);
+    
+    const response = await this.fetchWithTimeout(`${API_BASE_URL}/health`, {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json',
+      },
+    }, 10000);
+    
+    if (!response.ok) {
+      console.error('❌ [API] Status não OK:', response.status);
       return false;
     }
-  }
 
+    const result = await response.json() as { message: string };
+    console.log('✅ [API] Conexão OK:', result.message);
+    return true;
+  } catch (error) {
+    console.error('❌ [API] Erro de conexão:', error);
+    return false;
+  }
+}
   // 📧 RESERVA
   async enviarFormularioReserva(data: FormularioReservaData): Promise<{ success: boolean; message: string }> {
     try {
@@ -102,7 +122,7 @@ class ApiService {
           'Accept': 'application/json',
         },
         body: JSON.stringify(data),
-      }, 60000); // 60s timeout
+      }, 60000);
 
       console.log('📥 [API] Status:', response.status);
 
@@ -144,7 +164,7 @@ class ApiService {
           'Accept': 'application/json',
         },
         body: JSON.stringify(data),
-      }, 60000); // 60s timeout
+      }, 60000);
 
       console.log('📥 [API] Status:', response.status);
 
@@ -171,46 +191,64 @@ class ApiService {
     }
   }
 
-  // 🤝 ASSOCIAÇÃO
+  // 🤝 ASSOCIAÇÃO - FUNÇÃO CORRIGIDA
   async enviarFormularioAssociacao(data: FormularioAssociacaoData): Promise<{ success: boolean; message: string }> {
-    try {
-      console.log('📤 [API] Enviando associação...');
-      console.log('🔗 [API] URL:', `${API_BASE_URL}/email/associacao`);
-      console.log('📱 [API] Plataforma:', Platform.OS);
-      
-      const response = await this.fetchWithTimeout(`${API_BASE_URL}/email/associacao`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: JSON.stringify(data),
-      }, 60000); // 60s timeout
+  try {
+    console.log('📤 [API] Enviando associação...');
+    console.log('🔗 [API] URL:', `${API_BASE_URL}/email/associacao`);
+    console.log('📤 [API] Dados:', data);
+    
+    const response = await this.fetchWithTimeout(`${API_BASE_URL}/email/associacao`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify(data),
+    }, 60000);
 
-      console.log('📥 [API] Status:', response.status);
+    console.log('📥 [API] Status resposta:', response.status);
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('❌ [API] Erro do servidor:', errorText);
-        throw new Error(`HTTP ${response.status}`);
+    if (!response.ok) {
+      let errorText = 'Erro desconhecido';
+      try {
+        const errorData = await response.json();
+        errorText = errorData.message || errorText;
+        console.error('❌ [API] Erro do servidor:', errorData);
+      } catch (e) {
+        try {
+          errorText = await response.text();
+        } catch (e2) {
+          console.error('❌ [API] Erro ao ler resposta:', e2);
+        }
       }
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
 
-      const result = await response.json() as { success: boolean; message: string };
-      console.log('✅ [API] Sucesso:', result);
-      return result;
-    } catch (error) {
-      console.error('❌ [API] Erro associação:', error);
-      
-      if (error instanceof Error && error.name === 'AbortError') {
-        return { success: false, message: 'Timeout: Conexão muito lenta.' };
-      }
-      
+    const result = await response.json();
+    console.log('✅ [API] Sucesso:', result);
+    return result;
+  } catch (error: unknown) {
+    console.error('❌ [API] Erro associação:', error);
+    
+    if (error instanceof Error && error.name === 'AbortError') {
+      return { success: false, message: 'Timeout: Conexão muito lenta.' };
+    }
+    
+    if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
       return { 
         success: false, 
-        message: `Erro de conexão (${Platform.OS}). Verifique sua internet.` 
+        message: `Erro de conexão. Verifique se o backend está rodando.` 
       };
     }
+    
+    const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+    return { 
+      success: false, 
+      message: `Erro: ${errorMessage}` 
+    };
   }
+}
 }
 
 export default new ApiService();

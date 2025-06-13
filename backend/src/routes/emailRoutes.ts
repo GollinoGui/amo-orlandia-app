@@ -17,7 +17,7 @@ const storage = multer.diskStorage({
   }
 });
 
-const upload = multer({ 
+const upload = multer({
   storage: storage,
   limits: { fileSize: 10 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
@@ -67,7 +67,6 @@ router.post('/reserva', upload.single('fotoMovel'), async (req: Request, res: Re
         message: 'Erro ao enviar email'
       });
     }
-
   } catch (error) {
     console.error('❌ [RESERVA] Erro:', error);
     res.status(500).json({
@@ -135,7 +134,6 @@ router.post('/contato', async (req: Request, res: Response) => {
         message: 'Erro ao enviar mensagem'
       });
     }
-
   } catch (error) {
     console.error('❌ [CONTATO] Erro:', error);
     res.status(500).json({
@@ -145,17 +143,18 @@ router.post('/contato', async (req: Request, res: Response) => {
   }
 });
 
-// 🤝 ASSOCIAÇÃO
+
+
 router.post('/associacao', async (req: Request, res: Response) => {
   try {
     console.log('🤝 [ASSOCIACAO] Dados recebidos:', req.body);
     
     const {
-      nomeCompleto, cpf, rg, dataNascimento, telefone, email,
+      nomeCompleto, dataNascimento, telefone, email,
       enderecoCompleto, profissao, motivoAssociacao, comoConheceu
     } = req.body;
 
-    if (!nomeCompleto || !cpf || !rg || !dataNascimento || !telefone || !email) {
+    if (!nomeCompleto || !dataNascimento || !telefone || !email) {
       res.status(400).json({
         success: false,
         message: 'Campos obrigatórios não preenchidos'
@@ -164,31 +163,18 @@ router.post('/associacao', async (req: Request, res: Response) => {
     }
 
     const emailEnviado = await emailService.enviarFormularioAssociacao({
-      nomeCompleto, cpf, rg, dataNascimento, telefone, email,
+      nomeCompleto, dataNascimento, telefone, email,
       enderecoCompleto, profissao, motivoAssociacao, comoConheceu
     });
 
     if (emailEnviado) {
-      console.log('✅ [ASSOCIACAO] Email enviado');
-      res.json({
-        success: true,
-        message: 'Formulário enviado com sucesso!'
-      });
+      res.json({ success: true, message: 'Formulário enviado com sucesso!' });
     } else {
-      console.log('❌ [ASSOCIACAO] Falha no email');
-      res.status(500).json({
-        success: false,
-        message: 'Erro ao enviar email'
-      });
+      res.status(500).json({ success: false, message: 'Erro ao enviar email' });
     }
-
   } catch (error) {
     console.error('❌ [ASSOCIACAO] Erro:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Erro interno do servidor'
-    });
+    res.status(500).json({ success: false, message: 'Erro interno do servidor' });
   }
 });
-
 export default router;

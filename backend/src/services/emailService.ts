@@ -21,8 +21,6 @@ interface ContatoData {
 
 interface AssociacaoData {
   nomeCompleto: string;
-  cpf: string;
-  rg: string;
   dataNascimento: string;
   telefone: string;
   email: string;
@@ -354,14 +352,6 @@ class EmailService {
               <div class="field">
                 <span class="label">👤 Nome Completo:</span>
                 <span class="value">${data.nomeCompleto}</span>
-              </div>
-              <div class="field">
-                <span class="label">🆔 CPF:</span>
-                <span class="value">${data.cpf}</span>
-              </div>
-              <div class="field">
-                <span class="label">📄 RG:</span>
-                <span class="value">${data.rg}</span>
               </div>
               <div class="field">
                 <span class="label">📅 Data de Nascimento:</span>

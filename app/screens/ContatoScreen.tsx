@@ -112,7 +112,7 @@ export function ContatoScreen() {
       await Linking.openURL(url);
     } catch (error) {
       if (Platform.OS === 'web') {
-        setSucesso('📷 Instagram: @amo.orlandia');
+        setSucesso('Instagram: @amo.orlandia');
         setTimeout(() => setSucesso(''), 5000);
       } else {
         Alert.alert('Erro', 'Não foi possível abrir o Instagram. Procure: @amo.orlandia');
@@ -275,26 +275,7 @@ export function ContatoScreen() {
           </View>
         ) : null}
 
-        {/* Botões de contato rápido */}
-        <View style={styles.quickContactContainer}>
-          <TouchableOpacity
-            style={[styles.quickContactButton, { backgroundColor: '#25D366' }]}
-            onPress={abrirWhatsApp}
-            disabled={enviando}
-          >
-            <Text style={styles.quickContactIcon}>📱</Text>
-            <Text style={styles.quickContactText}>WhatsApp</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.quickContactButton, { backgroundColor: '#E4405F' }]}
-            onPress={abrirInstagram}
-            disabled={enviando}
-          >
-            <Text style={styles.quickContactIcon}>📷</Text>
-            <Text style={styles.quickContactText}>Instagram</Text>
-          </TouchableOpacity>
-        </View>
+        
 
         {/* Informações de contato */}
         <View style={styles.infoContainer}>
@@ -454,12 +435,7 @@ export function ContatoScreen() {
             </Text>
           </TouchableOpacity>
 
-          {/* 🔧 INDICADOR DE PLATAFORMA */}
-          <View style={styles.platformIndicator}>
-            <Text style={[styles.platformText, { color: textColor }]}>
-              {Platform.OS === 'web' ? '🌐 Versão Web' : '📱 Versão Mobile'}
-            </Text>
-          </View>
+         
         </View>
       </View>
     </ScrollView>

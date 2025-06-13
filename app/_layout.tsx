@@ -93,6 +93,17 @@ export default function RootLayout() {
             presentation: 'card',
           }} 
         />
+        <Stack.Screen 
+            name="denuncia" 
+            options={{ 
+              title: 'Nova Denúncia',
+              headerStyle: { backgroundColor: '#E74C3C' },
+              headerTintColor: '#fff',
+              headerTitleStyle: { fontWeight: 'bold' },
+              headerLeft: createHeaderLeft()
+            }} 
+          />
+
         
         <Stack.Screen 
           name="o-que-fazemos" 

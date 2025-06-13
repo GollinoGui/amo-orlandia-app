@@ -25,11 +25,11 @@ const PORT = parseInt(process.env.PORT || '3000', 10);
 
 // 🌐 CORS MAIS PERMISSIVO
 app.use(cors({
-  origin: '*', // ⬅️ MAIS PERMISSIVO
+  origin: '*',
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
-  optionsSuccessStatus: 200 // ⬅️ PARA BROWSERS ANTIGOS
+  optionsSuccessStatus: 200
 }));
 
 // 🔧 MIDDLEWARE PARA LOGS
@@ -54,8 +54,8 @@ app.use('/api/email', emailRoutes);
 // 🧪 ROTA DE SAÚDE MELHORADA
 app.get('/api/health', (req, res) => {
   console.log('🏥 [HEALTH] Verificação de saúde solicitada');
-  res.json({ 
-    status: 'OK', 
+  res.json({
+    status: 'OK',
     message: 'AMO Orlândia Backend funcionando!',
     timestamp: new Date().toISOString(),
     env: {

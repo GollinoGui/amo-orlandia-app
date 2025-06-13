@@ -149,6 +149,72 @@ class EmailController {
       });
     }
   }
+  async enviarFormularioAssociacao(req: Request, res: Response) {
+  console.log('📩 [BACKEND] Recebendo formulário de associação...');
+  try {
+    const {
+      nomeCompleto,
+      dataNascimento,
+      telefone,
+      email,
+      enderecoCompleto,
+      profissao,
+      motivoAssociacao,
+      comoConheceu
+    } = req.body;
+
+    if (
+      !nomeCompleto ||
+      !dataNascimento ||
+      !telefone ||
+      !email ||
+      !enderecoCompleto ||
+      !profissao ||
+      !motivoAssociacao ||
+      !comoConheceu
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: 'Campos obrigatórios não preenchidos'
+      });
+    }
+
+    const emailData = {
+      nomeCompleto,
+      dataNascimento,
+      telefone,
+      email,
+      enderecoCompleto,
+      profissao,
+      motivoAssociacao,
+      comoConheceu
+    };
+
+    console.log('📤 [BACKEND] Enviando email com dados:', emailData);
+
+    const emailEnviado = await emailService.enviarFormularioAssociacao(emailData);
+
+    if (emailEnviado) {
+      console.log('✅ [BACKEND] Email de associação enviado com sucesso');
+      return res.json({
+        success: true,
+        message: 'Formulário de associação enviado com sucesso!'
+      });
+    } else {
+      console.error('❌ [BACKEND] Falha ao enviar email de associação');
+      return res.status(500).json({
+        success: false,
+        message: 'Erro ao enviar formulário. Tente novamente.'
+      });
+    }
+  } catch (error) {
+    console.error('❌ [BACKEND] Erro no envio de associação:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Erro interno do servidor'
+    });
+  }
+}
 
   // Testar conexão de email
   async testarConexao(req: Request, res: Response) {

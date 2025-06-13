@@ -150,6 +150,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
+    
   },
   logoContainer: {
     alignItems: 'center',
@@ -171,6 +172,7 @@ const styles = StyleSheet.create({
     textShadowColor: 'rgba(0, 0, 0, 0.3)',
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 2,
+    
   },
   subtitle: {
     fontSize: 16,
@@ -191,6 +193,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
+    
   },
   buttonContent: {
     flexDirection: 'row',

@@ -1,6 +1,7 @@
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
+import { Platform } from 'react-native'; 
 import { Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 interface Evento {
@@ -348,11 +349,18 @@ const styles = StyleSheet.create({
     padding: 20,
     margin: 20,
     borderRadius: 15,
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+     ...Platform.select({
+      web: {
+        boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
+      },
+      default: {
+        elevation: 3,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+      },
+    }),
   },
   headerContent: {
     flexDirection: 'row',
@@ -393,12 +401,20 @@ const styles = StyleSheet.create({
     marginTop: 10,
     padding: 20,
     borderRadius: 15,
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    ...Platform.select({
+      web: {
+        boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
+      },
+      default: {
+        elevation: 3,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+      },
+    }),
   },
+  
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
@@ -487,3 +503,4 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
+export default EventoDetalhesScreen;

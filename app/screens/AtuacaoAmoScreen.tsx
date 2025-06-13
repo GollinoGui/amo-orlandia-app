@@ -24,7 +24,6 @@ export function AtuacaoAmoScreen() {
           <Text style={[styles.locationTitle, { color: textColor }]}>🏙️ Abrangência Total</Text>
           <Text style={[styles.locationText, { color: textColor }]}>
             • Todos os bairros de Orlândia/SP{'\n'}
-            • Áreas centrais e periféricas{'\n'}
             • Espaços públicos e comunitários{'\n'}
             • Canteiros centrais e praças
           </Text>
