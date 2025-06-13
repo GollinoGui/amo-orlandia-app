@@ -16,6 +16,8 @@ import {
     TouchableOpacity,
     View
 } from 'react-native';
+import apiService from '../services/apiService';
+
 
 interface DenunciaData {
   tipo: string;
@@ -30,6 +32,16 @@ interface DenunciaData {
   telefone: string;
   email: string;
 }
+const patrocinadores = [
+  'MORLAN - Juntos por uma Orlândia sustentável',
+  'Empresa Parceira - Cuidando do meio ambiente',
+  'Patrocinador Local - Por uma cidade mais limpa',
+  'Comércio Local - Apoiando a preservação ambiental',
+  'Parceiro Ambiental - Por um futuro mais verde'
+];
+
+
+
 
 export function DenunciaScreen() {
   const backgroundColor = useThemeColor({}, 'background');
@@ -53,6 +65,51 @@ export function DenunciaScreen() {
   const [erro, setErro] = useState('');
   const [sucesso, setSucesso] = useState('');
   const [buscandoLocalizacao, setBuscandoLocalizacao] = useState(false);
+
+  // ✅ ADICIONAR AQUI (APÓS OS ESTADOS)
+  const patrocinadores = [
+    'MORLAN - Juntos por uma Orlândia sustentável',
+    'UNIMED - Cuidando do meio ambiente',
+    'INTELLI - Por uma cidade mais limpa',
+    
+  ];
+
+  // ✅ FUNÇÕES DE NOTIFICAÇÃO (APÓS OS ESTADOS)
+  const mostrarSucesso = (mensagem: string) => {
+    if (Platform.OS === 'web') {
+      setSucesso(mensagem);
+      setTimeout(() => setSucesso(''), 8000);
+    } else {
+      Alert.alert('🎉 Sucesso!', mensagem, [
+        { text: '✅ OK', onPress: () => limparFormulario() }
+      ]);
+    }
+  };
+
+  const mostrarErro = (mensagem: string) => {
+    if (Platform.OS === 'web') {
+      setErro(mensagem);
+      setTimeout(() => setErro(''), 5000);
+    } else {
+      Alert.alert('❌ Erro', mensagem);
+    }
+  };
+
+  // ✅ FUNÇÃO LIMPAR FORMULÁRIO (APÓS OS ESTADOS)
+  const limparFormulario = () => {
+    setFormData({
+      tipo: '',
+      descricao: '',
+      endereco: '',
+      fotos: [],
+      nomeCompleto: '',
+      telefone: '',
+      email: ''
+    });
+    setSucesso('');
+    setErro('');
+    setLocalizacao(null);
+  };
 
   const tiposDenuncia = [
     'Móveis fora do dia do Cata Galho',
@@ -437,126 +494,144 @@ export function DenunciaScreen() {
 };
 
   // VALIDAÇÕES MELHORADAS
-  const enviarDenuncia = async () => {
-    setErro('');
-    setSucesso('');
-    
-    console.log('Validando formulário...');
-    
-    // Validações obrigatórias
-    if (!formData.tipo) {
-      setErro('Selecione o tipo de denúncia');
-      return;
-    }
-    
-    if (!formData.descricao.trim()) {
-      setErro('Descreva a situação');
-      return;
-    }
-    
-    if (formData.descricao.trim().length < 10) {
-      setErro('Descrição deve ter pelo menos 10 caracteres');
-      return;
-    }
-    
-    if (!formData.endereco.trim()) {
-      setErro('Informe o endereço');
-      return;
-    }
-    
-    if (!formData.nomeCompleto.trim()) {
-      setErro('Informe seu nome completo');
-      return;
-    }
-    
-    if (!validarNome(formData.nomeCompleto)) {
-      setErro('Nome deve conter apenas letras e ter pelo menos 2 caracteres');
-      return;
-    }
-    
-    if (!formData.telefone.trim()) {
-      setErro('Informe seu telefone');
-      return;
-    }
-    
-    if (!validarTelefone(formData.telefone)) {
-      setErro('Telefone deve ter 10 ou 11 dígitos. Formato: (16) 99999-9999');
-      return;
-    }
-    
-    if (!formData.email.trim()) {
-      setErro('Informe seu email');
-      return;
-    }
-    
-    if (!validarEmail(formData.email)) {
-      setErro('Email inválido. Formato: exemplo@email.com');
-      return;
-    }
-    
-    if (formData.fotos.length === 0) {
-      Alert.alert(
-        'Sem Fotos',
-        'Deseja enviar a denúncia sem fotos?\n\nFotos são muito importantes para análise da situação.',
-        [
-          { text: 'Adicionar Fotos', style: 'cancel' },
-          { text: 'Enviar Assim Mesmo', onPress: () => processarEnvio() }
-        ]
-      );
-      return;
-    }
-    
-    processarEnvio();
-  };
+  // ✅ ATUALIZAR A FUNÇÃO enviarDenuncia (que chama as validações)
+const enviarDenuncia = async () => {
+  console.log('=== [DENUNCIA] INICIANDO VALIDAÇÕES ===');
+  
+  // Limpar mensagens anteriores
+  setErro('');
+  setSucesso('');
+
+  // VALIDAÇÃO: Tipo
+  if (!formData.tipo.trim()) {
+    mostrarErro('Por favor, selecione o tipo de denúncia.');
+    return;
+  }
+
+  // VALIDAÇÃO: Descrição
+  if (!formData.descricao.trim()) {
+    mostrarErro('Por favor, descreva o problema.');
+    return;
+  }
+
+  if (formData.descricao.trim().length < 10) {
+    mostrarErro('Descrição deve ter pelo menos 10 caracteres.');
+    return;
+  }
+
+  // VALIDAÇÃO: Endereço
+  if (!formData.endereco.trim()) {
+    mostrarErro('Por favor, informe o endereço.');
+    return;
+  }
+
+  // ✅ VALIDAÇÃO: FOTOS (NOVA)
+  if (formData.fotos.length === 0) {
+    mostrarErro('Por favor, adicione pelo menos 1 foto como evidência da denúncia.');
+    return;
+  }
+
+  // VALIDAÇÃO: Nome
+  if (!formData.nomeCompleto.trim()) {
+    mostrarErro('Por favor, informe seu nome completo.');
+    return;
+  }
+
+  if (!validarNome(formData.nomeCompleto)) {
+    mostrarErro('Nome deve conter apenas letras e ter pelo menos 2 caracteres.');
+    return;
+  }
+
+  // VALIDAÇÃO: Telefone
+  if (!formData.telefone.trim()) {
+    mostrarErro('Por favor, informe seu telefone.');
+    return;
+  }
+
+  if (!validarTelefone(formData.telefone)) {
+    mostrarErro('Telefone deve ter 10 ou 11 dígitos. Formato: (16) 99999-9999');
+    return;
+  }
+
+  // VALIDAÇÃO: Email
+  if (!formData.email.trim()) {
+    mostrarErro('Por favor, informe seu email.');
+    return;
+  }
+
+  if (!validarEmail(formData.email)) {
+    mostrarErro('Email inválido. Formato: exemplo@email.com');
+    return;
+  }
+
+  console.log('✅ [DENUNCIA] Todas as validações passaram!');
+  
+  // Prosseguir com o envio
+  await processarEnvio();
+};
+
 
   const processarEnvio = async () => {
-    setEnviando(true);
+  setEnviando(true);
+  setErro('');
+  setSucesso('');
+  
+  try {
+    console.log('📤 [DENUNCIA] Preparando dados para envio...');
     
-    try {
-      console.log('Preparando dados para envio...');
-      
-      // Preparar dados para envio
-      const dadosEnvio = {
-        ...formData,
-        coordenadas: localizacao ? {
-          latitude: localizacao.coords.latitude,
-          longitude: localizacao.coords.longitude
-        } : undefined,
-        dataHora: new Date().toISOString(),
-        status: 'Pendente',
-        protocolo: '#' + Date.now().toString().slice(-6)
-      };
+    const dadosEnvio = {
+      tipo: formData.tipo,
+      descricao: formData.descricao,
+      endereco: formData.endereco,
+      coordenadas: localizacao ? {
+        latitude: localizacao.coords.latitude,
+        longitude: localizacao.coords.longitude
+      } : undefined,
+      fotos: formData.fotos,
+      nomeCompleto: formData.nomeCompleto,
+      telefone: formData.telefone,
+      email: formData.email
+    };
 
-      console.log('Enviando denúncia:', dadosEnvio);
+    console.log('📧 [DENUNCIA] Enviando via API...');
+    
+    const resultado = await apiService.enviarFormularioDenuncia(dadosEnvio);
+    
+    if (resultado.success) {
+      const protocolo = '#AMO' + Date.now().toString().slice(-6);
+      const patrocinadorAleatorio = patrocinadores[Math.floor(Math.random() * patrocinadores.length)];
       
-      // Simular delay de envio
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // ✅ MENSAGEM CORRIGIDA - MAIS COMPACTA
+      const mensagemSucesso = `Denúncia enviada com sucesso!
+
+
+Nossa equipe analisará sua denúncia e tomará as medidas necessárias.
+
+Obrigado por ajudar a manter Orlândia limpa!
+
+💝 Cortesia da:
+${patrocinadorAleatorio}`;
+
+      mostrarSucesso(mensagemSucesso);
       
-      const protocolo = dadosEnvio.protocolo;
-      setSucesso(`Denúncia enviada com sucesso!\n\nProtocolo: ${protocolo}\n\nGuarde este número para acompanhamento.`);
+      if (Platform.OS === 'web') {
+        setTimeout(() => {
+          limparFormulario();
+        }, 8000);
+      }
       
-      // Limpar formulário após sucesso
-      setTimeout(() => {
-        setFormData({
-          tipo: '',
-          descricao: '',
-          endereco: '',
-          fotos: [],
-          nomeCompleto: '',
-          telefone: '',
-          email: ''
-        });
-        setSucesso('');
-        setLocalizacao(null);
-      }, 5000);
-      
-    } catch (error) {
-      console.error('Erro ao enviar denúncia:', error);
-      setErro('Erro ao enviar denúncia. Tente novamente.');
-    } finally {
-      setEnviando(false);
+    } else {
+      mostrarErro(resultado.message || 'Erro ao enviar denúncia. Tente novamente.');
     }
-  };
+    
+  } catch (error) {
+    console.error('❌ [DENUNCIA] Erro no envio:', error);
+    mostrarErro('Erro inesperado ao enviar denúncia. Verifique sua conexão e tente novamente.');
+  } finally {
+    setEnviando(false);
+  }
+};
+
 
   return (
     <ScrollView style={[styles.container, { backgroundColor }]}>

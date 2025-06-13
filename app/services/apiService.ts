@@ -29,7 +29,19 @@ interface FormularioContatoData {
   assunto: string;
 }
 
-
+interface FormularioDenunciaData {
+  tipo: string;
+  descricao: string;
+  endereco: string;
+  coordenadas?: {
+    latitude: number;
+    longitude: number;
+  };
+  fotos: string[];
+  nomeCompleto: string;
+  telefone: string;
+  email: string;
+}
 interface FormularioAssociacaoData {
   nomeCompleto: string;
   dataNascimento: string;
@@ -230,6 +242,78 @@ class ApiService {
     return result;
   } catch (error: unknown) {
     console.error('❌ [API] Erro associação:', error);
+    
+    if (error instanceof Error && error.name === 'AbortError') {
+      return { success: false, message: 'Timeout: Conexão muito lenta.' };
+    }
+    
+    if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
+      return { 
+        success: false, 
+        message: `Erro de conexão. Verifique se o backend está rodando.` 
+      };
+    }
+    
+    const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+    return { 
+      success: false, 
+      message: `Erro: ${errorMessage}` 
+    };
+  }
+}
+async enviarFormularioDenuncia(data: FormularioDenunciaData): Promise<{ success: boolean; message: string }> {
+  try {
+    console.log('📤 [API] Enviando denúncia...');
+    console.log('🔗 [API] URL:', `${API_BASE_URL}/email/denuncia`);
+    
+    // PREPARAR FORMDATA PARA FOTOS
+    const formData = new FormData();
+    formData.append('tipo', data.tipo);
+    formData.append('descricao', data.descricao);
+    formData.append('endereco', data.endereco);
+    formData.append('nomeCompleto', data.nomeCompleto);
+    formData.append('telefone', data.telefone);
+    formData.append('email', data.email);
+    
+    // ADICIONAR COORDENADAS SE EXISTIR
+    if (data.coordenadas) {
+      formData.append('latitude', data.coordenadas.latitude.toString());
+      formData.append('longitude', data.coordenadas.longitude.toString());
+    }
+    
+    // ADICIONAR FOTOS
+    for (let i = 0; i < data.fotos.length; i++) {
+      const foto = data.fotos[i];
+      
+      if (foto.startsWith('data:')) {
+        // FOTO BASE64 (web)
+        const response = await fetch(foto);
+        const blob = await response.blob();
+        formData.append('fotos', blob, `denuncia-foto-${i + 1}.jpg`);
+      } else {
+        // FOTO URI (mobile)
+        const response = await fetch(foto);
+        const blob = await response.blob();
+        formData.append('fotos', blob, `denuncia-foto-${i + 1}.jpg`);
+      }
+    }
+
+    const response = await this.fetchWithTimeout(`${API_BASE_URL}/email/denuncia`, {
+      method: 'POST',
+      body: formData,
+    }, 60000);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('❌ [API] Erro do servidor:', errorText);
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
+    }
+
+    const result = await response.json();
+    console.log('✅ [API] Denúncia enviada:', result);
+    return result;
+  } catch (error) {
+    console.error('❌ [API] Erro denúncia:', error);
     
     if (error instanceof Error && error.name === 'AbortError') {
       return { success: false, message: 'Timeout: Conexão muito lenta.' };

@@ -177,4 +177,75 @@ router.post('/associacao', async (req: Request, res: Response) => {
     res.status(500).json({ success: false, message: 'Erro interno do servidor' });
   }
 });
+// ✅ ADICIONAR ESTA ROTA (não mexer nas outras)
+router.post('/denuncia', upload.array('fotos', 5), async (req: Request, res: Response) => {
+  try {
+    console.log('🚨 [DENUNCIA] Recebendo formulário de denúncia...');
+    console.log('📋 [DENUNCIA] Dados:', req.body);
+    console.log('📸 [DENUNCIA] Arquivos:', req.files);
+
+    const { 
+      tipo, 
+      descricao, 
+      endereco, 
+      nomeCompleto, 
+      telefone, 
+      email,
+      latitude,
+      longitude
+    } = req.body;
+
+    // Validações básicas
+    if (!tipo || !descricao || !endereco || !nomeCompleto || !telefone || !email) {
+      res.status(400).json({
+        success: false,
+        message: 'Todos os campos obrigatórios devem ser preenchidos'
+      });
+      return;
+    }
+
+    // Preparar coordenadas se existirem
+    const coordenadas = latitude && longitude ? {
+      latitude: parseFloat(latitude),
+      longitude: parseFloat(longitude)
+    } : undefined;
+
+    // Preparar caminhos das fotos
+    const fotos = req.files ? (req.files as Express.Multer.File[]).map(file => file.path) : [];
+
+    // Enviar email
+    const emailEnviado = await emailService.enviarFormularioDenuncia({
+      tipo,
+      descricao,
+      endereco,
+      coordenadas,
+      fotos,
+      nomeCompleto,
+      telefone,
+      email
+    });
+
+    if (emailEnviado) {
+      console.log('✅ [DENUNCIA] Email enviado com sucesso!');
+      res.json({
+        success: true,
+        message: 'Denúncia enviada com sucesso!'
+      });
+    } else {
+      console.log('❌ [DENUNCIA] Falha ao enviar email');
+      res.status(500).json({
+        success: false,
+        message: 'Erro ao enviar denúncia. Tente novamente.'
+      });
+    }
+
+  } catch (error) {
+    console.error('❌ [DENUNCIA] Erro:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erro interno do servidor'
+    });
+  }
+});
+
 export default router;

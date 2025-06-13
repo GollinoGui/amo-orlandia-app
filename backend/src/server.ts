@@ -136,6 +136,7 @@ app.listen(PORT, '0.0.0.0', async () => {
   console.log(`   POST http://localhost:${PORT}/api/email/reserva`);
   console.log(`   POST http://localhost:${PORT}/api/email/contato`);
   console.log(`   POST http://localhost:${PORT}/api/email/associacao`);
+  console.log(`   POST http://${localIP}:${PORT}/api/email/denuncia`);
   
   // Testar email
   try {

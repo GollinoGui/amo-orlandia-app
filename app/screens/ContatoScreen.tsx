@@ -431,7 +431,7 @@ export function ContatoScreen() {
             disabled={enviando}
           >
             <Text style={styles.submitButtonText}>
-              {enviando ? 'Enviando... ⏳' : 'Enviar Mensagem ✅'}
+              {enviando ? 'Enviando... ' : 'Enviar Mensagem '}
             </Text>
           </TouchableOpacity>
 

@@ -29,6 +29,19 @@ interface AssociacaoData {
   motivoAssociacao: string;
   comoConheceu: string;
 }
+interface DenunciaData {
+  tipo: string;
+  descricao: string;
+  endereco: string;
+  coordenadas?: {
+    latitude: number;
+    longitude: number;
+  };
+  fotos: string[];
+  nomeCompleto: string;
+  telefone: string;
+  email: string;
+}
 
 class EmailService {
   private transporter;
@@ -408,6 +421,136 @@ class EmailService {
       </html>
     `;
   }
+  async enviarFormularioDenuncia(data: DenunciaData): Promise<boolean> {
+  try {
+    console.log('🚨 [EMAIL] Enviando formulário de denúncia...');
+    console.log('📸 [EMAIL] Fotos anexadas:', data.fotos.length);
+    
+    const htmlContent = this.gerarHTMLDenuncia(data);
+    
+    const mailOptions: any = {
+      from: process.env.EMAIL_FROM,
+      to: process.env.EMAIL_TO,
+      subject: `🚨 Nova Denúncia de Descarte Irregular - ${data.nomeCompleto}`,
+      html: htmlContent,
+      replyTo: data.email
+    };
+
+    // ANEXAR FOTOS SE EXISTIREM
+    if (data.fotos.length > 0) {
+      mailOptions.attachments = data.fotos.map((foto, index) => ({
+        filename: `denuncia-foto-${index + 1}.jpg`,
+        path: foto,
+        cid: `foto-denuncia-${index + 1}`
+      }));
+      console.log('📎 [EMAIL] Anexos adicionados:', data.fotos.length);
+    }
+
+    const result = await this.transporter.sendMail(mailOptions);
+    console.log('✅ [EMAIL] Email de denúncia enviado:', result.messageId);
+    return true;
+  } catch (error) {
+    console.error('❌ [EMAIL] Erro ao enviar email de denúncia:', error);
+    return false;
+  }
+}
+
+// ✅ ADICIONAR ESTA FUNÇÃO PRIVADA (não mexer nas outras)
+private gerarHTMLDenuncia(data: DenunciaData): string {
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: #E74C3C; color: white; padding: 20px; text-align: center; border-radius: 10px 10px 0 0; }
+        .content { background: #f9f9f9; padding: 20px; border-radius: 0 0 10px 10px; }
+        .field { margin-bottom: 15px; }
+        .label { font-weight: bold; color: #E74C3C; }
+        .value { margin-left: 10px; }
+        .highlight { background: #ffebee; padding: 10px; border-left: 4px solid #E74C3C; margin: 15px 0; }
+        .section { background: white; padding: 15px; margin: 10px 0; border-radius: 5px; border-left: 4px solid #E74C3C; }
+        .coordinates { background: #e8f5e8; padding: 10px; border-radius: 5px; font-family: monospace; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>🚨 Nova Denúncia de Descarte Irregular</h1>
+          <p>AMO Orlândia - Sistema de Denúncias</p>
+        </div>
+        
+        <div class="content">
+          <div class="highlight">
+            <strong>Data/Hora:</strong> ${new Date().toLocaleString('pt-BR')}
+          </div>
+          
+          <div class="section">
+            <h3>📋 Dados da Denúncia</h3>
+            <div class="field">
+              <span class="label">🏷️ Tipo:</span>
+              <span class="value">${data.tipo}</span>
+            </div>
+            <div class="field">
+              <span class="label">📝 Descrição:</span>
+              <div style="margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 5px;">
+                ${data.descricao.replace(/\n/g, '<br>')}
+              </div>
+            </div>
+            <div class="field">
+              <span class="label">📍 Endereço:</span>
+              <span class="value">${data.endereco}</span>
+            </div>
+            ${data.coordenadas ? `
+            <div class="field">
+              <span class="label">🗺️ Coordenadas GPS:</span>
+              <div class="coordinates">
+                Latitude: ${data.coordenadas.latitude}<br>
+                Longitude: ${data.coordenadas.longitude}
+              </div>
+            </div>
+            ` : ''}
+          </div>
+
+          <div class="section">
+            <h3>👤 Dados do Denunciante</h3>
+            <div class="field">
+              <span class="label">👤 Nome:</span>
+              <span class="value">${data.nomeCompleto}</span>
+            </div>
+            <div class="field">
+              <span class="label">📱 Telefone:</span>
+              <span class="value">${data.telefone}</span>
+            </div>
+            <div class="field">
+              <span class="label">📧 Email:</span>
+              <span class="value">${data.email}</span>
+            </div>
+          </div>
+
+          ${data.fotos.length > 0 ? `
+          <div class="section">
+            <h3>📷 Fotos Anexadas</h3>
+            <div class="field">
+              <span class="label">📸 Total de fotos:</span>
+              <span class="value">${data.fotos.length}</span>
+            </div>
+            <p><em>As fotos estão anexadas a este email.</em></p>
+          </div>
+          ` : ''}
+          
+          <div class="highlight">
+            <strong>⚠️ Ação Necessária:</strong> Verificar a denúncia e tomar as medidas cabíveis.
+          </div>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+}
+
 }
 
 export default new EmailService();
