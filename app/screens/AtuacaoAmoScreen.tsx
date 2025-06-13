@@ -150,9 +150,9 @@ export function AtuacaoAmoScreen() {
   // 🏢 FOTOS DA SEDE - ✅ USANDO LOGO COMO PLACEHOLDER
   const fotosSede = [
     require('../../assets/images/sede.png'), // ✅ PLACEHOLDER
-    require('../../assets/images/sede.png'), // ✅ PLACEHOLDER
-    require('../../assets/images/sede.png'), // ✅ PLACEHOLDER
-    require('../../assets/images/sede.png'), // ✅ PLACEHOLDER
+    require('../../assets/images/sede2.png'), // ✅ PLACEHOLDER
+    require('../../assets/images/sede3.png'), // ✅ PLACEHOLDER
+    require('../../assets/images/sede4.png'), // ✅ PLACEHOLDER
   ];
 
   const [fotoSelecionada, setFotoSelecionada] = useState(0);
@@ -187,17 +187,7 @@ export function AtuacaoAmoScreen() {
   // 👥 RENDERIZAR MEMBRO DA DIRETORIA
   const renderMembro = (membro: DiretorMembro) => (
     <View key={`${membro.nome}-${membro.conselho}`} style={[styles.membroCard, { backgroundColor: cardColor }]}>
-      <View style={styles.membroFoto}>
-        {membro.foto ? (
-          <Image source={membro.foto} style={styles.fotoImage} />
-        ) : (
-          <View style={[styles.fotoPlaceholder, { backgroundColor: primaryColor }]}>
-            <Text style={styles.fotoPlaceholderText}>
-              {membro.nome.split(' ').map(n => n[0]).join('').substring(0, 2)}
-            </Text>
-          </View>
-        )}
-      </View>
+      
       <View style={styles.membroInfo}>
         <Text style={[styles.membroNome, { color: textColor }]}>{membro.nome}</Text>
         <Text style={[styles.membroCargo, { color: primaryColor }]}>{membro.cargo}</Text>
@@ -254,10 +244,10 @@ export function AtuacaoAmoScreen() {
 
       {/* 📖 SOBRE A AMO */}
       <View style={[styles.section, { backgroundColor: cardColor }]}>
-        <Text style={[styles.sectionTitle, { color: primaryColor }]}>🏛️ Sobre a AMO</Text>
+        <Text style={[styles.sectionTitle, { color: primaryColor }]}>Sobre a AMO</Text>
         <Text style={[styles.sectionText, { color: textColor }]}>
           A Associação de Moradores de Orlândia (AMO) foi fundada com o objetivo de representar 
-          e defender os interesses da comunidade orlandina. Trabalhamos incansavelmente para 
+          e defender os interesses da comunidade orlandina. Trabalhamos para 
           melhorar a qualidade de vida dos moradores através de projetos ambientais, 
           sociais e de infraestrutura urbana.
         </Text>
@@ -267,9 +257,9 @@ export function AtuacaoAmoScreen() {
         </Text>
       </View>
 
-      {/* 👥 NOSSA DIRETORIA */}
+      {/*  NOSSA DIRETORIA */}
       <View style={[styles.section, { backgroundColor: cardColor }]}>
-        <Text style={[styles.sectionTitle, { color: primaryColor }]}>👥 Nossa Diretoria</Text>
+        <Text style={[styles.sectionTitle, { color: primaryColor }]}>Nossa Diretoria</Text>
         
         {/* Conselho Administrativo */}
         <Text style={[styles.subSectionTitle, { color: textColor }]}>Conselho Administrativo</Text>
@@ -357,9 +347,6 @@ export function AtuacaoAmoScreen() {
               📍 Av. Cinco, 48 A - Orlândia/SP
             </Text>
             <Text style={[styles.enderecoTexto, { color: textColor }]}>
-              📱 (16) 99173-7383
-            </Text>
-            <Text style={[styles.enderecoTexto, { color: textColor }]}>
               📧 contato@amoorlandia.org.br
             </Text>
             <Text style={[styles.enderecoTexto, { color: textColor }]}>
@@ -387,15 +374,7 @@ export function AtuacaoAmoScreen() {
       <View style={[styles.section, { backgroundColor: cardColor }]}>
         <Text style={[styles.sectionTitle, { color: primaryColor }]}>🤝 Como Participar</Text>
         <View style={styles.participarContainer}>
-          <View style={styles.participarItem}>
-            <Text style={styles.participarIcon}>👥</Text>
-            <View style={styles.participarTexto}>
-              <Text style={[styles.participarTitulo, { color: textColor }]}>Reuniões Mensais</Text>
-              <Text style={[styles.participarDescricao, { color: textColor }]}>
-                Participe das reuniões ordinárias toda primeira segunda-feira do mês às 19h30
-              </Text>
-            </View>
-          </View>
+          
           
           <View style={styles.participarItem}>
             <Text style={styles.participarIcon}>📝</Text>
@@ -422,33 +401,14 @@ export function AtuacaoAmoScreen() {
             <View style={styles.participarTexto}>
               <Text style={[styles.participarTitulo, { color: textColor }]}>Redes Sociais</Text>
               <Text style={[styles.participarDescricao, { color: textColor }]}>
-                Siga-nos no Instagram @amo.orlandia e WhatsApp (16) 99173-7383
+                Siga-nos no Instagram @amo.orlandia
               </Text>
             </View>
           </View>
         </View>
       </View>
 
-      {/* 📊 ESTATÍSTICAS SIMPLES */}
-      <View style={[styles.section, { backgroundColor: cardColor }]}>
-        <Text style={[styles.sectionTitle, { color: primaryColor }]}>📊 Nosso Impacto</Text>
-        <View style={styles.estatisticasContainer}>
-          <View style={[styles.estatisticaItem, { borderColor: primaryColor }]}>
-            <Text style={[styles.estatisticaNumero, { color: primaryColor }]}>500+</Text>
-            <Text style={[styles.estatisticaTexto, { color: textColor }]}>Famílias Atendidas</Text>
-          </View>
-          
-          <View style={[styles.estatisticaItem, { borderColor: primaryColor }]}>
-            <Text style={[styles.estatisticaNumero, { color: primaryColor }]}>50+</Text>
-            <Text style={[styles.estatisticaTexto, { color: textColor }]}>Móveis Redistribuídos</Text>
-          </View>
-          
-          <View style={[styles.estatisticaItem, { borderColor: primaryColor }]}>
-            <Text style={[styles.estatisticaNumero, { color: primaryColor }]}>10+</Text>
-            <Text style={[styles.estatisticaTexto, { color: textColor }]}>Projetos Realizados</Text>
-          </View>
-        </View>
-      </View>
+      
     </ScrollView>
   );
 }

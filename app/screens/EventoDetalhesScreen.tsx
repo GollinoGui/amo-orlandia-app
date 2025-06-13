@@ -1,8 +1,7 @@
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
-import { Platform } from 'react-native'; 
-import { Linking, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Linking, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 interface Evento {
   id: number;
@@ -30,35 +29,35 @@ interface Evento {
 const eventos: Evento[] = [
   {
     id: 1,
-    titulo: "Projeto Limpai",
-    subtitulo: "Mutirão de Limpeza Urbana",
-    data: "2024-03-15",
-    status: "futuro",
-    icone: "🧹",
-    cor: "#9EBF26",
-    descricao: "Grande mutirão de limpeza urbana para tornar nossa cidade mais limpa e sustentável. Venha participar conosco e fazer a diferença em Orlândia!",
-    local: "Praça Central de Orlândia",
-    horario: "08:00 às 12:00",
-    organizador: "AMO Orlândia",
-    participantes: 0,
-    detalhes: {
-      objetivo: "Promover a limpeza urbana e conscientização ambiental através da participação comunitária, tornando Orlândia uma cidade mais limpa e sustentável.",
-      comoParticipar: [
-        "Compareça no local e horário indicados",
-        "Traga água e protetor solar",
-        "Use roupas confortáveis e calçados fechados",
-        "Venha com disposição para ajudar!"
-      ],
-      materiais: [
-        "Sacos de lixo (fornecidos pela AMO)",
-        "Luvas de proteção (fornecidas)",
-        "Vassouras e pás (fornecidas)",
-        "Carrinhos de mão (fornecidos)",
-        "Água e lanche (fornecidos)"
-      ],
-      contato: "(16) 99173-7383",
-      observacoes: "Em caso de chuva, o evento será adiado. Acompanhe nossas redes sociais para atualizações."
-    }
+    titulo: "Projeto Limpaí",
+  subtitulo: "Mutirão de Limpeza Urbana",
+  data: "2024-03-15",
+  status: "futuro",
+  icone: "🧹",
+  cor: "#9EBF26",
+  descricao: "Grande mutirão de limpeza urbana para tornar nossa cidade mais limpa e sustentável. Venha participar conosco e fazer a diferença em Orlândia!",
+  local: "Praça Central de Orlândia",
+  horario: "08:00 às 12:00",
+  organizador: "AMO Orlândia",
+  participantes: 0,
+  detalhes: {
+    objetivo: "Promover a limpeza urbana e conscientização ambiental através da participação comunitária, tornando Orlândia uma cidade mais limpa e sustentável.",
+    comoParticipar: [
+      "Compareça no local e horário indicados",
+      "Traga água e protetor solar",
+      "Use roupas confortáveis e calçados fechados",
+      "Venha com disposição para ajudar!"
+    ],
+    materiais: [
+      "Sacos de lixo (fornecidos pela AMO)",
+      "Luvas de proteção (fornecidas)",
+      "Vassouras e pás (fornecidas)",
+      "Carrinhos de mão (fornecidos)",
+      "Água e lanche (fornecidos)"
+    ],
+    contato: "(16) 99173-7383",
+    observacoes: "Em caso de chuva, o evento será adiado. Acompanhe nossas redes sociais para atualizações."
+  }
   },
   {
     id: 2,

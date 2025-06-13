@@ -30,7 +30,7 @@ const eventos: Evento[] = [
     status: "futuro",
     icone: "🧹",
     cor: "#9EBF26",
-    descricao: "Grande mutirão de limpeza urbana para tornar nossa cidade mais limpa e sustentável. Venha participar conosco!",
+    descricao: "Nosso primeiro grande mutirão de limpeza foi um sucesso! Mais de 100 voluntários participaram e fizeram a diferença em nossa cidade.",
     local: "Praça Central de Orlândia",
     horario: "08:00 às 12:00",
     organizador: "AMO Orlândia",
