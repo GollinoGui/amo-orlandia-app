@@ -1,24 +1,35 @@
+import { useColorScheme } from '@/hooks/useColorScheme';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack, useRouter } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
+import { useEffect, useState } from 'react';
 import { Platform, Text, TouchableOpacity } from 'react-native';
 import 'react-native-reanimated';
+import { CustomSplashScreen } from '../components/CustomSplashScreen';
 
-import { useColorScheme } from '@/hooks/useColorScheme';
+SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  // ✅ TODOS OS HOOKS NO INÍCIO
   const colorScheme = useColorScheme();
+  const [appIsReady, setAppIsReady] = useState(false);
+  const [showCustomSplash, setShowCustomSplash] = useState(true);
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
 
-  if (!loaded) {
-    return null;
-  }
+  // ✅ USEEFFECT SEMPRE APÓS OS STATES
+  useEffect(() => {
+    if (loaded) {
+      setAppIsReady(true);
+      SplashScreen.hideAsync();
+    }
+  }, [loaded]);
 
   // Função para criar o botão de voltar customizado
-  const createHeaderLeft = () => {
+   const createHeaderLeft = () => {
     const router = useRouter();
     return () => (
       <TouchableOpacity 
@@ -56,6 +67,21 @@ export default function RootLayout() {
       </TouchableOpacity>
     );
   };
+if (!loaded) {
+    return null;
+  }
+
+  if (!appIsReady) {
+    return null;
+  }
+
+  if (showCustomSplash) {
+    return (
+      <CustomSplashScreen 
+        onFinish={() => setShowCustomSplash(false)} 
+      />
+    );
+  }
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
@@ -69,6 +95,11 @@ export default function RootLayout() {
           headerTitleAlign: 'center',
         }}
       >
+        <Stack>
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="+not-found" />
+    </Stack>
+    
         <Stack.Screen 
           name="index" 
           options={{ 
