@@ -54,14 +54,7 @@ export  function HomeScreen() {
       route: 'quem-somos',
       color: '#72BF24'
     },
-    {
-      id: 7,
-      title: 'O que Fazemos',
-      subtitle: 'Nossas atividades e projetos',
-      emoji: '⚡',
-      route: 'o-que-fazemos',
-      color: '#9EBF26'
-    },
+    
     {
       id: 8,
       title: 'Contate-nos',

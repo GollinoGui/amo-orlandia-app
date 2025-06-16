@@ -36,60 +36,8 @@ const eventos: Evento[] = [
     organizador: "AMO Orlândia",
     participantes: 0,
   },
-  {
-    id: 2,
-    titulo: "Limpai 2023",
-    subtitulo: "1º Mutirão de Limpeza",
-    data: "2023-09-20",
-    status: "passado",
-    icone: "🧹",
-    cor: "#72BF24",
-    descricao: "Nosso primeiro grande mutirão de limpeza foi um sucesso! Mais de 100 voluntários participaram.",
-    local: "Bairro Centro",
-    horario: "07:00 às 11:00",
-    organizador: "AMO Orlândia",
-    participantes: 120,
-    resultados: [
-      "120 voluntários participaram",
-      "2 toneladas de lixo coletadas",
-      "15 ruas limpas",
-      "50 mudas plantadas"
-    ],
-  },
-  {
-    id: 3,
-    titulo: "Plantio de Árvores",
-    subtitulo: "Orlândia Mais Verde",
-    data: "2023-11-25",
-    status: "passado",
-    icone: "🌳",
-    cor: "#39BF24",
-    descricao: "Evento de plantio de árvores nativas para aumentar a cobertura verde da cidade.",
-    local: "Parque Municipal",
-    horario: "08:00 às 10:00",
-    organizador: "AMO Orlândia + Prefeitura",
-    participantes: 80,
-    resultados: [
-      "80 voluntários participaram",
-      "200 mudas plantadas",
-      "5 áreas reflorestadas",
-      "Parceria com escolas locais"
-    ],
-  },
-  {
-    id: 4,
-    titulo: "Feira de Sustentabilidade",
-    subtitulo: "Consciência Ambiental",
-    data: "2024-04-22",
-    status: "futuro",
-    icone: "♻️",
-    cor: "#F2C335",
-    descricao: "Feira educativa sobre sustentabilidade, reciclagem e preservação ambiental.",
-    local: "Praça da Matriz",
-    horario: "14:00 às 18:00",
-    organizador: "AMO Orlândia",
-    participantes: 0,
-  },
+  
+  
 ];
 
 export function EventosScreen() {

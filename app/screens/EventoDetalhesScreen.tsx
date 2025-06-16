@@ -164,18 +164,31 @@ export function EventoDetalhesScreen() {
   }
 
   const abrirWhatsApp = async () => {
-    if (evento.detalhes?.contato) {
-      const numero = evento.detalhes.contato.replace(/\D/g, '');
-      const mensagem = `Olá! Gostaria de participar do evento "${evento.titulo}".`;
-      const url = `whatsapp://send?phone=55${numero}&text=${encodeURIComponent(mensagem)}`;
+  if (evento.detalhes?.contato) {
+    const numero = evento.detalhes.contato.replace(/\D/g, '');
+    const mensagem = `Olá! Gostaria de saber como faço para participar do evento "${evento.titulo}".`;
+    
+    // URL para WhatsApp Web
+    const whatsappWeb = `https://wa.me/55${numero}?text=${encodeURIComponent(mensagem)}`;
+    const whatsappApp = `whatsapp://send?phone=55${numero}&text=${encodeURIComponent(mensagem)}`;
+    
+    try {
+      // Tenta abrir o app primeiro
+      const canOpenApp = await Linking.canOpenURL(whatsappApp);
       
-      try {
-        await Linking.openURL(url);
-      } catch (error) {
-        console.error('Erro ao abrir WhatsApp:', error);
+      if (canOpenApp) {
+        await Linking.openURL(whatsappApp);
+      } else {
+        // Se não conseguir, abre no web
+        await Linking.openURL(whatsappWeb);
       }
+    } catch (error) {
+      console.error('Erro ao abrir WhatsApp:', error);
+      // Fallback final - abre no navegador
+      await Linking.openURL(whatsappWeb);
     }
-  };
+  }
+};
 
   return (
     <ScrollView style={[styles.container, { backgroundColor }]}>

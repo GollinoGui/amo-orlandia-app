@@ -105,21 +105,7 @@ export default function RootLayout() {
           />
 
         
-        <Stack.Screen 
-          name="o-que-fazemos" 
-          options={{ 
-            title: 'O que Fazemos',
-            headerStyle: { backgroundColor: '#72BF24' },
-            headerTintColor: '#fff',
-            headerTitleStyle: { 
-              fontWeight: 'bold',
-              fontSize: Platform.OS === 'ios' ? 18 : 16,
-            },
-            headerLeft: createHeaderLeft(),
-            gestureEnabled: true,
-            presentation: 'card',
-          }} 
-        />
+        
         
         <Stack.Screen 
           name="atuacao-amo" 

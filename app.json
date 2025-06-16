@@ -4,7 +4,7 @@
     "slug": "amo-orlandia-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/logo.jpg",
+    "icon": "./assets/images/icon.png",
     "userInterfaceStyle": "light",
     "scheme": "amo-orlandia",
     "splash": {
@@ -30,7 +30,7 @@
     "android": {
       "package": "com.amoorlandia.app",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/logo.jpg",
+        "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#39BF24"
       },
       "permissions": [
@@ -54,7 +54,7 @@
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/logo.jpg"
+      "favicon": "./assets/images/icon.png"
     },
     "plugins": [
       "expo-router",
