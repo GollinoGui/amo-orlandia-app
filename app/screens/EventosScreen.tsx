@@ -1,7 +1,17 @@
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { FlatList, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  FlatList,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
+} from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface Evento {
   id: number;
@@ -36,15 +46,12 @@ const eventos: Evento[] = [
     organizador: "AMO Orlândia",
     participantes: 0,
   },
-  
-  
 ];
 
 export function EventosScreen() {
-  const backgroundColor = useThemeColor({}, 'background');
-  const textColor = useThemeColor({}, 'text');
-  const cardColor = useThemeColor({}, 'card');
   const router = useRouter();
+  const insets = useSafeAreaInsets();
+  const { theme } = useTheme();
 
   const [filtroAtivo, setFiltroAtivo] = useState<'todos' | 'futuros' | 'passados'>('todos');
 
@@ -56,7 +63,7 @@ export function EventosScreen() {
 
   const renderEvento = ({ item }: { item: Evento }) => (
     <TouchableOpacity
-      style={[styles.eventoCard, { backgroundColor: cardColor }]}
+      style={[styles.eventoCard, { backgroundColor: theme.colors.card }]}
       onPress={() => router.push(`/evento-detalhes?id=${item.id}`)}
       activeOpacity={0.7}
     >
@@ -83,18 +90,18 @@ export function EventosScreen() {
         </Text>
         
         {item.local && (
-          <Text style={[styles.eventoInfo, { color: textColor }]}>
+          <Text style={[styles.eventoInfo, { color: theme.colors.text }]}>
             📍 {item.local}
           </Text>
         )}
         
         {item.horario && (
-          <Text style={[styles.eventoInfo, { color: textColor }]}>
+          <Text style={[styles.eventoInfo, { color: theme.colors.text }]}>
             ⏰ {item.horario}
           </Text>
         )}
 
-        <Text style={[styles.eventoDescricao, { color: textColor }]} numberOfLines={2}>
+        <Text style={[styles.eventoDescricao, { color: theme.colors.text }]} numberOfLines={2}>
           {item.descricao}
         </Text>
 
@@ -114,83 +121,116 @@ export function EventosScreen() {
   );
 
   return (
-    <ScrollView style={[styles.container, { backgroundColor }]}>
-      <View style={[styles.header, { backgroundColor: cardColor }]}>
-        <Text style={[styles.title, { color: '#F2C335' }]}>📅 Eventos AMO</Text>
-        <Text style={[styles.description, { color: textColor }]}>
-          Acompanhe nossos eventos passados e futuros. Participe e faça a diferença em Orlândia!
-        </Text>
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      {/* ✅ NOVO: STATUS BAR */}
+      <StatusBar 
+        barStyle={theme.isDark ? "light-content" : "light-content"}
+        backgroundColor="#F2C335"
+      />
+      
+      {/* ✅ NOVO: HEADER RESPONSIVO */}
+      <View style={[
+        styles.header, 
+        { 
+          paddingTop: insets.top + 10,
+          backgroundColor: '#F2C335'
+        }
+      ]}>
+        <TouchableOpacity 
+          style={styles.backButton} 
+          onPress={() => router.back()}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
+        </TouchableOpacity>
+        
+        <Text style={styles.headerTitle}>📅 Eventos AMO</Text>
+        
+        <View style={styles.headerSpacer} />
+      </View>
 
-        {/* Filtros */}
-        <View style={styles.filtrosContainer}>
-          <TouchableOpacity
-            style={[styles.filtroButton, { 
-              backgroundColor: filtroAtivo === 'todos' ? '#F2C335' : 'transparent',
-              borderColor: '#F2C335'
-            }]}
-            onPress={() => setFiltroAtivo('todos')}
-          >
-            <Text style={[styles.filtroText, { 
-              color: filtroAtivo === 'todos' ? '#fff' : '#F2C335' 
-            }]}>
-              Todos ({eventos.length})
-            </Text>
-          </TouchableOpacity>
+      {/* ✅ SEU CONTEÚDO ORIGINAL */}
+      <ScrollView style={styles.content}>
+        <View style={[styles.headerCard, { backgroundColor: theme.colors.card }]}>
+          <Text style={[styles.title, { color: '#F2C335' }]}>📅 Eventos AMO</Text>
+          <Text style={[styles.description, { color: theme.colors.text }]}>
+            Acompanhe nossos eventos passados e futuros. Participe e faça a diferença em Orlândia!
+          </Text>
 
-          <TouchableOpacity
-            style={[styles.filtroButton, { 
-              backgroundColor: filtroAtivo === 'futuros' ? '#4CAF50' : 'transparent',
-              borderColor: '#4CAF50'
-            }]}
-            onPress={() => setFiltroAtivo('futuros')}
-          >
-            <Text style={[styles.filtroText, { 
-              color: filtroAtivo === 'futuros' ? '#fff' : '#4CAF50' 
-            }]}>
-              Futuros ({eventos.filter(e => e.status === 'futuro').length})
-            </Text>
-          </TouchableOpacity>
+          {/* Filtros */}
+          <View style={styles.filtrosContainer}>
+            <TouchableOpacity
+              style={[styles.filtroButton, { 
+                backgroundColor: filtroAtivo === 'todos' ? '#F2C335' : 'transparent',
+                borderColor: '#F2C335'
+              }]}
+              onPress={() => setFiltroAtivo('todos')}
+            >
+              <Text style={[styles.filtroText, { 
+                color: filtroAtivo === 'todos' ? '#fff' : '#F2C335' 
+              }]}>
+                Todos ({eventos.length})
+              </Text>
+            </TouchableOpacity>
 
+            <TouchableOpacity
+              style={[styles.filtroButton, { 
+                backgroundColor: filtroAtivo === 'futuros' ? '#4CAF50' : 'transparent',
+                borderColor: '#4CAF50'
+              }]}
+              onPress={() => setFiltroAtivo('futuros')}
+            >
+              <Text style={[styles.filtroText, { 
+                color: filtroAtivo === 'futuros' ? '#fff' : '#4CAF50' 
+              }]}>
+                Futuros ({eventos.filter(e => e.status === 'futuro').length})
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.filtroButton, { 
+                backgroundColor: filtroAtivo === 'passados' ? '#757575' : 'transparent',
+                borderColor: '#757575'
+              }]}
+              onPress={() => setFiltroAtivo('passados')}
+            >
+              <Text style={[styles.filtroText, { 
+                color: filtroAtivo === 'passados' ? '#fff' : '#757575' 
+              }]}>
+                Passados ({eventos.filter(e => e.status === 'passado').length})
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        <FlatList
+          data={eventosFiltrados}
+          renderItem={renderEvento}
+          keyExtractor={(item) => item.id.toString()}
+          contentContainerStyle={styles.listaEventos}
+          scrollEnabled={false}
+        />
+
+        {/* Call to Action */}
+        <View style={[styles.ctaContainer, { backgroundColor: theme.colors.card }]}>
+          <Text style={[styles.ctaTitle, { color: '#39BF24' }]}>
+            🤝 Quer participar dos próximos eventos?
+          </Text>
+          <Text style={[styles.ctaText, { color: theme.colors.text }]}>
+            Entre em contato conosco e seja um voluntário da AMO Orlândia!
+          </Text>
           <TouchableOpacity
-            style={[styles.filtroButton, { 
-              backgroundColor: filtroAtivo === 'passados' ? '#757575' : 'transparent',
-              borderColor: '#757575'
-            }]}
-            onPress={() => setFiltroAtivo('passados')}
+            style={[styles.ctaButton, { backgroundColor: '#39BF24' }]}
+            onPress={() => router.push('/contato')}
           >
-            <Text style={[styles.filtroText, { 
-              color: filtroAtivo === 'passados' ? '#fff' : '#757575' 
-            }]}>
-              Passados ({eventos.filter(e => e.status === 'passado').length})
-            </Text>
+            <Text style={styles.ctaButtonText}>📞 Entrar em Contato</Text>
           </TouchableOpacity>
         </View>
-      </View>
 
-      <FlatList
-        data={eventosFiltrados}
-        renderItem={renderEvento}
-        keyExtractor={(item) => item.id.toString()}
-        contentContainerStyle={styles.listaEventos}
-        scrollEnabled={false}
-      />
-
-      {/* Call to Action */}
-      <View style={[styles.ctaContainer, { backgroundColor: cardColor }]}>
-        <Text style={[styles.ctaTitle, { color: '#39BF24' }]}>
-          🤝 Quer participar dos próximos eventos?
-        </Text>
-        <Text style={[styles.ctaText, { color: textColor }]}>
-          Entre em contato conosco e seja um voluntário da AMO Orlândia!
-        </Text>
-        <TouchableOpacity
-          style={[styles.ctaButton, { backgroundColor: '#39BF24' }]}
-          onPress={() => router.push('/contato')}
-        >
-          <Text style={styles.ctaButtonText}>📞 Entrar em Contato</Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+        {/* ESPAÇAMENTO FINAL */}
+        <View style={{ height: 20 }} />
+      </ScrollView>
+    </View>
   );
 }
 
@@ -198,7 +238,37 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  // ✅ NOVOS ESTILOS PARA O HEADER
   header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingBottom: 16,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+  },
+  backButton: {
+    padding: 8,
+    marginRight: 12,
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    flex: 1,
+    textAlign: 'center',
+  },
+  headerSpacer: {
+    width: 40,
+  },
+  content: {
+    flex: 1,
+  },
+  // ✅ SEUS ESTILOS ORIGINAIS (mantidos iguais)
+  headerCard: {
     padding: 20,
     borderRadius: 15,
     margin: 20,
@@ -328,7 +398,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
   },
-    ctaTitle: {
+   ctaTitle: {
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
@@ -351,4 +421,5 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
+
 export default EventosScreen;

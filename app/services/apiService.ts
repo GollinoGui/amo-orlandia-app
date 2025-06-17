@@ -5,9 +5,17 @@ const getApiBaseUrl = () => {
   if (Platform.OS === 'web') {
     return 'http://localhost:3000/api';
   }
-  // ✅ SEU IP CORRETO
-  return 'http://192.168.1.102:3000/api';
+    // 🚀 RAILWAY URL - SEMPRE ONLINE
+  if (__DEV__) {
+    // Em desenvolvimento, pode escolher:
+    return 'https://amo-orlandia-production.up.railway.app/api'; // Online
+    // return 'http://192.168.1.102:3000/api'; // Local (descomente se quiser)
+  }
+  
+  // Em produção, sempre Railway
+  return 'https://amo-orlandia-production.up.railway.app/api';
 };
+
 
 const API_BASE_URL = getApiBaseUrl();
 

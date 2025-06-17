@@ -1,6 +1,18 @@
-import { useThemeColor } from '@/hooks/useThemeColor';
 import React, { useState } from 'react';
-import { Linking, Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { 
+  Linking, 
+  Modal, 
+  ScrollView, 
+  StyleSheet, 
+  Text, 
+  TouchableOpacity, 
+  View,
+  StatusBar
+} from 'react-native';
+import { useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface Servico {
   id: number;
@@ -19,10 +31,10 @@ interface Servico {
   url?: string;
 }
 
-export default function ServicosPublicosScreen() {
-  const backgroundColor = useThemeColor({}, 'background');
-  const textColor = useThemeColor({}, 'text');
-  const cardColor = useThemeColor({}, 'card');
+export function ServicosPublicosScreen() {
+  const router = useRouter();
+  const insets = useSafeAreaInsets();
+  const { theme } = useTheme();
   
   const [modalVisible, setModalVisible] = useState(false);
   const [servicoSelecionado, setServicoSelecionado] = useState<Servico | null>(null);
@@ -213,114 +225,95 @@ export default function ServicosPublicosScreen() {
         'Controle de medicamentos especiais',
         'Atendimento a receitas médicas do SUS'
       ],
-      comoAcessar: 'Compareça à farmácia com receita médica válida, documento de identidade e cartão SUS. O atendimento é gratuito para munícipes de Orlândia. Horário estendido até às 21h para maior comodidade da população.'
+            comoAcessar: 'Compareça à farmácia com receita médica válida, documento de identidade e cartão SUS. O atendimento é gratuito para munícipes de Orlândia. Horário estendido até 21h para maior comodidade da população.'
     },
     {
       id: 10,
-      nome: 'Secretaria de Infraestrutura Urbana',
-      subtitulo: 'Infraestrutura e Obras Públicas',
-      icone: '🏗️',
+      nome: 'Secretaria de Finanças',
+      subtitulo: 'Finanças e Tributação Municipal',
+      icone: '💰',
       cor: '#72BF24',
-      endereco: 'Informações disponíveis na Prefeitura Municipal',
-      telefone: 'Informações: Prefeitura Municipal',
-      horario: 'Segunda a Sexta-feira das 08:00 às 17:00',
-      responsavel: 'Leonardo Donizeti Alvez (Responsável)',
-      descricao: 'A Secretaria Municipal de Infraestrutura Urbana é responsável pela manutenção, conservação e desenvolvimento da infraestrutura urbana de Orlândia, garantindo a qualidade dos serviços públicos essenciais.',
+      endereco: 'Avenida do Café, 1.040, Centro',
+      telefone: '(16) 3820-8020',
+      horario: 'Segunda a Sexta-feira das 08:00 às 16:30',
+      responsavel: 'Marcelo Henrique Pinto (Secretário)',
+      descricao: 'A Secretaria Municipal de Finanças é responsável pela gestão financeira do município, arrecadação de tributos, controle orçamentário e atendimento ao contribuinte para questões fiscais e tributárias.',
       servicos: [
-        'Manutenção de vias públicas e calçamento',
-                'Limpeza urbana e coleta de lixo',
-        'Manutenção de praças e jardins públicos',
-        'Obras de infraestrutura urbana',
-        'Serviços de iluminação pública',
-        'Conservação de equipamentos urbanos',
-        'Atendimento a solicitações de reparos'
+        'Emissão de certidões negativas',
+        'Parcelamento de débitos municipais',
+        'Cadastro de contribuintes',
+        'Orientação tributária',
+        'Emissão de guias de pagamento',
+        'Atendimento ao contribuinte',
+        'Regularização fiscal'
       ],
-      comoAcessar: 'Entre em contato com a Prefeitura Municipal para solicitar serviços de infraestrutura, reportar problemas urbanos ou obter informações sobre obras públicas. Atendimento gratuito para munícipes.'
+      comoAcessar: 'Entre em contato pelo telefone, e-mail (financas@orlandia.sp.gov.br) ou compareça ao endereço para questões relacionadas a impostos municipais, certidões, parcelamentos e orientações fiscais. Leve documentos pessoais e comprovantes.'
     },
     {
       id: 11,
-      nome: 'Secretaria de Meio Ambiente',
-      subtitulo: 'Proteção e Preservação Ambiental',
-      icone: '🌱',
+      nome: 'Secretaria de Governo',
+      subtitulo: 'Coordenação Governamental',
+      icone: '🏛️',
       cor: '#9EBF26',
       endereco: 'Avenida do Café, 1.040, Centro',
-      telefone: '(16) 3820-8063',
-      horario: 'Segunda a Sexta-feira das 08:00 às 17:00',
-      responsavel: 'João Alfredo Freitas Pires de Campos (Responsável)',
-      descricao: 'A Secretaria Municipal de Meio Ambiente desenvolve políticas de proteção ambiental, educação ecológica e sustentabilidade, promovendo a preservação dos recursos naturais de Orlândia.',
+      telefone: '(16) 3820-8001',
+      horario: 'Segunda a Sexta-feira das 08:00 às 16:30',
+      responsavel: 'Luiz Carlos Pereira (Secretário)',
+      descricao: 'A Secretaria Municipal de Governo coordena as ações governamentais, articula políticas públicas entre as secretarias e mantém o relacionamento institucional com outros órgãos e entidades.',
       servicos: [
-        'Licenciamento ambiental municipal',
-        'Fiscalização ambiental',
-        'Programas de educação ambiental',
-        'Gestão de áreas verdes municipais',
-        'Controle de poluição e ruído',
-        'Projetos de sustentabilidade',
-        'Atendimento a denúncias ambientais'
+        'Coordenação de políticas públicas',
+        'Articulação intersetorial',
+        'Relacionamento institucional',
+        'Apoio às demais secretarias',
+        'Gestão de convênios e parcerias',
+        'Comunicação governamental'
       ],
-      comoAcessar: 'Entre em contato pelo telefone, e-mail (meioambiente@orlandia.sp.gov.br) ou compareça ao endereço para questões ambientais, licenças, denúncias ou participação em programas de educação ambiental.'
+      comoAcessar: 'Entre em contato pelo telefone ou compareça ao endereço para questões relacionadas a políticas públicas, parcerias institucionais e articulação governamental.'
     },
     {
       id: 12,
-      nome: 'Secretaria de Saúde',
-      subtitulo: 'Saúde Pública Municipal',
-      icone: '🏥',
+      nome: 'Secretaria de Habitação',
+      subtitulo: 'Habitação e Desenvolvimento Urbano',
+      icone: '🏠',
       cor: '#F2C335',
-      endereco: 'Avenida 3, nº 130, Centro',
-      telefone: '(16) 3820-8207',
-      horario: 'Segunda a Sexta-feira das 08:00 às 17:00',
-      responsavel: 'Diego Roberto Meloni (Secretário)',
-      descricao: 'A Secretaria Municipal de Saúde é responsável por coordenar e executar as políticas de saúde pública no município, garantindo o acesso universal aos serviços de saúde e promovendo o bem-estar da população.',
+      endereco: 'Avenida do Café, 1.040, Centro',
+      telefone: '(16) 3820-8050',
+      horario: 'Segunda a Sexta-feira das 08:00 às 16:30',
+      responsavel: 'Marcos Roberto Pereira (Secretário)',
+      descricao: 'A Secretaria Municipal de Habitação desenvolve políticas habitacionais, programas de moradia popular e projetos de desenvolvimento urbano para garantir o direito à moradia digna.',
       servicos: [
-        'Coordenação das Unidades Básicas de Saúde (UBS)',
-        'Programas de vacinação',
-        'Atendimento médico e odontológico',
-        'Programas de prevenção e promoção da saúde',
-        'Controle de endemias e epidemias',
-        'Saúde da família e comunitária',
-        'Regulação de consultas e exames especializados'
+        'Programas habitacionais municipais',
+        'Cadastro para habitação popular',
+        'Regularização fundiária',
+        'Projetos de desenvolvimento urbano',
+        'Orientação sobre programas federais de habitação',
+        'Acompanhamento de obras habitacionais'
       ],
-      comoAcessar: 'Procure a Unidade Básica de Saúde mais próxima da sua residência ou entre em contato com a secretaria para informações sobre serviços, agendamentos e programas de saúde. Leve documento de identidade e cartão SUS.'
+      comoAcessar: 'Procure a secretaria no endereço indicado ou entre em contato pelo telefone para informações sobre programas habitacionais, inscrições e orientações. Leve documentos pessoais, comprovante de renda e residência.'
     },
     {
       id: 13,
-      nome: 'Vigilância Sanitária',
-      subtitulo: 'Controle e Fiscalização Sanitária',
+      nome: 'Portal da Transparência',
+      subtitulo: 'Transparência Pública Municipal',
       icone: '🔍',
       cor: '#39BF24',
-      endereco: 'Rua 9, 726 – Centro',
-      telefone: '(16) 3820-8225',
-      horario: 'Das 07:00h às 17:00h (Fechado para almoço das 12:00h às 14:00h)',
-      descricao: 'A Vigilância Sanitária é a parcela do poder de polícia do Estado destinada à proteção e promoção da saúde, que tem como principal finalidade impedir que a saúde humana seja exposta a riscos ou combater as causas dos efeitos nocivos gerados por distorções sanitárias na produção e circulação de bens, ou na prestação de serviços de interesse à saúde.\n\nTrata-se de um conjunto de ações capaz de eliminar, diminuir ou prevenir riscos à saúde e de intervir nos problemas sanitários decorrentes do meio ambiente, da produção e circulação de bens e da prestação de serviços de interesse da saúde.\n\nA Vigilância Sanitária Municipal está vinculada à Secretaria Municipal de Saúde, GVS VIII Franca, CVS São Paulo, ANVISA e Ministério da Saúde.',
+      descricao: 'O Portal da Transparência de Orlândia disponibiliza informações sobre gastos públicos, licitações, contratos, folha de pagamento e demais dados da administração municipal, garantindo transparência e controle social.',
       servicos: [
-        'Controle de bens de consumo relacionados à saúde',
-        'Fiscalização de estabelecimentos comerciais',
-        'Controle de prestação de serviços de saúde',
-        'Inspeção sanitária em restaurantes e lanchonetes',
-        'Fiscalização de farmácias e drogarias',
-        'Controle sanitário de eventos e festivais',
-        'Atendimento a denúncias sanitárias',
-        'Licenciamento sanitário de estabelecimentos'
+        'Consulta a gastos públicos',
+        'Informações sobre licitações',
+        'Contratos e convênios',
+        'Folha de pagamento dos servidores',
+        'Receitas municipais',
+        'Relatórios de gestão',
+        'Lei de Acesso à Informação'
       ],
-      comoAcessar: 'Entre em contato pelo telefone (16) 3820-8225 ou compareça ao endereço para denúncias, solicitações de fiscalização, licenciamento sanitário ou orientações sobre normas sanitárias. Atendimento destinado à sociedade em geral.'
-    },
-    {
-      id: 14,
-      nome: 'Rede Protetiva Orlândia',
-      subtitulo: 'Blog oficial da Rede Protetiva',
-      icone: '🌐',
-      cor: '#E74C3C',
+      comoAcessar: 'Acesse o portal através do site oficial da Prefeitura de Orlândia. Todas as informações estão disponíveis 24 horas por dia, gratuitamente.',
       isExternalLink: true,
-      url: 'https://redeprotetivaorlandia.blogspot.com/',
-      descricao: 'Acesse o blog oficial da Rede Protetiva de Orlândia para informações atualizadas sobre serviços, projetos e ações da rede de proteção social do município.'
+      url: 'https://www.orlandia.sp.gov.br/transparencia'
     }
   ];
 
   const abrirModal = (servico: Servico) => {
-    if (servico.isExternalLink && servico.url) {
-      Linking.openURL(servico.url);
-      return;
-    }
-    
     setServicoSelecionado(servico);
     setModalVisible(true);
   };
@@ -330,53 +323,179 @@ export default function ServicosPublicosScreen() {
     setServicoSelecionado(null);
   };
 
-  return (
-    <View style={[styles.container, { backgroundColor }]}>
-      <ScrollView style={styles.scrollView}>
-        <Text style={[styles.title, { color: textColor }]}>🏥 Serviços Públicos</Text>
-        <Text style={[styles.subtitle, { color: textColor }]}>
-          Encontre informações sobre os serviços públicos disponíveis em Orlândia
+  const abrirLink = async (url: string) => {
+    try {
+      await Linking.openURL(url);
+    } catch (error) {
+      console.error('Erro ao abrir link:', error);
+    }
+  };
+
+  const ligarTelefone = async (telefone: string) => {
+    const numeroLimpo = telefone.replace(/\D/g, '');
+    const url = `tel:+55${numeroLimpo}`;
+    
+    try {
+      await Linking.openURL(url);
+    } catch (error) {
+      console.error('Erro ao ligar:', error);
+    }
+  };
+
+  const renderServico = (servico: Servico) => (
+    <TouchableOpacity
+      key={servico.id}
+      style={[styles.servicoCard, { backgroundColor: theme.colors.card }]}
+      onPress={() => servico.isExternalLink && servico.url ? abrirLink(servico.url) : abrirModal(servico)}
+      activeOpacity={0.7}
+    >
+      <View style={[styles.servicoHeader, { backgroundColor: servico.cor }]}>
+        <Text style={styles.servicoIcone}>{servico.icone}</Text>
+        <View style={styles.servicoHeaderText}>
+          <Text style={styles.servicoNome}>{servico.nome}</Text>
+          <Text style={styles.servicoSubtitulo}>{servico.subtitulo}</Text>
+        </View>
+        {servico.isExternalLink && (
+          <Ionicons name="open-outline" size={20} color="#fff" />
+        )}
+      </View>
+
+      <View style={styles.servicoContent}>
+        {servico.endereco && (
+          <Text style={[styles.servicoInfo, { color: theme.colors.text }]}>
+            📍 {servico.endereco}
+          </Text>
+        )}
+        
+        {servico.telefone && (
+          <Text style={[styles.servicoInfo, { color: theme.colors.text }]}>
+            📞 {servico.telefone}
+          </Text>
+        )}
+        
+        {servico.horario && (
+          <Text style={[styles.servicoInfo, { color: theme.colors.text }]}>
+            ⏰ {servico.horario}
+          </Text>
+        )}
+
+        <Text style={[styles.servicoDescricao, { color: theme.colors.text }]} numberOfLines={3}>
+          {servico.descricao}
         </Text>
 
-        <View style={styles.servicesGrid}>
-          {servicos.map((servico) => (
-            <TouchableOpacity
-              key={servico.id}
-              style={[
-                styles.serviceCard,
-                { 
-                  backgroundColor: servico.cor + '15',
-                  borderLeftColor: servico.cor,
-                }
-              ]}
-              onPress={() => abrirModal(servico)}
-              activeOpacity={0.8}
-            >
-              <View style={styles.cardContent}>
-                <View style={[styles.iconContainer, { backgroundColor: servico.cor + '25' }]}>
-                  <Text style={styles.serviceIcon}>{servico.icone}</Text>
-                </View>
-                <View style={styles.textContainer}>
-                  <Text style={[styles.serviceName, { color: textColor }]}>
-                    {servico.nome}
-                  </Text>
-                  <Text style={[styles.serviceSubtitle, { color: textColor }]}>
-                    {servico.subtitulo}
-                  </Text>
-                  {servico.isExternalLink && (
-                    <Text style={[styles.externalLinkIndicator, { color: servico.cor }]}>
-                      🌐 Link externo
-                    </Text>
-                  )}
-                </View>
-                <View style={[styles.arrow, { borderLeftColor: servico.cor }]} />
-              </View>
-            </TouchableOpacity>
-          ))}
+        <View style={styles.verMaisContainer}>
+          <Text style={[styles.verMaisText, { color: servico.cor }]}>
+            {servico.isExternalLink ? 'Acessar Portal →' : 'Ver detalhes →'}
+          </Text>
         </View>
+      </View>
+    </TouchableOpacity>
+  );
+
+  return (
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      {/* STATUS BAR */}
+      <StatusBar 
+        barStyle={theme.isDark ? "light-content" : "light-content"}
+        backgroundColor="#39BF24"
+      />
+      
+      {/* HEADER RESPONSIVO */}
+      <View style={[
+        styles.header, 
+        { 
+          paddingTop: insets.top + 10,
+          backgroundColor: '#39BF24'
+        }
+      ]}>
+        <TouchableOpacity 
+          style={styles.backButton} 
+          onPress={() => router.back()}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
+        </TouchableOpacity>
+        
+        <Text style={styles.headerTitle}>🏥 Serviços Públicos</Text>
+        
+        <View style={styles.headerSpacer} />
+      </View>
+
+      <ScrollView style={styles.content}>
+        {/* HEADER CARD */}
+        <View style={[styles.headerCard, { backgroundColor: theme.colors.card }]}>
+          <Text style={[styles.title, { color: '#39BF24' }]}>🏥 Serviços Públicos</Text>
+          <Text style={[styles.description, { color: theme.colors.text }]}>
+            Encontre informações sobre os principais serviços públicos disponíveis em Orlândia. 
+            Clique em cada serviço para ver detalhes completos.
+          </Text>
+        </View>
+
+        {/* LISTA DE SERVIÇOS */}
+        <View style={styles.servicosList}>
+          {servicos.map(renderServico)}
+        </View>
+
+        {/* INFORMAÇÕES GERAIS */}
+        <View style={[styles.infoCard, { backgroundColor: theme.colors.card }]}>
+          <Text style={[styles.infoTitle, { color: '#F2C335' }]}>ℹ️ Informações Gerais</Text>
+          <Text style={[styles.infoText, { color: theme.colors.text }]}>
+            • Todos os serviços são gratuitos para munícipes de Orlândia
+          </Text>
+          <Text style={[styles.infoText, { color: theme.colors.text }]}>
+            • Leve sempre documento de identidade e comprovante de residência
+          </Text>
+          <Text style={[styles.infoText, { color: theme.colors.text }]}>
+            • Para emergências médicas, ligue 192 (SAMU) ou 193 (Bombeiros)
+          </Text>
+          <Text style={[styles.infoText, { color: theme.colors.text }]}>
+            • Para emergências policiais, ligue 190 (Polícia Militar)
+          </Text>
+        </View>
+
+        {/* CONTATO PREFEITURA */}
+        <View style={[styles.contatoCard, { backgroundColor: theme.colors.card }]}>
+          <Text style={[styles.contatoTitle, { color: '#39BF24' }]}>📞 Contato Geral da Prefeitura</Text>
+          
+          <TouchableOpacity 
+            style={[styles.contatoButton, { backgroundColor: '#3498DB' }]}
+            onPress={() => ligarTelefone('1638263600')}
+          >
+            <Text style={styles.contatoIcon}>📞</Text>
+            <View style={styles.contatoInfo}>
+              <Text style={styles.contatoButtonTitle}>Telefone Principal</Text>
+              <Text style={styles.contatoButtonSubtitle}>(16) 3826-3600</Text>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={[styles.contatoButton, { backgroundColor: '#E67E22' }]}
+            onPress={() => abrirLink('mailto:faleconosco@orlandia.sp.gov.br')}
+          >
+            <Text style={styles.contatoIcon}>📧</Text>
+            <View style={styles.contatoInfo}>
+              <Text style={styles.contatoButtonTitle}>Email Oficial</Text>
+              <Text style={styles.contatoButtonSubtitle}>faleconosco@orlandia.sp.gov.br</Text>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={[styles.contatoButton, { backgroundColor: '#E4405F' }]}
+            onPress={() => abrirLink('https://www.instagram.com/prefeituramunicipalorlandia/')}
+          >
+            <Text style={styles.contatoIcon}>📷</Text>
+            <View style={styles.contatoInfo}>
+              <Text style={styles.contatoButtonTitle}>Instagram Oficial</Text>
+              <Text style={styles.contatoButtonSubtitle}>@prefeituramunicipalorlandia</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+
+        {/* ESPAÇAMENTO FINAL */}
+        <View style={{ height: 20 }} />
       </ScrollView>
 
-      {/* Modal de detalhes */}
+      {/* MODAL DE DETALHES */}
       <Modal
         animationType="slide"
         transparent={true}
@@ -384,100 +503,131 @@ export default function ServicosPublicosScreen() {
         onRequestClose={fecharModal}
       >
         <View style={styles.modalOverlay}>
-          <View style={[styles.modalContent, { backgroundColor: cardColor }]}>
-            <ScrollView style={styles.modalScrollView}>
-              {servicoSelecionado && (
-                <>
-                  <View style={styles.modalHeader}>
-                    <Text style={styles.modalIcon}>{servicoSelecionado.icone}</Text>
-                    <Text style={[styles.modalTitle, { color: textColor }]}>
-                      {servicoSelecionado.nome}
-                    </Text>
-                    <Text style={[styles.modalSubtitle, { color: textColor }]}>
-                      {servicoSelecionado.subtitulo}
-                    </Text>
+          <View style={[styles.modalContent, { backgroundColor: theme.colors.card }]}>
+            {servicoSelecionado && (
+              <>
+                {/* HEADER DO MODAL */}
+                <View style={[styles.modalHeader, { backgroundColor: servicoSelecionado.cor }]}>
+                  <Text style={styles.modalIcone}>{servicoSelecionado.icone}</Text>
+                  <View style={styles.modalHeaderText}>
+                    <Text style={styles.modalNome}>{servicoSelecionado.nome}</Text>
+                    <Text style={styles.modalSubtitulo}>{servicoSelecionado.subtitulo}</Text>
                   </View>
+                  <TouchableOpacity onPress={fecharModal} style={styles.closeButton}>
+                    <Ionicons name="close" size={24} color="#fff" />
+                  </TouchableOpacity>
+                </View>
 
-                  <View style={styles.modalBody}>
+                <ScrollView style={styles.modalBody}>
+                  {/* INFORMAÇÕES BÁSICAS */}
+                  <View style={styles.modalSection}>
+                    <Text style={[styles.modalSectionTitle, { color: servicoSelecionado.cor }]}>
+                      📋 Informações Básicas
+                    </Text>
+                    
                     {servicoSelecionado.endereco && (
-                      <View style={styles.infoItem}>
-                        <Text style={styles.infoIcon}>📍</Text>
-                        <Text style={[styles.infoText, { color: textColor }]}>
+                      <View style={styles.modalInfoItem}>
+                                                <Text style={styles.modalInfoIcon}>📍</Text>
+                        <Text style={[styles.modalInfoText, { color: theme.colors.text }]}>
                           {servicoSelecionado.endereco}
                         </Text>
                       </View>
                     )}
-
+                    
                     {servicoSelecionado.telefone && (
-                      <View style={styles.infoItem}>
-                        <Text style={styles.infoIcon}>📱</Text>
-                        <Text style={[styles.infoText, { color: textColor }]}>
+                      <TouchableOpacity 
+                        style={styles.modalInfoItem}
+                        onPress={() => ligarTelefone(servicoSelecionado.telefone!)}
+                      >
+                        <Text style={styles.modalInfoIcon}>📞</Text>
+                        <Text style={[styles.modalInfoText, { color: servicoSelecionado.cor }]}>
                           {servicoSelecionado.telefone}
                         </Text>
-                      </View>
+                      </TouchableOpacity>
                     )}
-
+                    
                     {servicoSelecionado.horario && (
-                      <View style={styles.infoItem}>
-                        <Text style={styles.infoIcon}>🕐</Text>
-                        <Text style={[styles.infoText, { color: textColor }]}>
+                      <View style={styles.modalInfoItem}>
+                        <Text style={styles.modalInfoIcon}>⏰</Text>
+                        <Text style={[styles.modalInfoText, { color: theme.colors.text }]}>
                           {servicoSelecionado.horario}
                         </Text>
                       </View>
                     )}
-
+                    
                     {servicoSelecionado.responsavel && (
-                      <View style={styles.infoItem}>
-                        <Text style={styles.infoIcon}>👤</Text>
-                        <Text style={[styles.infoText, { color: textColor }]}>
+                      <View style={styles.modalInfoItem}>
+                        <Text style={styles.modalInfoIcon}>👤</Text>
+                        <Text style={[styles.modalInfoText, { color: theme.colors.text }]}>
                           {servicoSelecionado.responsavel}
                         </Text>
                       </View>
                     )}
+                  </View>
 
-                    <View style={styles.descriptionSection}>
-                      <Text style={[styles.sectionTitle, { color: servicoSelecionado.cor }]}>
-                        📋 Descrição
+                  {/* DESCRIÇÃO */}
+                  <View style={styles.modalSection}>
+                    <Text style={[styles.modalSectionTitle, { color: servicoSelecionado.cor }]}>
+                      📖 Descrição
+                    </Text>
+                    <Text style={[styles.modalDescricao, { color: theme.colors.text }]}>
+                      {servicoSelecionado.descricao}
+                    </Text>
+                  </View>
+
+                  {/* SERVIÇOS OFERECIDOS */}
+                  {servicoSelecionado.servicos && (
+                    <View style={styles.modalSection}>
+                      <Text style={[styles.modalSectionTitle, { color: servicoSelecionado.cor }]}>
+                        🔧 Serviços Oferecidos
                       </Text>
-                      <Text style={[styles.descriptionText, { color: textColor }]}>
-                        {servicoSelecionado.descricao}
+                      {servicoSelecionado.servicos.map((servico, index) => (
+                        <View key={index} style={styles.servicoItem}>
+                          <Text style={styles.servicoItemBullet}>•</Text>
+                          <Text style={[styles.servicoItemText, { color: theme.colors.text }]}>
+                            {servico}
+                          </Text>
+                        </View>
+                      ))}
+                    </View>
+                  )}
+
+                  {/* COMO ACESSAR */}
+                  {servicoSelecionado.comoAcessar && (
+                    <View style={styles.modalSection}>
+                      <Text style={[styles.modalSectionTitle, { color: servicoSelecionado.cor }]}>
+                        🚪 Como Acessar
+                      </Text>
+                      <Text style={[styles.modalDescricao, { color: theme.colors.text }]}>
+                        {servicoSelecionado.comoAcessar}
                       </Text>
                     </View>
+                  )}
 
-                    {servicoSelecionado.servicos && servicoSelecionado.servicos.length > 0 && (
-                      <View style={styles.servicesSection}>
-                        <Text style={[styles.sectionTitle, { color: servicoSelecionado.cor }]}>
-                          🔧 Serviços Oferecidos
-                        </Text>
-                        {servicoSelecionado.servicos.map((servico, index) => (
-                          <Text key={index} style={[styles.serviceItem, { color: textColor }]}>
-                            • {servico}
-                          </Text>
-                        ))}
-                      </View>
+                  {/* BOTÕES DE AÇÃO */}
+                  <View style={styles.modalActions}>
+                    {servicoSelecionado.telefone && (
+                      <TouchableOpacity
+                        style={[styles.actionButton, { backgroundColor: servicoSelecionado.cor }]}
+                        onPress={() => ligarTelefone(servicoSelecionado.telefone!)}
+                      >
+                        <Text style={styles.actionButtonText}>📞 Ligar</Text>
+                      </TouchableOpacity>
                     )}
-
-                    {servicoSelecionado.comoAcessar && (
-                      <View style={styles.accessSection}>
-                        <Text style={[styles.sectionTitle, { color: servicoSelecionado.cor }]}>
-                          🚪 Como Acessar
-                        </Text>
-                        <Text style={[styles.accessText, { color: textColor }]}>
-                          {servicoSelecionado.comoAcessar}
-                        </Text>
-                      </View>
-                    )}
+                    
+                    <TouchableOpacity
+                      style={[styles.actionButton, { backgroundColor: '#6c757d' }]}
+                      onPress={fecharModal}
+                    >
+                      <Text style={styles.actionButtonText}>✖️ Fechar</Text>
+                    </TouchableOpacity>
                   </View>
-                </>
-              )}
-            </ScrollView>
 
-            <TouchableOpacity
-              style={[styles.closeButton, { backgroundColor: servicoSelecionado?.cor || '#39BF24' }]}
-              onPress={fecharModal}
-            >
-              <Text style={styles.closeButtonText}>Fechar</Text>
-            </TouchableOpacity>
+                  {/* ESPAÇAMENTO FINAL DO MODAL */}
+                  <View style={{ height: 20 }} />
+                </ScrollView>
+              </>
+            )}
           </View>
         </View>
       </Modal>
@@ -489,77 +639,177 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  scrollView: {
-    flex: 1,
-    padding: 20,
+  // HEADER STYLES
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingBottom: 16,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
   },
-  title: {
-    fontSize: 24,
+  backButton: {
+    padding: 8,
+    marginRight: 12,
+  },
+  headerTitle: {
+    fontSize: 20,
     fontWeight: 'bold',
+    color: '#FFFFFF',
+    flex: 1,
     textAlign: 'center',
-    marginBottom: 10,
   },
-  subtitle: {
-    fontSize: 16,
-    textAlign: 'center',
-    marginBottom: 25,
-    opacity: 0.8,
+  headerSpacer: {
+    width: 40,
   },
-  servicesGrid: {
-    gap: 15,
+  content: {
+    flex: 1,
+    padding: 15,
   },
-  serviceCard: {
+  // HEADER CARD
+  headerCard: {
+    padding: 20,
     borderRadius: 15,
-    borderLeftWidth: 4,
+    marginBottom: 20,
+    alignItems: 'center',
     elevation: 2,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
   },
-  cardContent: {
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 15,
+  },
+  description: {
+    fontSize: 16,
+    textAlign: 'center',
+    lineHeight: 22,
+  },
+  // SERVIÇOS LIST
+  servicosList: {
+    gap: 15,
+  },
+  servicoCard: {
+    borderRadius: 15,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    overflow: 'hidden',
+  },
+  servicoHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 20,
+    padding: 15,
   },
-  iconContainer: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    justifyContent: 'center',
-    alignItems: 'center',
+  servicoIcone: {
+    fontSize: 28,
     marginRight: 15,
   },
-  serviceIcon: {
-    fontSize: 22,
-  },
-  textContainer: {
+  servicoHeaderText: {
     flex: 1,
   },
-  serviceName: {
+  servicoNome: {
     fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 4,
+    fontWeight: 'bold',
+    color: '#fff',
   },
-  serviceSubtitle: {
-    fontSize: 13,
-    opacity: 0.7,
-  },
-  externalLinkIndicator: {
+  servicoSubtitulo: {
     fontSize: 12,
-    fontWeight: '500',
-    marginTop: 4,
+    color: 'rgba(255, 255, 255, 0.9)',
   },
-  arrow: {
-    width: 0,
-    height: 0,
-    borderLeftWidth: 8,
-    borderTopWidth: 6,
-    borderBottomWidth: 6,
-    borderTopColor: 'transparent',
-    borderBottomColor: 'transparent',
+  servicoContent: {
+    padding: 15,
   },
-  // Modal styles
+  servicoInfo: {
+    fontSize: 14,
+    marginBottom: 5,
+    opacity: 0.8,
+  },
+  servicoDescricao: {
+    fontSize: 14,
+    lineHeight: 20,
+    marginVertical: 10,
+  },
+  verMaisContainer: {
+    alignItems: 'flex-end',
+    marginTop: 10,
+  },
+  verMaisText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  // INFO CARD
+  infoCard: {
+    padding: 20,
+    borderRadius: 15,
+    marginTop: 20,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  infoTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  infoText: {
+    fontSize: 14,
+    lineHeight: 20,
+    marginBottom: 8,
+  },
+  // CONTATO CARD
+  contatoCard: {
+    padding: 20,
+    borderRadius: 15,
+    marginTop: 15,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  contatoTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  contatoButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 10,
+  },
+  contatoIcon: {
+    fontSize: 20,
+    marginRight: 15,
+  },
+  contatoInfo: {
+    flex: 1,
+  },
+  contatoButtonTitle: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  contatoButtonSubtitle: {
+    color: 'rgba(255, 255, 255, 0.8)',
+    fontSize: 12,
+  },
+  // MODAL STYLES
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -570,98 +820,102 @@ const styles = StyleSheet.create({
   modalContent: {
     width: '100%',
     maxHeight: '90%',
-    borderRadius: 20,
+    borderRadius: 15,
+    overflow: 'hidden',
     elevation: 5,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
   },
-  modalScrollView: {
-    maxHeight: '85%',
-  },
   modalHeader: {
+    flexDirection: 'row',
     alignItems: 'center',
-    padding: 25,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(0, 0, 0, 0.1)',
+    padding: 20,
   },
-  modalIcon: {
-    fontSize: 40,
-    marginBottom: 10,
+  modalIcone: {
+    fontSize: 32,
+    marginRight: 15,
   },
-  modalTitle: {
-    fontSize: 20,
+  modalHeaderText: {
+    flex: 1,
+  },
+  modalNome: {
+    fontSize: 18,
     fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 5,
+    color: '#fff',
   },
-  modalSubtitle: {
+  modalSubtitulo: {
     fontSize: 14,
-    textAlign: 'center',
-    opacity: 0.7,
+    color: 'rgba(255, 255, 255, 0.9)',
+  },
+  closeButton: {
+    padding: 5,
   },
   modalBody: {
     padding: 20,
   },
-  infoItem: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginBottom: 15,
-    paddingHorizontal: 10,
-  },
-  infoIcon: {
-    fontSize: 16,
-    marginRight: 12,
-    marginTop: 2,
-    width: 20,
-  },
-  infoText: {
-    fontSize: 15,
-    flex: 1,
-    lineHeight: 22,
-  },
-  descriptionSection: {
-    marginTop: 20,
+  modalSection: {
     marginBottom: 20,
   },
-  sectionTitle: {
+  modalSectionTitle: {
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 10,
   },
-  descriptionText: {
-    fontSize: 14,
-    lineHeight: 22,
-    textAlign: 'justify',
+  modalInfoItem: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: 8,
   },
-  servicesSection: {
-    marginBottom: 20,
+  modalInfoIcon: {
+    fontSize: 16,
+    marginRight: 10,
+    marginTop: 2,
   },
-  serviceItem: {
+  modalInfoText: {
     fontSize: 14,
+    flex: 1,
     lineHeight: 20,
-    marginBottom: 5,
-    paddingLeft: 10,
   },
-  accessSection: {
-    marginBottom: 10,
-  },
-  accessText: {
+  modalDescricao: {
     fontSize: 14,
     lineHeight: 22,
     textAlign: 'justify',
   },
-  closeButton: {
-    margin: 20,
-    padding: 15,
-    borderRadius: 10,
+  servicoItem: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: 8,
+  },
+  servicoItemBullet: {
+    fontSize: 16,
+    marginRight: 10,
+    marginTop: 2,
+    color: '#39BF24',
+  },
+  servicoItemText: {
+    fontSize: 14,
+    flex: 1,
+    lineHeight: 20,
+  },
+  modalActions: {
+    flexDirection: 'row',
+    gap: 10,
+    marginTop: 20,
+  },
+  actionButton: {
+    flex: 1,
+    padding: 12,
+    borderRadius: 8,
     alignItems: 'center',
   },
-  closeButtonText: {
+  actionButtonText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: 'bold',
   },
 });
+
+export default ServicosPublicosScreen;
 

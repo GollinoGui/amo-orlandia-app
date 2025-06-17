@@ -1,248 +1,395 @@
-import { useThemeColor } from '@/hooks/useThemeColor';
-import React from 'react';
+import React, { useState } from 'react';
 import {
+  Image,
   Linking,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View
+  View,
+  StatusBar
 } from 'react-native';
+import { useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
+import { useTheme } from '../contexts/ThemeContext';
+
+interface TimelineMomento {
+  ano: string;
+  titulo: string;
+  descricao: string;
+  icone: string;
+}
+
+interface Valor {
+  titulo: string;
+  descricao: string;
+  icone: string;
+  cor: string;
+}
 
 export function QuemSomosScreen() {
-  const backgroundColor = useThemeColor({}, 'background');
-  const textColor = useThemeColor({}, 'text');
-  const cardColor = useThemeColor({}, 'card');
-  const primaryColor = '#39BF24';
-  const secondaryColor = '#F2C335';
+  const router = useRouter();
+  const insets = useSafeAreaInsets();
+  const { theme } = useTheme();
+
+  // 📅 TIMELINE DA AMO
+  const timeline: TimelineMomento[] = [
+    {
+      ano: '2020',
+      titulo: 'Fundação da AMO',
+      descricao: 'A Associação de Moradores de Orlândia foi oficialmente fundada com o objetivo de representar e defender os interesses da comunidade orlandina.',
+      icone: '🏛️'
+    },
+    {
+      ano: '2021',
+      titulo: 'Primeiros Projetos',
+      descricao: 'Início dos primeiros projetos sociais e ambientais, focando na melhoria da qualidade de vida dos moradores.',
+      icone: '🌱'
+    },
+    {
+      ano: '2022',
+      titulo: 'Parcerias Estratégicas',
+      descricao: 'Estabelecimento de parcerias com empresas locais como MORLAN, UNIMED e INTELLI para ampliar o alcance dos projetos.',
+      icone: '🤝'
+    },
+    {
+      ano: '2023',
+      titulo: 'Política de Reserva',
+      descricao: 'Implementação da Política de Reserva de Móveis, revolucionando o descarte sustentável na cidade.',
+      icone: '🪑'
+    },
+    {
+      ano: '2024',
+      titulo: 'Projeto Limpai',
+      descricao: 'Lançamento do Projeto Limpai, grande iniciativa de conscientização ambiental e limpeza urbana.',
+      icone: '🧹'
+    },
+        {
+      ano: '2025',
+      titulo: 'App AMO Orlândia',
+      descricao: 'Lançamento do aplicativo oficial AMO Orlândia, facilitando o acesso aos serviços e fortalecendo a comunicação com a comunidade.',
+      icone: '📱'
+    }
+  ];
+
+  // 💎 VALORES DA AMO
+  const valores: Valor[] = [
+    {
+      titulo: 'Transparência',
+      descricao: 'Mantemos total transparência em nossas ações e prestação de contas à comunidade.',
+      icone: '🔍',
+      cor: '#39BF24'
+    },
+    {
+      titulo: 'Sustentabilidade',
+      descricao: 'Promovemos práticas sustentáveis e consciência ambiental em todos os nossos projetos.',
+      icone: '🌱',
+      cor: '#72BF24'
+    },
+    {
+      titulo: 'Participação',
+      descricao: 'Incentivamos a participação ativa da comunidade nas decisões e ações da associação.',
+      icone: '👥',
+      cor: '#9EBF26'
+    },
+    {
+      titulo: 'Inovação',
+      descricao: 'Buscamos soluções inovadoras para os desafios urbanos e sociais de Orlândia.',
+      icone: '💡',
+      cor: '#F2C335'
+    }
+  ];
 
   const abrirWhatsApp = async () => {
-    const numero = '16991737383';
+    const numero = '5516991737383';
     const mensagem = 'Olá! Gostaria de saber mais sobre a AMO Orlândia.';
-    const whatsappWeb = `https://wa.me/55${numero}?text=${encodeURIComponent(mensagem)}`;
+    const url = `whatsapp://send?phone=${numero}&text=${encodeURIComponent(mensagem)}`;
     
     try {
-      await Linking.openURL(whatsappWeb);
+      await Linking.openURL(url);
     } catch (error) {
       console.error('Erro ao abrir WhatsApp:', error);
     }
   };
 
+  const abrirInstagram = async () => {
+    const url = 'https://www.instagram.com/amo.orlandia/';
+    
+    try {
+      await Linking.openURL(url);
+    } catch (error) {
+      console.error('Erro ao abrir Instagram:', error);
+    }
+  };
+
+  const abrirMapa = async () => {
+    const endereco = 'Av. Cinco, 48 A, Orlândia, SP';
+    const url = `https://maps.google.com/?q=${encodeURIComponent(endereco)}`;
+    
+    try {
+      await Linking.openURL(url);
+    } catch (error) {
+      console.error('Erro ao abrir mapa:', error);
+    }
+  };
+
   return (
-    <ScrollView style={[styles.container, { backgroundColor }]}>
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      {/* STATUS BAR */}
+      <StatusBar 
+        barStyle={theme.isDark ? "light-content" : "light-content"}
+        backgroundColor="#39BF24"
+      />
       
-      {/* HEADER PRINCIPAL */}
-      <View style={[styles.headerSection, { backgroundColor: primaryColor }]}>
-        <Text style={styles.headerTitle}>AMO Orlândia</Text>
-        <Text style={styles.headerSubtitle}>Associação dos Moradores de Orlândia</Text>
-        <Text style={styles.headerDescription}>
-          Uma entidade apartidária que atua em defesa da qualidade de vida dos cidadãos de Orlândia
-        </Text>
+      {/* HEADER RESPONSIVO */}
+      <View style={[
+        styles.header, 
+        { 
+          paddingTop: insets.top + 10,
+          backgroundColor: '#39BF24'
+        }
+      ]}>
+        <TouchableOpacity 
+          style={styles.backButton} 
+          onPress={() => router.back()}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
+        </TouchableOpacity>
+        
+        <Text style={styles.headerTitle}>👥 Quem Somos</Text>
+        
+        <View style={styles.headerSpacer} />
       </View>
 
-      {/* NOSSA ESSÊNCIA */}
-      <View style={[styles.section, { backgroundColor: cardColor }]}>
-        <Text style={[styles.sectionTitle, { color: primaryColor }]}>🎯 Nossa Essência</Text>
-        <Text style={[styles.sectionText, { color: textColor }]}>
-          A AMO é mais que uma associação - somos a voz unificada da comunidade orlandina. 
-          Trabalhamos de forma apartidária, focando sempre no bem comum e na melhoria 
-          da qualidade de vida de todos os cidadãos.
-        </Text>
-        
-        <View style={styles.principiosContainer}>
-          <View style={[styles.principioItem, { borderLeftColor: primaryColor }]}>
-            <Text style={[styles.principioTitulo, { color: primaryColor }]}>Apartidária</Text>
-            <Text style={[styles.principioTexto, { color: textColor }]}>
-              Não temos vínculos políticos. Nosso compromisso é exclusivamente com a comunidade.
-            </Text>
-          </View>
+      <ScrollView style={styles.content}>
+        {/* HEADER PRINCIPAL */}
+        <View style={styles.heroSection}>
+          <Image 
+            source={require('../../assets/images/logo.jpg')}
+            style={styles.logoHero}
+          />
+          <Text style={[styles.heroTitle, { color: theme.colors.text }]}>
+            AMO Orlândia
+          </Text>
+          <Text style={[styles.heroSubtitle, { color: theme.colors.text }]}>
+            Associação de Moradores de Orlândia
+          </Text>
+          <Text style={[styles.heroDescription, { color: theme.colors.text }]}>
+            Trabalhando juntos por uma Orlândia melhor desde 2020
+          </Text>
+        </View>
+
+        {/* NOSSA MISSÃO */}
+        <View style={[styles.section, { backgroundColor: theme.colors.card }]}>
+          <Text style={[styles.sectionTitle, { color: '#39BF24' }]}>🎯 Nossa Missão</Text>
+          <Text style={[styles.sectionText, { color: theme.colors.text }]}>
+            A AMO Orlândia tem como missão representar e defender os interesses da comunidade orlandina, 
+            promovendo o desenvolvimento sustentável, a qualidade de vida e o bem-estar social através 
+            de projetos inovadores e participação cidadã ativa.
+          </Text>
+        </View>
+
+        {/* NOSSA VISÃO */}
+        <View style={[styles.section, { backgroundColor: theme.colors.card }]}>
+          <Text style={[styles.sectionTitle, { color: '#72BF24' }]}>👁️ Nossa Visão</Text>
+          <Text style={[styles.sectionText, { color: theme.colors.text }]}>
+            Ser reconhecida como a principal associação de moradores de Orlândia, referência em 
+            transparência, inovação e efetividade na promoção de melhorias urbanas e sociais, 
+            contribuindo para fazer de Orlândia uma cidade modelo em qualidade de vida.
+          </Text>
+        </View>
+
+        {/* NOSSOS VALORES */}
+        <View style={[styles.section, { backgroundColor: theme.colors.card }]}>
+          <Text style={[styles.sectionTitle, { color: '#9EBF26' }]}>💎 Nossos Valores</Text>
           
-          <View style={[styles.principioItem, { borderLeftColor: secondaryColor }]}>
-            <Text style={[styles.principioTitulo, { color: secondaryColor }]}>Transparente</Text>
-            <Text style={[styles.principioTexto, { color: textColor }]}>
-              Todas nossas ações são públicas e prestamos contas à comunidade regularmente.
-            </Text>
-          </View>
-          
-          <View style={[styles.principioItem, { borderLeftColor: primaryColor }]}>
-            <Text style={[styles.principioTitulo, { color: primaryColor }]}>Inclusiva</Text>
-            <Text style={[styles.principioTexto, { color: textColor }]}>
-              Trabalhamos sem discriminação, representando todos os moradores de Orlândia.
-            </Text>
+          <View style={styles.valoresGrid}>
+            {valores.map((valor, index) => (
+              <View key={index} style={[styles.valorCard, { backgroundColor: theme.colors.surface }]}>
+                <View style={[styles.valorIconContainer, { backgroundColor: valor.cor }]}>
+                  <Text style={styles.valorIcon}>{valor.icone}</Text>
+                </View>
+                <Text style={[styles.valorTitulo, { color: valor.cor }]}>{valor.titulo}</Text>
+                <Text style={[styles.valorDescricao, { color: theme.colors.text }]}>
+                  {valor.descricao}
+                </Text>
+              </View>
+            ))}
           </View>
         </View>
-      </View>
 
-      {/* NOSSAS FINALIDADES */}
-      <View style={[styles.section, { backgroundColor: cardColor }]}>
-        <Text style={[styles.sectionTitle, { color: primaryColor }]}>🎯 Nossas Finalidades</Text>
-        
-        <View style={styles.finalidadesList}>
-          <View style={styles.finalidadeItem}>
-            <Text style={[styles.finalidadeIcon, { color: primaryColor }]}>🌱</Text>
-            <View style={styles.finalidadeTexto}>
-              <Text style={[styles.finalidadeTitulo, { color: textColor }]}>Desenvolvimento Sustentável</Text>
-              <Text style={[styles.finalidadeDescricao, { color: textColor }]}>
-                Promover o desenvolvimento sustentável e equilibrado dos bairros de Orlândia
-              </Text>
-            </View>
+        {/* NOSSA HISTÓRIA - TIMELINE */}
+        <View style={[styles.section, { backgroundColor: theme.colors.card }]}>
+          <Text style={[styles.sectionTitle, { color: '#F2C335' }]}>📅 Nossa História</Text>
+          
+          <View style={styles.timeline}>
+            {timeline.map((momento, index) => (
+              <View key={index} style={styles.timelineItem}>
+                <View style={styles.timelineLeft}>
+                  <View style={[styles.timelineIconContainer, { backgroundColor: '#F2C335' }]}>
+                    <Text style={styles.timelineIcon}>{momento.icone}</Text>
+                  </View>
+                  <Text style={[styles.timelineAno, { color: '#F2C335' }]}>{momento.ano}</Text>
+                </View>
+                
+                <View style={styles.timelineRight}>
+                  <Text style={[styles.timelineTitulo, { color: theme.colors.text }]}>
+                    {momento.titulo}
+                  </Text>
+                  <Text style={[styles.timelineDescricao, { color: theme.colors.text }]}>
+                    {momento.descricao}
+                  </Text>
+                </View>
+              </View>
+            ))}
           </View>
+        </View>
 
-          <View style={styles.finalidadeItem}>
-            <Text style={[styles.finalidadeIcon, { color: secondaryColor }]}>🗣️</Text>
-            <View style={styles.finalidadeTexto}>
-              <Text style={[styles.finalidadeTitulo, { color: textColor }]}>Representação Popular</Text>
-              <Text style={[styles.finalidadeDescricao, { color: textColor }]}>
-                Representar a população, propondo soluções a problemas locais e fiscalizando o poder público
-              </Text>
+        {/* NOSSOS NÚMEROS */}
+        <View style={[styles.section, { backgroundColor: theme.colors.card }]}>
+          <Text style={[styles.sectionTitle, { color: '#39BF24' }]}>📊 Nossos Números</Text>
+          
+          <View style={styles.numerosGrid}>
+            <View style={[styles.numeroCard, { backgroundColor: theme.colors.surface }]}>
+              <Text style={styles.numeroValor}>5+</Text>
+              <Text style={[styles.numeroLabel, { color: theme.colors.text }]}>Anos de Atuação</Text>
             </View>
-          </View>
-
-          <View style={styles.finalidadeItem}>
-            <Text style={[styles.finalidadeIcon, { color: primaryColor }]}>📚</Text>
-            <View style={styles.finalidadeTexto}>
-              <Text style={[styles.finalidadeTitulo, { color: textColor }]}>Cidadania e Cultura</Text>
-              <Text style={[styles.finalidadeDescricao, { color: textColor }]}>
-                Fomentar cidadania, cultura, educação, esportes e direitos humanos
-              </Text>
+            
+            <View style={[styles.numeroCard, { backgroundColor: theme.colors.surface }]}>
+              <Text style={styles.numeroValor}>1000+</Text>
+              <Text style={[styles.numeroLabel, { color: theme.colors.text }]}>Famílias Atendidas</Text>
             </View>
-          </View>
-
-          <View style={styles.finalidadeItem}>
-            <Text style={[styles.finalidadeIcon, { color: secondaryColor }]}>🛡️</Text>
-            <View style={styles.finalidadeTexto}>
-              <Text style={[styles.finalidadeTitulo, { color: textColor }]}>Ética e Transparência</Text>
-              <Text style={[styles.finalidadeDescricao, { color: textColor }]}>
-                Apoiar ações de ética, transparência e preservação do meio ambiente e patrimônio público
-              </Text>
+            
+            <View style={[styles.numeroCard, { backgroundColor: theme.colors.surface }]}>
+              <Text style={styles.numeroValor}>50+</Text>
+              <Text style={[styles.numeroLabel, { color: theme.colors.text }]}>Projetos Realizados</Text>
             </View>
-          </View>
-
-          <View style={styles.finalidadeItem}>
-            <Text style={[styles.finalidadeIcon, { color: primaryColor }]}>🤝</Text>
-            <View style={styles.finalidadeTexto}>
-              <Text style={[styles.finalidadeTitulo, { color: textColor }]}>Políticas Públicas</Text>
-              <Text style={[styles.finalidadeDescricao, { color: textColor }]}>
-                Colaborar com a formulação de políticas públicas, fomentando parcerias público-privadas saudáveis
-              </Text>
+            
+            <View style={[styles.numeroCard, { backgroundColor: theme.colors.surface }]}>
+              <Text style={styles.numeroValor}>3</Text>
+              <Text style={[styles.numeroLabel, { color: theme.colors.text }]}>Parcerias Estratégicas</Text>
             </View>
           </View>
         </View>
-      </View>
 
-      {/* NOSSO IMPACTO */}
-      <View style={[styles.section, { backgroundColor: cardColor }]}>
-        <Text style={[styles.sectionTitle, { color: primaryColor }]}>📊 Nosso Impacto</Text>
-        
-        <View style={styles.impactoGrid}>
-          <View style={[styles.impactoCard, { backgroundColor: primaryColor + '15' }]}>
-            <Text style={[styles.impactoNumero, { color: primaryColor }]}>500+</Text>
-            <Text style={[styles.impactoTexto, { color: textColor }]}>Famílias Atendidas</Text>
-          </View>
+        {/* NOSSO COMPROMISSO */}
+        <View style={[styles.section, { backgroundColor: theme.colors.card }]}>
+          <Text style={[styles.sectionTitle, { color: '#72BF24' }]}>🤝 Nosso Compromisso</Text>
           
-          <View style={[styles.impactoCard, { backgroundColor: secondaryColor + '15' }]}>
-            <Text style={[styles.impactoNumero, { color: secondaryColor }]}>15+</Text>
-            <Text style={[styles.impactoTexto, { color: textColor }]}>Projetos Realizados</Text>
-          </View>
-          
-          <View style={[styles.impactoCard, { backgroundColor: primaryColor + '15' }]}>
-            <Text style={[styles.impactoNumero, { color: primaryColor }]}>10+</Text>
-            <Text style={[styles.impactoTexto, { color: textColor }]}>Parcerias Ativas</Text>
-          </View>
-          
-          <View style={[styles.impactoCard, { backgroundColor: secondaryColor + '15' }]}>
-            <Text style={[styles.impactoNumero, { color: secondaryColor }]}>100%</Text>
-            <Text style={[styles.impactoTexto, { color: textColor }]}>Transparência</Text>
-          </View>
-        </View>
-      </View>
-
-      {/* COMO ATUAMOS */}
-      <View style={[styles.section, { backgroundColor: cardColor }]}>
-        <Text style={[styles.sectionTitle, { color: primaryColor }]}>⚙️ Como Atuamos</Text>
-        
-        <View style={styles.atuacaoContainer}>
-          <View style={styles.atuacaoItem}>
-            <View style={[styles.atuacaoIconContainer, { backgroundColor: primaryColor }]}>
-              <Text style={styles.atuacaoIconText}>1</Text>
-            </View>
-            <View style={styles.atuacaoTextoContainer}>
-              <Text style={[styles.atuacaoTitulo, { color: textColor }]}>Escutamos a Comunidade</Text>
-              <Text style={[styles.atuacaoDescricao, { color: textColor }]}>
-                Identificamos problemas e necessidades através do diálogo direto com os moradores
+          <View style={styles.compromissosList}>
+            <View style={styles.compromissoItem}>
+              <Text style={styles.compromissoIcon}>✅</Text>
+              <Text style={[styles.compromissoTexto, { color: theme.colors.text }]}>
+                Transparência total em todas as nossas ações e prestação de contas
               </Text>
             </View>
-          </View>
-
-          <View style={styles.atuacaoItem}>
-            <View style={[styles.atuacaoIconContainer, { backgroundColor: secondaryColor }]}>
-              <Text style={styles.atuacaoIconText}>2</Text>
-            </View>
-            <View style={styles.atuacaoTextoContainer}>
-              <Text style={[styles.atuacaoTitulo, { color: textColor }]}>Desenvolvemos Soluções</Text>
-              <Text style={[styles.atuacaoDescricao, { color: textColor }]}>
-                Criamos projetos e propostas concretas para resolver os problemas identificados
+            
+            <View style={styles.compromissoItem}>
+              <Text style={styles.compromissoIcon}>✅</Text>
+              <Text style={[styles.compromissoTexto, { color: theme.colors.text }]}>
+                Participação democrática da comunidade nas decisões importantes
               </Text>
             </View>
-          </View>
-
-          <View style={styles.atuacaoItem}>
-            <View style={[styles.atuacaoIconContainer, { backgroundColor: primaryColor }]}>
-              <Text style={styles.atuacaoIconText}>3</Text>
-            </View>
-            <View style={styles.atuacaoTextoContainer}>
-              <Text style={[styles.atuacaoTitulo, { color: textColor }]}>Mobilizamos Recursos</Text>
-              <Text style={[styles.atuacaoDescricao, { color: textColor }]}>
-                Buscamos parcerias e recursos necessários para implementar as soluções
+            
+            <View style={styles.compromissoItem}>
+              <Text style={styles.compromissoIcon}>✅</Text>
+              <Text style={[styles.compromissoTexto, { color: theme.colors.text }]}>
+                Desenvolvimento sustentável e responsabilidade ambiental
               </Text>
             </View>
-          </View>
-
-          <View style={styles.atuacaoItem}>
-            <View style={[styles.atuacaoIconContainer, { backgroundColor: secondaryColor }]}>
-              <Text style={styles.atuacaoIconText}>4</Text>
+            
+            <View style={styles.compromissoItem}>
+              <Text style={styles.compromissoIcon}>✅</Text>
+              <Text style={[styles.compromissoTexto, { color: theme.colors.text }]}>
+                Inovação constante na busca por soluções eficazes
+              </Text>
             </View>
-            <View style={styles.atuacaoTextoContainer}>
-              <Text style={[styles.atuacaoTitulo, { color: textColor }]}>Executamos e Monitoramos</Text>
-              <Text style={[styles.atuacaoDescricao, { color: textColor }]}>
-                Colocamos os projetos em prática e acompanhamos os resultados
+            
+            <View style={styles.compromissoItem}>
+              <Text style={styles.compromissoIcon}>✅</Text>
+              <Text style={[styles.compromissoTexto, { color: theme.colors.text }]}>
+                Inclusão social e atenção às famílias em vulnerabilidade
               </Text>
             </View>
           </View>
         </View>
-      </View>
 
-      {/* FAÇA PARTE */}
-      <View style={[styles.section, { backgroundColor: cardColor }]}>
-        <Text style={[styles.sectionTitle, { color: primaryColor }]}>🤝 Faça Parte da AMO</Text>
-        <Text style={[styles.sectionText, { color: textColor }]}>
-          A AMO é feita por pessoas como você, que acreditam que juntos podemos 
-          construir uma Orlândia melhor para todos. Sua participação é fundamental!
-        </Text>
-
-        <View style={styles.participarContainer}>
+        {/* ONDE ESTAMOS */}
+        <View style={[styles.section, { backgroundColor: theme.colors.card }]}>
+          <Text style={[styles.sectionTitle, { color: '#F2C335' }]}>📍 Onde Estamos</Text>
+          
           <TouchableOpacity 
-            style={[styles.participarButton, { backgroundColor: '#25D366' }]}
-            onPress={abrirWhatsApp}
+            style={[styles.enderecoButton, { backgroundColor: '#39BF24' }]}
+            onPress={abrirMapa}
           >
-            <Text style={styles.participarButtonText}>📱 Fale Conosco no WhatsApp</Text>
+            <Text style={styles.enderecoIcon}>📍</Text>
+            <View style={styles.enderecoInfo}>
+              <Text style={styles.enderecoTitulo}>Nossa Sede</Text>
+              <Text style={styles.enderecoTexto}>Av. Cinco, 48 A - Orlândia/SP</Text>
+              <Text style={styles.enderecoSubtexto}>Toque para abrir no mapa</Text>
+            </View>
           </TouchableOpacity>
-
+          
           <View style={styles.contatoInfo}>
-            <Text style={[styles.contatoTexto, { color: textColor }]}>
-              📧 contato@amoorlandia.org.br
-            </Text>
-            <Text style={[styles.contatoTexto, { color: textColor }]}>
-              📍 Av. Cinco, 48 A - Orlândia/SP
-            </Text>
-            <Text style={[styles.contatoTexto, { color: textColor }]}>
-              📱 (16) 99173-7383
-            </Text>
+            <View style={styles.contatoItem}>
+              <Text style={styles.contatoIcon}>📱</Text>
+              <Text style={[styles.contatoTexto, { color: theme.colors.text }]}>
+                WhatsApp: (16) 99173-7383
+              </Text>
+            </View>
+            
+            <View style={styles.contatoItem}>
+              <Text style={styles.contatoIcon}>📷</Text>
+              <Text style={[styles.contatoTexto, { color: theme.colors.text }]}>
+                Instagram: @amo.orlandia
+              </Text>
+            </View>
           </View>
         </View>
-      </View>
 
-    </ScrollView>
+        {/* CALL TO ACTION */}
+        <View style={[styles.ctaSection, { 
+          backgroundColor: theme.isDark ? '#1B4D3E' : '#E8F5E8',
+          borderColor: '#39BF24'
+        }]}>
+          <Text style={[styles.ctaTitle, { color: '#39BF24' }]}>
+            🌟 Faça Parte da Nossa História!
+          </Text>
+          <Text style={[styles.ctaText, { color: theme.colors.text }]}>
+            A AMO Orlândia é feita por pessoas como você, que acreditam em uma cidade melhor. 
+            Junte-se a nós e ajude a construir o futuro de Orlândia!
+          </Text>
+          
+          <View style={styles.ctaButtons}>
+            <TouchableOpacity 
+              style={[styles.ctaButton, { backgroundColor: '#9EBF26' }]}
+              onPress={() => router.push('/associe-se')}
+            >
+              <Text style={styles.ctaButtonText}>🤝 Associe-se</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={[styles.ctaButton, { backgroundColor: '#25D366' }]}
+              onPress={abrirWhatsApp}
+            >
+              <Text style={styles.ctaButtonText}>💬 WhatsApp</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={[styles.ctaButton, { backgroundColor: '#E4405F' }]}
+              onPress={abrirInstagram}
+            >
+              <Text style={styles.ctaButtonText}>📷 Instagram</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* ESPAÇAMENTO FINAL */}
+        <View style={{ height: 20 }} />
+      </ScrollView>
+    </View>
   );
 }
 
@@ -250,36 +397,73 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  
-  // HEADER
-  headerSection: {
-    padding: 30,
+  // HEADER STYLES
+  header: {
+    flexDirection: 'row',
     alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingBottom: 16,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+  },
+  backButton: {
+    padding: 8,
+    marginRight: 12,
   },
   headerTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    flex: 1,
+    textAlign: 'center',
+  },
+  headerSpacer: {
+    width: 40,
+  },
+  content: {
+    flex: 1,
+    padding: 15,
+  },
+  // HERO SECTION
+  heroSection: {
+    alignItems: 'center',
+    paddingVertical: 30,
+    marginBottom: 20,
+  },
+  logoHero: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    marginBottom: 20,
+    borderWidth: 4,
+    borderColor: '#39BF24',
+  },
+  heroTitle: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: '#fff',
+    textAlign: 'center',
     marginBottom: 8,
   },
-  headerSubtitle: {
+  heroSubtitle: {
     fontSize: 18,
-    color: 'rgba(255, 255, 255, 0.9)',
-    marginBottom: 15,
     textAlign: 'center',
+    marginBottom: 12,
+    opacity: 0.8,
   },
-  headerDescription: {
+  heroDescription: {
     fontSize: 16,
-    color: 'rgba(255, 255, 255, 0.8)',
     textAlign: 'center',
-    lineHeight: 22,
+    fontStyle: 'italic',
+    opacity: 0.7,
   },
-
-  // SEÇÕES
+  // SECTION STYLES
   section: {
-    margin: 15,
     padding: 20,
-    borderRadius: 12,
+    borderRadius: 15,
+    marginBottom: 15,
     elevation: 2,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -287,147 +471,231 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
   },
   sectionTitle: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 15,
+    textAlign: 'center',
   },
   sectionText: {
     fontSize: 16,
     lineHeight: 24,
-    marginBottom: 15,
+    textAlign: 'justify',
   },
-
-  // PRINCÍPIOS
-  principiosContainer: {
-    marginTop: 10,
-  },
-  principioItem: {
-    borderLeftWidth: 4,
-    paddingLeft: 15,
-    marginBottom: 20,
-    paddingVertical: 10,
-  },
-  principioTitulo: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 5,
-  },
-    principioTexto: {
-    fontSize: 14,
-    lineHeight: 20,
-  },
-
-  // FINALIDADES
-  finalidadesList: {
-    marginTop: 10,
-  },
-  finalidadeItem: {
-    flexDirection: 'row',
-    marginBottom: 20,
-    alignItems: 'flex-start',
-  },
-  finalidadeIcon: {
-    fontSize: 24,
-    marginRight: 15,
-    marginTop: 5,
-  },
-  finalidadeTexto: {
-    flex: 1,
-  },
-  finalidadeTitulo: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 5,
-  },
-  finalidadeDescricao: {
-    fontSize: 14,
-    lineHeight: 20,
-    opacity: 0.8,
-  },
-
-  // IMPACTO
-  impactoGrid: {
+  // VALORES GRID
+  valoresGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    marginTop: 10,
+    gap: 15,
   },
-  impactoCard: {
-    width: '48%',
-    padding: 20,
-    borderRadius: 10,
+  valorCard: {
+    flex: 1,
+    minWidth: '45%',
+    padding: 15,
+    borderRadius: 12,
     alignItems: 'center',
-    marginBottom: 15,
+    elevation: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
   },
-  impactoNumero: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginBottom: 5,
-  },
-  impactoTexto: {
-    fontSize: 12,
-    textAlign: 'center',
-    fontWeight: '600',
-  },
-
-  // COMO ATUAMOS
-  atuacaoContainer: {
-    marginTop: 10,
-  },
-  atuacaoItem: {
-    flexDirection: 'row',
-    marginBottom: 25,
-    alignItems: 'flex-start',
-  },
-  atuacaoIconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
+  valorIconContainer: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 15,
+    marginBottom: 10,
   },
-  atuacaoIconText: {
-    color: '#fff',
-    fontSize: 18,
+  valorIcon: {
+    fontSize: 24,
+  },
+  valorTitulo: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  valorDescricao: {
+    fontSize: 12,
+    textAlign: 'center',
+    lineHeight: 16,
+  },
+  // TIMELINE STYLES
+  timeline: {
+    gap: 20,
+  },
+  timelineItem: {
+    flexDirection: 'row',
+    gap: 15,
+  },
+  timelineLeft: {
+    alignItems: 'center',
+    width: 80,
+  },
+  timelineIconContainer: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  timelineIcon: {
+    fontSize: 24,
+  },
+  timelineAno: {
+    fontSize: 14,
     fontWeight: 'bold',
   },
-  atuacaoTextoContainer: {
+  timelineRight: {
     flex: 1,
+    paddingTop: 5,
   },
-  atuacaoTitulo: {
+  timelineTitulo: {
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 5,
   },
-  atuacaoDescricao: {
+  timelineDescricao: {
     fontSize: 14,
     lineHeight: 20,
     opacity: 0.8,
   },
-
-  // PARTICIPAR
-  participarContainer: {
-    marginTop: 15,
+  // NÚMEROS GRID
+  numerosGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 15,
+  },
+  numeroCard: {
+    flex: 1,
+    minWidth: '45%',
+    padding: 20,
+    borderRadius: 12,
     alignItems: 'center',
+    elevation: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
   },
-  participarButton: {
-    paddingVertical: 15,
-    paddingHorizontal: 30,
-    borderRadius: 25,
-    marginBottom: 20,
+  numeroValor: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#39BF24',
+    marginBottom: 5,
   },
-  participarButtonText: {
+  numeroLabel: {
+    fontSize: 12,
+    textAlign: 'center',
+    fontWeight: '500',
+  },
+  // COMPROMISSOS LIST
+  compromissosList: {
+    gap: 12,
+  },
+  compromissoItem: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    paddingVertical: 8,
+  },
+  compromissoIcon: {
+    fontSize: 18,
+    marginRight: 12,
+    marginTop: 2,
+  },
+  compromissoTexto: {
+    fontSize: 16,
+    flex: 1,
+    lineHeight: 22,
+  },
+  // ENDEREÇO STYLES
+  enderecoButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 15,
+    borderRadius: 12,
+    marginBottom: 15,
+  },
+  enderecoIcon: {
+    fontSize: 24,
+    marginRight: 15,
+  },
+  enderecoInfo: {
+    flex: 1,
+  },
+  enderecoTitulo: {
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+    marginBottom: 2,
+  },
+  enderecoTexto: {
+    color: '#fff',
+    fontSize: 14,
+    marginBottom: 2,
+  },
+  enderecoSubtexto: {
+    color: 'rgba(255, 255, 255, 0.8)',
+    fontSize: 12,
   },
   contatoInfo: {
+    gap: 10,
+  },
+  contatoItem: {
+    flexDirection: 'row',
     alignItems: 'center',
   },
+  contatoIcon: {
+    fontSize: 18,
+    marginRight: 12,
+  },
   contatoTexto: {
+    fontSize: 16,
+  },
+  // CTA STYLES
+  ctaSection: {
+    margin: 15,
+    padding: 20,
+    borderRadius: 15,
+    alignItems: 'center',
+    borderWidth: 2,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  ctaTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  ctaText: {
+    fontSize: 16,
+    textAlign: 'center',
+    marginBottom: 20,
+    lineHeight: 22,
+  },
+  ctaButtons: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+    justifyContent: 'center',
+  },
+  ctaButton: {
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 25,
+    minWidth: 100,
+    alignItems: 'center',
+  },
+  ctaButtonText: {
+    color: '#fff',
     fontSize: 14,
-    marginBottom: 8,
+    fontWeight: 'bold',
   },
 });
 

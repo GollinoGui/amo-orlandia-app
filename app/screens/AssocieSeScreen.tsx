@@ -1,117 +1,84 @@
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { Ionicons } from '@expo/vector-icons';
+import { Picker } from '@react-native-picker/picker';
+import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { Alert, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import {
+  Alert,
+  Linking,
+  Platform,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
+} from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTheme } from '../contexts/ThemeContext';
 import apiService from '../services/apiService';
 
+interface FormularioAssociacaoData {
+  nomeCompleto: string;
+  dataNascimento: string;
+  telefone: string;
+  email: string;
+  enderecoCompleto: string;
+  profissao: string;
+  motivoAssociacao: string;
+  comoConheceu: string;
+}
+
 export function AssocieSeScreen() {
-  const backgroundColor = useThemeColor({}, 'background');
-  const textColor = useThemeColor({}, 'text');
-  const primaryColor = '#9EBF26';
-  const cardColor = useThemeColor({}, 'card');
+  const router = useRouter();
+  const insets = useSafeAreaInsets();
+  const { theme } = useTheme();
 
-  const limparMensagens = () => {
-  setErro('');
-  setSucesso('');
-};
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormularioAssociacaoData>({
     nomeCompleto: '',
-  dataNascimento: '',
-  telefone: '',
-  email: '',
-  enderecoCompleto: '',
-  profissao: '',
-  motivoAssociacao: '',
-  comoConheceu: ''
+    dataNascimento: '',
+    telefone: '',
+    email: '',
+    enderecoCompleto: '',
+    profissao: '',
+    motivoAssociacao: '',
+    comoConheceu: ''
   });
-    const patrocinadores = [
-        'MORLAN - Juntos por uma Orlândia sustentável',
-        'UNIMED - Cuidando do meio ambiente',
-        'INTELLI - Por uma cidade mais limpa'
-      ];
 
-      const mostrarSucesso = (mensagem: string) => {
-          if (Platform.OS === 'web') {
-            // WEB: Usar estado para mostrar banner
-            setSucesso(mensagem);
-            setTimeout(() => setSucesso(''), 5000);
-          } else {
-            // MOBILE: Usar Alert
-            Alert.alert('🎉 Sucesso!', mensagem, [
-              { text: '✅ OK', onPress: () => limparFormulario() }
-            ]);
-          }
-        };
-        const mostrarErro = (mensagem: string) => {
-            if (Platform.OS === 'web') {
-              // WEB: Usar estado para mostrar banner
-              setErro(mensagem);
-            } else {
-              // MOBILE: Usar Alert
-              Alert.alert('❌ Erro', mensagem);
-            }
-          };
-        
-      const [erro, setErro] = useState('');
-      const [sucesso, setSucesso] = useState('');
-      const [enviando, setEnviando] = useState(false);
+  const [erro, setErro] = useState('');
+  const [sucesso, setSucesso] = useState('');
+  const [enviando, setEnviando] = useState(false);
 
-  
+  // OPÇÕES DOS SELECTS
+  const motivosAssociacao = [
+    "Quero contribuir para melhorar minha cidade",
+    "Desejo participar de projetos sociais",
+    "Interesse em questões ambientais",
+    "Quero fazer parte da comunidade ativa",
+    "Busco oportunidades de voluntariado",
+    "Outro motivo"
+  ];
 
-  // 🆕 VALIDAÇÃO REAL DE DATA DE NASCIMENTO
-  const validarDataNascimento = (data: string): { valida: boolean; erro?: string } => {
-    const regex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
-    const match = data.match(regex);
-    
-    if (!match) {
-      return { valida: false, erro: 'Formato inválido. Use DD/MM/AAAA' };
-    }
-    
-    const dia = parseInt(match[1]);
-    const mes = parseInt(match[2]);
-    const ano = parseInt(match[3]);
-    
-    // Verifica se os valores são válidos
-    if (mes < 1 || mes > 12) {
-      return { valida: false, erro: 'Mês deve estar entre 01 e 12' };
-    }
-    
-    if (dia < 1 || dia > 31) {
-      return { valida: false, erro: 'Dia deve estar entre 01 e 31' };
-    }
-    
-    // Verifica dias por mês
-    const diasPorMes = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-    
-    // Verifica ano bissexto
-    const ehBissexto = (ano % 4 === 0 && ano % 100 !== 0) || (ano % 400 === 0);
-    if (ehBissexto) diasPorMes[1] = 29;
-    
-    if (dia > diasPorMes[mes - 1]) {
-      return { valida: false, erro: `${mes === 2 ? 'Fevereiro' : 'Este mês'} não tem ${dia} dias` };
-    }
-    
-    // Verifica se a data não é no futuro
-    const dataInformada = new Date(ano, mes - 1, dia);
-    const hoje = new Date();
-    
-    if (dataInformada > hoje) {
-      return { valida: false, erro: 'Data não pode ser no futuro' };
-    }
-    
-    // Verifica idade mínima (16 anos) e máxima (120 anos)
-    const idade = hoje.getFullYear() - ano;
-    
-    if (idade < 16) {
-      return { valida: false, erro: 'Idade mínima: 16 anos' };
-    }
-    
-    if (idade > 120) {
-      return { valida: false, erro: 'Idade máxima: 120 anos' };
-    }
-    
-    return { valida: true };
+  const formasConhecimento = [
+    "Redes sociais (Instagram/Facebook)",
+    "Indicação de amigos/familiares",
+    "Eventos da AMO",
+    "Site/aplicativo da AMO",
+    "Mídia local (jornal/rádio)",
+    "Outro"
+  ];
+
+  const patrocinadores = [
+    'MORLAN - Juntos por uma Orlândia sustentável',
+    'UNIMED - Cuidando do meio ambiente',
+    'INTELLI - Por uma cidade mais limpa'
+  ];
+
+  // ✅ FUNÇÕES DE VALIDAÇÃO
+  const validarNome = (nome: string) => {
+    const regex = /^[a-zA-ZÀ-ÿ\s]+$/;
+    return regex.test(nome) && nome.trim().length >= 5;
   };
-  
 
   const formatarTelefone = (telefone: string) => {
     const numeros = telefone.replace(/\D/g, '');
@@ -120,17 +87,6 @@ export function AssocieSeScreen() {
     } else {
       return numeros.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
     }
-  };
-
-  const formatarData = (data: string) => {
-    const numeros = data.replace(/\D/g, '');
-    return numeros.replace(/(\d{2})(\d{2})(\d{4})/, '$1/$2/$3');
-  };
-
-  // Outras validações
-  const validarNome = (nome: string) => {
-    const regex = /^[a-zA-ZÀ-ÿ\s]+$/;
-    return regex.test(nome) && nome.trim().length >= 3;
   };
 
   const validarTelefone = (telefone: string) => {
@@ -143,232 +99,196 @@ export function AssocieSeScreen() {
     return regex.test(email);
   };
 
-  // Contadores
-  
-  const contarDigitosTelefone = (telefone: string) => telefone.replace(/\D/g, '').length;
-
-  // 🆕 Estados para mostrar erros específicos
-  const [errosCampos, setErrosCampos] = useState({
-    data: ''
-  });
-
-  // Handlers
-  const handleNomeChange = (texto: string) => {
-    const textoLimpo = texto.replace(/[^a-zA-ZÀ-ÿ\s]/g, '');
-    if (textoLimpo.length <= 100) {
-      setFormData({...formData, nomeCompleto: textoLimpo});
-      setErro('');
-    }
+  const formatarData = (data: string) => {
+    const numeros = data.replace(/\D/g, '');
+    if (numeros.length <= 2) return numeros;
+    if (numeros.length <= 4) return `${numeros.slice(0, 2)}/${numeros.slice(2)}`;
+    return `${numeros.slice(0, 2)}/${numeros.slice(2, 4)}/${numeros.slice(4, 8)}`;
   };
 
-  
+  const validarData = (data: string) => {
+    const regex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+    if (!regex.test(data)) return false;
+    
+    const [, dia, mes, ano] = data.match(regex)!;
+    const dataObj = new Date(parseInt(ano), parseInt(mes) - 1, parseInt(dia));
+    const hoje = new Date();
+    const idade = hoje.getFullYear() - dataObj.getFullYear();
+    
+    return idade >= 16 && idade <= 120;
+  };
+
+  const contarDigitosTelefone = (telefone: string) => {
+    return telefone.replace(/\D/g, '').length;
+  };
+
+  // ✅ HANDLERS DE INPUT
+  const handleNomeChange = (texto: string) => {
+    const textoLimpo = texto.replace(/[^a-zA-ZÀ-ÿ\s]/g, '');
+    setFormData({...formData, nomeCompleto: textoLimpo});
+    limparMensagens();
+  };
 
   const handleTelefoneChange = (texto: string) => {
     const telefoneFormatado = formatarTelefone(texto);
-    if (telefoneFormatado.length <= 15) {
-      setFormData({...formData, telefone: telefoneFormatado});
-      setErro('');
-    }
+    setFormData({...formData, telefone: telefoneFormatado});
+    limparMensagens();
+  };
+
+  const handleEmailChange = (texto: string) => {
+    setFormData({...formData, email: texto.toLowerCase().trim()});
+    limparMensagens();
   };
 
   const handleDataChange = (texto: string) => {
     const dataFormatada = formatarData(texto);
-    if (dataFormatada.length <= 10) {
-      setFormData({...formData, dataNascimento: dataFormatada});
-      setErro('');
+    setFormData({...formData, dataNascimento: dataFormatada});
+    limparMensagens();
+  };
+
+  const limparMensagens = () => {
+    setErro('');
+    setSucesso('');
+  };
+
+  // 🚀 SISTEMA DE NOTIFICAÇÃO UNIVERSAL
+  const mostrarSucesso = (mensagem: string) => {
+    if (Platform.OS === 'web') {
+      setSucesso(mensagem);
+      setTimeout(() => setSucesso(''), 5000);
+    } else {
+      Alert.alert('🎉 Sucesso!', mensagem, [
+        { text: '✅ OK', onPress: () => limparFormulario() }
+      ]);
+    }
+  };
+
+    const mostrarErro = (mensagem: string) => {
+    if (Platform.OS === 'web') {
+      setErro(mensagem);
+    } else {
+      Alert.alert('❌ Erro', mensagem);
+    }
+  };
+
+  // 📧 FUNÇÃO DE ENVIO
+  const handleSubmit = async () => {
+    limparMensagens();
+    setEnviando(true);
+    
+    try {
+      console.log('=== [ASSOCIACAO] INICIANDO VALIDAÇÕES ===');
+
+      // Validações
+      if (!formData.nomeCompleto.trim()) {
+        mostrarErro('Por favor, preencha seu nome completo.');
+        return;
+      }
+
+      if (!validarNome(formData.nomeCompleto)) {
+        mostrarErro('Nome deve conter apenas letras e ter pelo menos 5 caracteres.');
+        return;
+      }
+
+      if (!formData.dataNascimento.trim()) {
+        mostrarErro('Por favor, preencha sua data de nascimento.');
+        return;
+      }
+
+      if (!validarData(formData.dataNascimento)) {
+        mostrarErro('Data de nascimento inválida. Use o formato DD/MM/AAAA e idade entre 16 e 120 anos.');
+        return;
+      }
+
+      if (!formData.telefone.trim()) {
+        mostrarErro('Por favor, preencha seu telefone.');
+        return;
+      }
+
+      if (!validarTelefone(formData.telefone)) {
+        mostrarErro('Telefone deve ter 10 ou 11 dígitos.');
+        return;
+      }
+
+      if (!formData.email.trim()) {
+        mostrarErro('Por favor, preencha seu email.');
+        return;
+      }
+
+      if (!validarEmail(formData.email)) {
+        mostrarErro('Email inválido.');
+        return;
+      }
+
+      if (!formData.enderecoCompleto.trim()) {
+        mostrarErro('Por favor, preencha seu endereço completo.');
+        return;
+      }
+
+      if (formData.enderecoCompleto.trim().length < 15) {
+        mostrarErro('Endereço deve ter pelo menos 15 caracteres com detalhes.');
+        return;
+      }
+
+      if (!formData.profissao.trim()) {
+        mostrarErro('Por favor, preencha sua profissão.');
+        return;
+      }
+
+      if (!formData.motivoAssociacao) {
+        mostrarErro('Por favor, selecione o motivo da associação.');
+        return;
+      }
+
+      if (!formData.comoConheceu) {
+        mostrarErro('Por favor, informe como conheceu a AMO.');
+        return;
+      }
+
+      console.log('=== [ASSOCIACAO] DADOS VALIDADOS ===');
+      console.log('📤 [ASSOCIACAO] Enviando:', formData);
+
+      // 🧪 TESTE DE CONEXÃO PRIMEIRO
+      console.log('🧪 [ASSOCIACAO] Testando conexão...');
+      const conexaoOk = await apiService.testarConexao();
       
-      // 🆕 Validação em tempo real da data
-      if (dataFormatada.length === 10) {
-        const validacao = validarDataNascimento(dataFormatada);
-        if (validacao.valida) {
-          setErrosCampos({...errosCampos, data: ''});
-        } else {
-          setErrosCampos({...errosCampos, data: validacao.erro || 'Data inválida'});
+      if (!conexaoOk) {
+        mostrarErro('Sem conexão com o servidor. Verifique sua internet.');
+        return;
+      }
+
+      console.log('✅ [ASSOCIACAO] Conexão OK, enviando formulário...');
+
+      // Enviar formulário
+      const resultado = await apiService.enviarFormularioAssociacao(formData);
+
+      console.log('📧 [ASSOCIACAO] Resultado:', resultado);
+
+      if (resultado.success) {
+        const patrocinadorAleatorio = patrocinadores[Math.floor(Math.random() * patrocinadores.length)];
+        const mensagemSucesso = `Sua solicitação de associação foi enviada com sucesso!\n\nEm breve entraremos em contato para finalizar o processo.\n\n💝 Cortesia da:\n${patrocinadorAleatorio}`;
+        mostrarSucesso(mensagemSucesso);
+
+        if (Platform.OS === 'web') {
+          setTimeout(() => {
+            limparFormulario();
+          }, 5000);
         }
       } else {
-        setErrosCampos({...errosCampos, data: ''});
+        mostrarErro(resultado.message);
       }
+
+    } catch (error) {
+      console.error('❌ [ASSOCIACAO] Erro:', error);
+      mostrarErro('Erro de conexão. Verifique sua internet e tente novamente.');
+    } finally {
+      setEnviando(false);
     }
   };
-
-  const handleEmailChange = (texto: string) => {
-    if (texto.length <= 100) {
-      setFormData({...formData, email: texto.toLowerCase()});
-      setErro('');
-    }
-  };
-
-  const handleProfissaoChange = (texto: string) => {
-    if (texto.length <= 50) {
-      setFormData({...formData, profissao: texto});
-      setErro('');
-    }
-  };
-
-  const handleSubmit = async () => {
-    console.log('🚀 [FRONTEND] === INÍCIO ENVIO ===');
-  console.log('🚀 [FRONTEND] Dados do formulário:', JSON.stringify(formData, null, 2));
-  console.log('🚀 [FRONTEND] Campos preenchidos:');
-  console.log('🚀 [FRONTEND] - nomeCompleto:', formData.nomeCompleto ? '✅ OK' : '❌ VAZIO');
-  console.log('🚀 [FRONTEND] - dataNascimento:', formData.dataNascimento ? '✅ OK' : '❌ VAZIO');
-  console.log('🚀 [FRONTEND] - telefone:', formData.telefone ? '✅ OK' : '❌ VAZIO');
-  console.log('🚀 [FRONTEND] - email:', formData.email ? '✅ OK' : '❌ VAZIO');
-  console.log('🚀 [FRONTEND] ===== DEBUG FRONTEND =====');
-  console.log('🚀 [FRONTEND] FormData completo:', formData);
-  console.log('🚀 [FRONTEND] Campos individuais:');
-  console.log('  - nomeCompleto:', formData.nomeCompleto);
-  console.log('  - dataNascimento:', formData.dataNascimento);
-  console.log('  - telefone:', formData.telefone);
-  console.log('  - email:', formData.email);
-  console.log('  - enderecoCompleto:', formData.enderecoCompleto);
-  console.log('  - profissao:', formData.profissao);
-  console.log('  - motivoAssociacao:', formData.motivoAssociacao);
-  console.log('  - comoConheceu:', formData.comoConheceu);
-  
- 
-  limparMensagens();
-  setEnviando(true);
-  
-  try {
-    // Validações
-    if (!formData.nomeCompleto.trim()) {
-      mostrarErro('Por favor, preencha seu nome completo.');
-      return;
-    }
-
-    if (!validarNome(formData.nomeCompleto)) {
-      mostrarErro('Nome deve conter apenas letras e ter pelo menos 3 caracteres.');
-      return;
-    }
-
-    if (!formData.dataNascimento.trim()) {
-      mostrarErro('Por favor, preencha sua data de nascimento.');
-      return;
-    }
-
-    if (formData.dataNascimento.length !== 10) {
-      mostrarErro('Data de nascimento deve estar no formato DD/MM/AAAA.');
-      return;
-    }
-
-    const validacaoData = validarDataNascimento(formData.dataNascimento);
-    if (!validacaoData.valida) {
-      mostrarErro(validacaoData.erro || 'Data de nascimento inválida.');
-      return;
-    }
-
-    if (!formData.telefone.trim()) {
-      mostrarErro('Por favor, preencha seu telefone.');
-      return;
-    }
-
-    if (!validarTelefone(formData.telefone)) {
-      mostrarErro('Telefone deve ter 10 ou 11 dígitos.');
-      return;
-    }
-
-    if (!formData.email.trim()) {
-      mostrarErro('Por favor, preencha seu email.');
-      return;
-    }
-
-    if (!validarEmail(formData.email)) {
-      mostrarErro('Email deve ter um formato válido.');
-      return;
-    }
-
-    if (!formData.enderecoCompleto.trim()) {
-      mostrarErro('Por favor, preencha seu endereço completo.');
-      return;
-    }
-
-    if (formData.enderecoCompleto.length < 10) {
-      mostrarErro('Endereço deve ter pelo menos 10 caracteres.');
-      return;
-    }
-
-    if (!formData.profissao.trim()) {
-      mostrarErro('Por favor, preencha sua profissão.');
-      return;
-    }
-
-    if (!formData.motivoAssociacao.trim()) {
-      mostrarErro('Por favor, descreva por que quer se associar.');
-      return;
-    }
-
-    if (formData.motivoAssociacao.length < 20) {
-      mostrarErro('Descreva melhor o motivo (mínimo 20 caracteres).');
-      return;
-    }
-
-    if (!formData.comoConheceu.trim()) {
-      mostrarErro('Por favor, descreva como conheceu a AMO.');
-      return;
-    }
-
-    // ✅ DADOS PARA ENVIO
-    const dadosEnvio = {
-      nomeCompleto: formData.nomeCompleto,
-      dataNascimento: formData.dataNascimento,
-      telefone: formData.telefone,
-      email: formData.email,
-      enderecoCompleto: formData.enderecoCompleto,
-      profissao: formData.profissao,
-      motivoAssociacao: formData.motivoAssociacao,
-      comoConheceu: formData.comoConheceu
-    };
-
-    console.log('🚀 [FRONTEND] Dados para envio:', dadosEnvio);
-    console.log('🚀 [FRONTEND] JSON stringify:', JSON.stringify(dadosEnvio, null, 2));
-    console.log('🚀 [FRONTEND] ===== DADOS SENDO ENVIADOS =====');
-console.log('🚀 [FRONTEND] FormData original:', formData);
-console.log('🚀 [FRONTEND] Dados para envio:', {
-  nomeCompleto: formData.nomeCompleto,
-  dataNascimento: formData.dataNascimento,
-  telefone: formData.telefone,
-  email: formData.email,
-  enderecoCompleto: formData.enderecoCompleto,
-  profissao: formData.profissao,
-  motivoAssociacao: formData.motivoAssociacao,
-  comoConheceu: formData.comoConheceu
-});
-console.log('🚀 [FRONTEND] JSON que será enviado:', JSON.stringify({
-  nomeCompleto: formData.nomeCompleto,
-  dataNascimento: formData.dataNascimento,
-  telefone: formData.telefone,
-  email: formData.email,
-  enderecoCompleto: formData.enderecoCompleto,
-  profissao: formData.profissao,
-  motivoAssociacao: formData.motivoAssociacao,
-  comoConheceu: formData.comoConheceu
-}, null, 2));
-
-    const resultado = await apiService.enviarFormularioAssociacao(dadosEnvio);
-    
-    console.log('🚀 [FRONTEND] Resultado:', resultado);
-
-    if (resultado.success) {
-      const patrocinadorAleatorio = patrocinadores[Math.floor(Math.random() * patrocinadores.length)];
-      const mensagemSucesso = `Sua solicitação de associação foi enviada com sucesso!\n\nEm breve entraremos em contato.\n\n💝 Cortesia da:\n${patrocinadorAleatorio}`;
-      mostrarSucesso(mensagemSucesso);
-    } else {
-      mostrarErro(resultado.message);
-    }
-
-  } catch (error) {
-    console.error('❌ [FRONTEND] Erro:', error);
-    mostrarErro('Erro de conexão. Verifique sua internet e tente novamente.');
-  } finally {
-    setEnviando(false);
-    console.log('🚀 [FRONTEND] ===== FIM DEBUG FRONTEND =====');
-  }
-};
 
   const limparFormulario = () => {
     setFormData({
       nomeCompleto: '',
-      
       dataNascimento: '',
       telefone: '',
       email: '',
@@ -377,233 +297,478 @@ console.log('🚀 [FRONTEND] JSON que será enviado:', JSON.stringify({
       motivoAssociacao: '',
       comoConheceu: ''
     });
-    setErro('');
-    setErrosCampos({ data: '' });
+    limparMensagens();
   };
 
   return (
-    <ScrollView style={[styles.container, { backgroundColor }]}>
-      <View style={[styles.card, { backgroundColor: cardColor }]}>
-        <Text style={[styles.title, { color: primaryColor }]}>🤝 Associe-se à AMO</Text>
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      {/* STATUS BAR */}
+      <StatusBar 
+        barStyle={theme.isDark ? "light-content" : "light-content"}
+        backgroundColor="#9EBF26"
+      />
+      
+      {/* HEADER RESPONSIVO */}
+      <View style={[
+        styles.header, 
+        { 
+          paddingTop: insets.top + 10,
+          backgroundColor: '#9EBF26'
+        }
+      ]}>
+        <TouchableOpacity 
+          style={styles.backButton} 
+          onPress={() => router.back()}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
+        </TouchableOpacity>
         
-        <Text style={[styles.description, { color: textColor }]}>
-          Faça parte da AMO Orlândia! {'\n'}Preencha o formulário abaixo para enviar sua proposta de associação e contribuir com o desenvolvimento da nossa cidade.
-        </Text>
+        <Text style={styles.headerTitle}>🤝 Associe-se à AMO</Text>
+        
+        <View style={styles.headerSpacer} />
+      </View>
 
-        {sucesso ? (
-          <View style={[styles.messageContainer, styles.successContainer]}>
-            <Text style={styles.successMessageText}>{sucesso}</Text>
+      <ScrollView style={styles.content}>
+        {/* HEADER CARD */}
+        <View style={[styles.headerCard, { backgroundColor: theme.colors.card }]}>
+          <Text style={[styles.title, { color: '#9EBF26' }]}>🤝 Associe-se à AMO Orlândia</Text>
+          <Text style={[styles.description, { color: theme.colors.text }]}>
+            Faça parte da nossa comunidade e ajude a construir uma Orlândia melhor para todos. 
+            Preencha o formulário abaixo para se tornar um associado.
+          </Text>
+        </View>
+
+        {/* BENEFÍCIOS DA ASSOCIAÇÃO */}
+        <View style={[styles.beneficiosCard, { backgroundColor: theme.colors.card }]}>
+          <Text style={[styles.beneficiosTitle, { color: '#39BF24' }]}>✨ Benefícios da Associação</Text>
+          
+          <View style={styles.beneficiosList}>
+            <View style={styles.beneficioItem}>
+              <Text style={styles.beneficioIcon}>🗳️</Text>
+              <Text style={[styles.beneficioTexto, { color: theme.colors.text }]}>
+                Direito a voto nas assembleias e decisões da AMO
+              </Text>
+            </View>
+            
+            <View style={styles.beneficioItem}>
+              <Text style={styles.beneficioIcon}>📢</Text>
+              <Text style={[styles.beneficioTexto, { color: theme.colors.text }]}>
+                Participação prioritária em projetos e eventos
+              </Text>
+            </View>
+            
+            <View style={styles.beneficioItem}>
+              <Text style={styles.beneficioIcon}>🤝</Text>
+              <Text style={[styles.beneficioTexto, { color: theme.colors.text }]}>
+                Networking com outros moradores engajados
+              </Text>
+            </View>
+            
+            <View style={styles.beneficioItem}>
+              <Text style={styles.beneficioIcon}>📋</Text>
+              <Text style={[styles.beneficioTexto, { color: theme.colors.text }]}>
+                Acesso a informações exclusivas sobre a cidade
+              </Text>
+            </View>
+            
+            <View style={styles.beneficioItem}>
+              <Text style={styles.beneficioIcon}>🌱</Text>
+              <Text style={[styles.beneficioTexto, { color: theme.colors.text }]}>
+                Oportunidades de voluntariado em projetos sociais
+              </Text>
+            </View>
           </View>
-        ) : null}
+        </View>
 
+        {/* FORMULÁRIO */}
+        <View style={[styles.formCard, { backgroundColor: theme.colors.card }]}>
+          <Text style={[styles.formTitle, { color: '#9EBF26' }]}>📝 Formulário de Associação</Text>
 
-        {/* Mensagem de erro geral */}
-        {erro ? (
-          <View style={styles.messageContainer}>
-            <Text style={styles.messageText}>{erro}</Text>
-          </View>
-        ) : null}
+          {/* 🔧 SISTEMA DE MENSAGENS */}
+          {erro ? (
+            <View style={[styles.messageContainer, styles.errorContainer]}>
+              <Text style={styles.errorMessageText}>❌ {erro}</Text>
+            </View>
+          ) : null}
 
-        <View style={styles.form}>
-          <Text style={[styles.label, { color: textColor }]}>
-            Nome Completo: * ({formData.nomeCompleto.length}/100)
-          </Text>
-          <TextInput
-            style={[styles.input, { borderColor: primaryColor, color: textColor }]}
-            value={formData.nomeCompleto}
-            onChangeText={handleNomeChange}
-            placeholder="Digite seu nome completo"
-            placeholderTextColor={textColor + '80'}
-            maxLength={100}
-            editable={!enviando}
-          />
-          {formData.nomeCompleto.length > 0 && !validarNome(formData.nomeCompleto) && (
-            <Text style={styles.errorText}>Nome deve conter apenas letras</Text>
-          )}
-          <Text style={[styles.label, { color: textColor }]}>Data de Nascimento: *</Text>
-          <TextInput
-            style={[
-              styles.input, 
-              { 
-                borderColor: errosCampos.data ? '#E74C3C' : primaryColor, 
-                color: textColor 
-              }
-            ]}
-            value={formData.dataNascimento}
-            onChangeText={handleDataChange}
-            placeholder="DD/MM/AAAA"
-            placeholderTextColor={textColor + '80'}
-            keyboardType="numeric"
-            maxLength={10}
-            editable={!enviando}
-          />
-          {errosCampos.data ? (
-            <Text style={styles.errorText}>{errosCampos.data}</Text>
-          ) : formData.dataNascimento.length > 0 && formData.dataNascimento.length < 10 && (
-            <Text style={styles.infoText}>Use o formato DD/MM/AAAA</Text>
-          )}
+          {sucesso ? (
+            <View style={[styles.messageContainer, styles.successContainer]}>
+              <Text style={styles.successMessageText}>✅ {sucesso}</Text>
+            </View>
+          ) : null}
 
-          <Text style={[styles.label, { color: textColor }]}>
-            Telefone: * ({contarDigitosTelefone(formData.telefone)}/11)
-          </Text>
-          <TextInput
-            style={[styles.input, { borderColor: primaryColor, color: textColor }]}
-            value={formData.telefone}
-            onChangeText={handleTelefoneChange}
-            placeholder="(16) 99999-9999"
-            placeholderTextColor={textColor + '80'}
-            keyboardType="phone-pad"
-            maxLength={15}
-            editable={!enviando}
-          />
-          {formData.telefone.length > 0 && !validarTelefone(formData.telefone) && (
-            <Text style={styles.errorText}>Telefone deve ter 10 ou 11 dígitos</Text>
-          )}
+          <View style={styles.form}>
+            {/* Nome Completo */}
+            <Text style={[styles.label, { color: theme.colors.text }]}>Nome Completo: *</Text>
+            <TextInput
+              style={[styles.input, { borderColor: '#9EBF26', color: theme.colors.text }]}
+              value={formData.nomeCompleto}
+              onChangeText={handleNomeChange}
+              placeholder="Digite seu nome completo"
+              placeholderTextColor={theme.colors.text + '80'}
+              maxLength={100}
+              editable={!enviando}
+            />
+            {formData.nomeCompleto.length > 0 && !validarNome(formData.nomeCompleto) && (
+              <Text style={styles.fieldErrorText}>Nome deve conter apenas letras e ter pelo menos 5 caracteres</Text>
+            )}
 
-          <Text style={[styles.label, { color: textColor }]}>
-            Email: * ({formData.email.length}/100)
-          </Text>
-          <TextInput
-            style={[styles.input, { borderColor: primaryColor, color: textColor }]}
-            value={formData.email}
-            onChangeText={handleEmailChange}
-            placeholder="seu@email.com"
-            placeholderTextColor={textColor + '80'}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            maxLength={100}
-            editable={!enviando}
-          />
-          {formData.email.length > 0 && !validarEmail(formData.email) && (
-            <Text style={styles.errorText}>Email deve ter um formato válido</Text>
-          )}
+            {/* Data de Nascimento */}
+            <Text style={[styles.label, { color: theme.colors.text }]}>Data de Nascimento: *</Text>
+            <TextInput
+              style={[styles.input, { borderColor: '#9EBF26', color: theme.colors.text }]}
+              value={formData.dataNascimento}
+              onChangeText={handleDataChange}
+              placeholder="DD/MM/AAAA"
+              placeholderTextColor={theme.colors.text + '80'}
+              keyboardType="numeric"
+              maxLength={10}
+              editable={!enviando}
+            />
+            {formData.dataNascimento.length > 0 && !validarData(formData.dataNascimento) && (
+              <Text style={styles.fieldErrorText}>Data inválida ou idade fora do permitido (16-120 anos)</Text>
+            )}
 
-          <Text style={[styles.label, { color: textColor }]}>
-            Endereço Completo: * ({formData.enderecoCompleto.length}/200)
-          </Text>
-          <TextInput
-            style={[styles.textArea, { borderColor: primaryColor, color: textColor }]}
-            value={formData.enderecoCompleto}
-            onChangeText={(text) => {
-              if (text.length <= 200) {
-                setFormData({...formData, enderecoCompleto: text});
-                setErro('');
-              }
-            }}
-            placeholder="Rua, número, bairro, cidade, CEP"
-            placeholderTextColor={textColor + '80'}
-            multiline
-            numberOfLines={3}
-            maxLength={200}
-            editable={!enviando}
-          />
-          {formData.enderecoCompleto.length > 0 && formData.enderecoCompleto.length < 10 && (
-            <Text style={styles.errorText}>Endereço deve ter pelo menos 10 caracteres</Text>
-          )}
-
-          <Text style={[styles.label, { color: textColor }]}>
-            Profissão: * ({formData.profissao.length}/50)
-          </Text>
-          <TextInput
-            style={[styles.input, { borderColor: primaryColor, color: textColor }]}
-            value={formData.profissao}
-            onChangeText={handleProfissaoChange}
-            placeholder="Sua profissão atual"
-            placeholderTextColor={textColor + '80'}
-            maxLength={50}
-            editable={!enviando}
-          />
-
-          <Text style={[styles.label, { color: textColor }]}>
-            Por que você quer se associar à AMO? * ({formData.motivoAssociacao.length}/300)
-          </Text>
-          <TextInput
-            style={[styles.textArea, { borderColor: primaryColor, color: textColor }]}
-            value={formData.motivoAssociacao}
-            onChangeText={(text) => {
-              if (text.length <= 300) {
-                setFormData({...formData, motivoAssociacao: text});
-                setErro('');
-              }
-            }}
-            placeholder="Conte-nos seus motivos para se associar (mínimo 20 caracteres)"
-            placeholderTextColor={textColor + '80'}
-            multiline
-            numberOfLines={4}
-            maxLength={300}
-            editable={!enviando}
-          />
-          {formData.motivoAssociacao.length > 0 && formData.motivoAssociacao.length < 20 && (
-            <Text style={styles.errorText}>Descreva melhor o motivo (mínimo 20 caracteres)</Text>
-          )}
-
-          <Text style={[styles.label, { color: textColor }]}>
-            Como você conheceu a AMO? * ({formData.comoConheceu.length}/200)
-          </Text>
-          <TextInput
-            style={[styles.textArea, { borderColor: primaryColor, color: textColor }]}
-            value={formData.comoConheceu}
-            onChangeText={(text) => {
-              if (text.length <= 200) {
-                setFormData({...formData, comoConheceu: text});
-                setErro('');
-              }
-            }}
-            placeholder="Redes sociais, amigos, eventos, etc."
-            placeholderTextColor={textColor + '80'}
-            multiline
-            numberOfLines={3}
-            maxLength={200}
-            editable={!enviando}
-          />
-
-          <TouchableOpacity
-            style={[
-              styles.submitButton, 
-              { 
-                backgroundColor: enviando ? '#ccc' : primaryColor,
-                opacity: enviando ? 0.7 : 1
-              }
-            ]}
-            onPress={handleSubmit}
-            activeOpacity={0.7}
-            disabled={enviando}
-          >
-            <Text style={styles.submitButtonText}>
-              {enviando ? 'Enviando... ' : 'Enviar Solicitação 🤝'}
+            {/* Telefone */}
+            <Text style={[styles.label, { color: theme.colors.text }]}>
+              Telefone: * ({contarDigitosTelefone(formData.telefone)}/11)
             </Text>
+            <TextInput
+              style={[styles.input, { borderColor: '#9EBF26', color: theme.colors.text }]}
+              value={formData.telefone}
+              onChangeText={handleTelefoneChange}
+              placeholder="(16) 99999-9999"
+              placeholderTextColor={theme.colors.text + '80'}
+              keyboardType="phone-pad"
+              maxLength={15}
+              editable={!enviando}
+            />
+            {formData.telefone.length > 0 && !validarTelefone(formData.telefone) && (
+              <Text style={styles.fieldErrorText}>Telefone deve ter 10 ou 11 dígitos</Text>
+            )}
+
+            {/* Email */}
+            <Text style={[styles.label, { color: theme.colors.text }]}>Email: *</Text>
+            <TextInput
+              style={[styles.input, { borderColor: '#9EBF26', color: theme.colors.text }]}
+              value={formData.email}
+              onChangeText={handleEmailChange}
+              placeholder="seu@email.com"
+              placeholderTextColor={theme.colors.text + '80'}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              editable={!enviando}
+            />
+            {formData.email.length > 0 && !validarEmail(formData.email) && (
+              <Text style={styles.fieldErrorText}>Email inválido</Text>
+            )}
+
+            {/* Endereço Completo */}
+            <Text style={[styles.label, { color: theme.colors.text }]}>
+              Endereço Completo: * ({formData.enderecoCompleto.length}/300)
+            </Text>
+            <TextInput
+              style={[styles.textArea, { borderColor: '#9EBF26', color: theme.colors.text }]}
+              value={formData.enderecoCompleto}
+              onChangeText={(texto) => {
+                setFormData({...formData, enderecoCompleto: texto});
+                limparMensagens();
+              }}
+              placeholder="Rua, número, bairro, CEP e pontos de referência (mínimo 15 caracteres)"
+              placeholderTextColor={theme.colors.text + '80'}
+              multiline
+              numberOfLines={3}
+              maxLength={300}
+              editable={!enviando}
+            />
+            {formData.enderecoCompleto.length > 0 && formData.enderecoCompleto.length < 15 && (
+              <Text style={styles.fieldErrorText}>Endereço deve ter pelo menos 15 caracteres</Text>
+            )}
+
+            {/* Profissão */}
+            <Text style={[styles.label, { color: theme.colors.text }]}>Profissão: *</Text>
+            <TextInput
+              style={[styles.input, { borderColor: '#9EBF26', color: theme.colors.text }]}
+              value={formData.profissao}
+              onChangeText={(texto) => {
+                setFormData({...formData, profissao: texto});
+                limparMensagens();
+              }}
+              placeholder="Digite sua profissão"
+              placeholderTextColor={theme.colors.text + '80'}
+              maxLength={50}
+              editable={!enviando}
+            />
+
+            {/* Motivo da Associação */}
+            <Text style={[styles.label, { color: theme.colors.text }]}>Motivo da Associação: *</Text>
+            {Platform.OS === 'web' ? (
+              <select
+                value={formData.motivoAssociacao}
+                onChange={e => setFormData({ ...formData, motivoAssociacao: e.target.value })}
+                disabled={enviando}
+                style={{
+                  marginBottom: 15,
+                  borderRadius: 8,
+                  padding: 12,
+                  fontSize: 16,
+                  width: '100%',
+                  borderColor: '#9EBF26',
+                  borderWidth: 1,
+                  color: theme.colors.text,
+                  backgroundColor: theme.colors.card,
+                }}
+              >
+                                <option value="">Selecione o motivo</option>
+                {motivosAssociacao.map(motivo => (
+                  <option key={motivo} value={motivo}>{motivo}</option>
+                ))}
+              </select>
+            ) : (
+              <Picker
+                selectedValue={formData.motivoAssociacao || ""}
+                onValueChange={(itemValue: string) => setFormData({ ...formData, motivoAssociacao: itemValue || "" })}
+                enabled={!enviando}
+                style={{
+                  marginBottom: 15,
+                  backgroundColor: theme.colors.card,
+                  borderRadius: 8,
+                  color: theme.colors.text,
+                }}
+                itemStyle={{
+                  color: theme.colors.text,
+                }}
+              >
+                <Picker.Item label="Selecione o motivo" value="" />
+                {motivosAssociacao.map(motivo => (
+                  <Picker.Item key={motivo} label={motivo} value={motivo} />
+                ))}
+              </Picker>
+            )}
+
+            {/* Como Conheceu a AMO */}
+            <Text style={[styles.label, { color: theme.colors.text }]}>Como conheceu a AMO Orlândia? *</Text>
+            {Platform.OS === 'web' ? (
+              <select
+                value={formData.comoConheceu}
+                onChange={e => setFormData({ ...formData, comoConheceu: e.target.value })}
+                disabled={enviando}
+                style={{
+                  marginBottom: 15,
+                  borderRadius: 8,
+                  padding: 12,
+                  fontSize: 16,
+                  width: '100%',
+                  borderColor: '#9EBF26',
+                  borderWidth: 1,
+                  color: theme.colors.text,
+                  backgroundColor: theme.colors.card,
+                }}
+              >
+                <option value="">Selecione uma opção</option>
+                {formasConhecimento.map(forma => (
+                  <option key={forma} value={forma}>{forma}</option>
+                ))}
+              </select>
+            ) : (
+              <Picker
+                selectedValue={formData.comoConheceu || ""}
+                onValueChange={(itemValue: string) => setFormData({ ...formData, comoConheceu: itemValue || "" })}
+                enabled={!enviando}
+                style={{
+                  marginBottom: 15,
+                  backgroundColor: theme.colors.card,
+                  borderRadius: 8,
+                  color: theme.colors.text,
+                }}
+                itemStyle={{
+                  color: theme.colors.text,
+                }}
+              >
+                <Picker.Item label="Selecione uma opção" value="" />
+                {formasConhecimento.map(forma => (
+                  <Picker.Item key={forma} label={forma} value={forma} />
+                ))}
+              </Picker>
+            )}
+
+            {/* Botão de envio */}
+            <TouchableOpacity
+              style={[
+                styles.submitButton, 
+                { 
+                  backgroundColor: enviando ? '#ccc' : '#9EBF26',
+                  opacity: enviando ? 0.7 : 1
+                }
+              ]}
+              onPress={handleSubmit}
+              activeOpacity={0.7}
+              disabled={enviando}
+            >
+              <Text style={styles.submitButtonText}>
+                {enviando ? 'Enviando... ⏳' : 'Enviar Solicitação 🤝'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* INFORMAÇÕES IMPORTANTES */}
+        <View style={[styles.infoCard, { backgroundColor: theme.colors.card }]}>
+          <Text style={[styles.infoTitle, { color: '#F2C335' }]}>ℹ️ Informações Importantes</Text>
+          
+          <View style={styles.infoList}>
+            <View style={styles.infoItem}>
+              <Text style={styles.infoIcon}>📋</Text>
+              <Text style={[styles.infoText, { color: theme.colors.text }]}>
+                Após o envio, analisaremos sua solicitação em até 5 dias úteis
+              </Text>
+            </View>
+            
+            <View style={styles.infoItem}>
+              <Text style={styles.infoIcon}>📞</Text>
+              <Text style={[styles.infoText, { color: theme.colors.text }]}>
+                Entraremos em contato pelo telefone informado para confirmar os dados
+              </Text>
+            </View>
+            
+            <View style={styles.infoItem}>
+              <Text style={styles.infoIcon}>💳</Text>
+              <Text style={[styles.infoText, { color: theme.colors.text }]}>
+                A associação é gratuita e não possui mensalidades
+              </Text>
+            </View>
+            
+            <View style={styles.infoItem}>
+              <Text style={styles.infoIcon}>📧</Text>
+              <Text style={[styles.infoText, { color: theme.colors.text }]}>
+                Você receberá um email de confirmação quando sua associação for aprovada
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        {/* DÚVIDAS */}
+        <View style={[styles.duvidasCard, { backgroundColor: theme.colors.card }]}>
+          <Text style={[styles.duvidasTitle, { color: '#39BF24' }]}>❓ Dúvidas Frequentes</Text>
+          
+          <View style={styles.duvidasList}>
+            <View style={styles.duvidasItem}>
+              <Text style={[styles.pergunta, { color: theme.colors.text }]}>
+                Q: A associação tem algum custo?
+              </Text>
+              <Text style={[styles.resposta, { color: theme.colors.text }]}>
+                R: Não! A associação à AMO Orlândia é totalmente gratuita.
+              </Text>
+            </View>
+            
+            <View style={styles.duvidasItem}>
+              <Text style={[styles.pergunta, { color: theme.colors.text }]}>
+                Q: Quais são as obrigações de um associado?
+              </Text>
+              <Text style={[styles.resposta, { color: theme.colors.text }]}>
+                R: Não há obrigações. A participação em atividades é voluntária.
+              </Text>
+            </View>
+            
+            <View style={styles.duvidasItem}>
+              <Text style={[styles.pergunta, { color: theme.colors.text }]}>
+                Q: Posso cancelar minha associação?
+              </Text>
+              <Text style={[styles.resposta, { color: theme.colors.text }]}>
+                R: Sim, você pode cancelar a qualquer momento entrando em contato conosco.
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        {/* CONTATO */}
+        <View style={[styles.contatoCard, { backgroundColor: theme.colors.card }]}>
+          <Text style={[styles.contatoTitle, { color: '#F2C335' }]}>📞 Ainda tem dúvidas?</Text>
+          <Text style={[styles.contatoText, { color: theme.colors.text }]}>
+            Entre em contato conosco através dos nossos canais oficiais:
+          </Text>
+          
+          <TouchableOpacity 
+            style={[styles.contatoButton, { backgroundColor: '#25D366' }]}
+            onPress={() => {
+              // Abrir WhatsApp
+              const numero = '5516991737383';
+              const mensagem = 'Olá! Tenho dúvidas sobre a associação à AMO Orlândia.';
+              const url = `whatsapp://send?phone=${numero}&text=${encodeURIComponent(mensagem)}`;
+              
+              try {
+                Linking.openURL(url);
+              } catch (error) {
+                console.error('Erro ao abrir WhatsApp:', error);
+              }
+            }}
+          >
+            <Text style={styles.contatoButtonText}>💬 WhatsApp: (16) 99173-7383</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={[styles.contatoButton, { backgroundColor: '#F2C335' }]}
+            onPress={() => router.push('/contato')}
+          >
+            <Text style={styles.contatoButtonText}>📝 Formulário de Contato</Text>
           </TouchableOpacity>
         </View>
 
-        <View style={[styles.infoBox, { backgroundColor: primaryColor + '15', borderColor: primaryColor }]}>
-          <Text style={[styles.infoTitle, { color: primaryColor }]}>ℹ️ Informações Importantes</Text>
-          <Text style={[styles.infoText, { color: textColor }]}>
-            • Todos os dados são confidenciais e protegidos{'\n'}
-            • A AMO é apartidária, então não é permitida a filiação de pessoas ligadas a partidos políticos.{'\n'}
-            • Para se associar é necessário ser morador ou trabalhar em Orlandia.{'\n'}
-            • O conselho de Ética da AMO tomará a decisão das filiações solicitadas.{'\n'}
-          </Text>
-        </View>
-      </View>
-    </ScrollView>
+        {/* ESPAÇAMENTO FINAL */}
+        <View style={{ height: 20 }} />
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
   },
-  card: {
-    borderRadius: 15,
+  // HEADER STYLES
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingBottom: 16,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+  },
+  backButton: {
+    padding: 8,
+    marginRight: 12,
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    flex: 1,
+    textAlign: 'center',
+  },
+  headerSpacer: {
+    width: 40,
+  },
+  content: {
+    flex: 1,
+    padding: 15,
+  },
+  // HEADER CARD
+  headerCard: {
     padding: 20,
-    elevation: 3,
+    borderRadius: 15,
+    marginBottom: 20,
+    alignItems: 'center',
+    elevation: 2,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
   },
-    title: {
+  title: {
     fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
@@ -612,9 +777,60 @@ const styles = StyleSheet.create({
   description: {
     fontSize: 16,
     textAlign: 'center',
-    marginBottom: 25,
     lineHeight: 22,
   },
+  // BENEFÍCIOS CARD
+  beneficiosCard: {
+    padding: 20,
+    borderRadius: 15,
+    marginBottom: 20,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  beneficiosTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  beneficiosList: {
+    gap: 12,
+  },
+  beneficioItem: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  beneficioIcon: {
+    fontSize: 18,
+    marginRight: 12,
+    marginTop: 2,
+  },
+  beneficioTexto: {
+    fontSize: 16,
+    flex: 1,
+    lineHeight: 22,
+  },
+  // FORM CARD
+  formCard: {
+    padding: 20,
+    borderRadius: 15,
+    marginBottom: 20,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  formTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  // MENSAGENS
   messageContainer: {
     padding: 15,
     borderRadius: 10,
@@ -641,12 +857,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: '600',
   },
-  messageText: {
-    fontSize: 16,
-    textAlign: 'center',
-    fontWeight: '500',
-    color: '#721c24',
-  },
+  // FORM STYLES
   form: {
     gap: 15,
   },
@@ -680,31 +891,119 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
-  errorText: {
+  fieldErrorText: {
     color: '#E74C3C',
     fontSize: 12,
     marginTop: 5,
     marginLeft: 5,
-    fontWeight: '500',
   },
-  infoText: {
-    color: '#3498DB',
-    fontSize: 12,
-    marginTop: 5,
-    marginLeft: 5,
-  },
-  infoBox: {
+  // INFO CARD
+  infoCard: {
     padding: 20,
-    borderRadius: 12,
-    borderWidth: 2,
-    marginTop: 25,
+    borderRadius: 15,
+    marginBottom: 20,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   infoTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  infoList: {
+    gap: 12,
+  },
+  infoItem: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  infoIcon: {
     fontSize: 16,
+    marginRight: 12,
+    marginTop: 2,
+  },
+  infoText: {
+    fontSize: 14,
+    flex: 1,
+    lineHeight: 20,
+  },
+  // DÚVIDAS CARD
+  duvidasCard: {
+    padding: 20,
+    borderRadius: 15,
+    marginBottom: 20,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  duvidasTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  duvidasList: {
+    gap: 15,
+  },
+  duvidasItem: {
+    paddingBottom: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(0,0,0,0.1)',
+  },
+    pergunta: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  resposta: {
+    fontSize: 14,
+    lineHeight: 20,
+    opacity: 0.8,
+  },
+  // CONTATO CARD
+  contatoCard: {
+    padding: 20,
+    borderRadius: 15,
+    marginBottom: 20,
+    alignItems: 'center',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  contatoTitle: {
+    fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
+    textAlign: 'center',
+  },
+  contatoText: {
+    fontSize: 14,
+    textAlign: 'center',
+    marginBottom: 15,
+    lineHeight: 20,
+  },
+  contatoButton: {
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 25,
+    marginBottom: 10,
+    minWidth: 200,
+    alignItems: 'center',
+  },
+  contatoButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
   },
 });
 
-
 export default AssocieSeScreen;
+

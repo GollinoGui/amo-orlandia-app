@@ -1,10 +1,19 @@
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { Ionicons } from '@expo/vector-icons';
 import { Picker } from '@react-native-picker/picker';
+import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { Alert, Linking, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Linking, Platform, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTheme } from '../contexts/ThemeContext';
 import apiService from '../services/apiService';
 
 export function ContatoScreen() {
+  const router = useRouter();
+  const insets = useSafeAreaInsets();
+  const { theme } = useTheme();
+  
+  // ✅ MANTIVE TODAS AS SUAS VARIÁVEIS ORIGINAIS
   const backgroundColor = useThemeColor({}, 'background');
   const textColor = useThemeColor({}, 'text');
   const primaryColor = '#F2C335';
@@ -29,7 +38,7 @@ export function ContatoScreen() {
   const [sucesso, setSucesso] = useState('');
   const [enviando, setEnviando] = useState(false);
 
-  // ✅ VALIDAÇÕES
+  // ✅ MANTIVE TODAS AS SUAS FUNÇÕES ORIGINAIS
   const validarNome = (nome: string) => {
     const regex = /^[a-zA-ZÀ-ÿ\s]+$/;
     return regex.test(nome) && nome.trim().length >= 2;
@@ -59,7 +68,6 @@ export function ContatoScreen() {
     return telefone.replace(/\D/g, '').length;
   };
 
-  // ✅ HANDLERS
   const limparMensagens = () => {
     setErro('');
     setSucesso('');
@@ -87,7 +95,6 @@ export function ContatoScreen() {
     limparMensagens();
   };
 
-  // 🔗 CONTATOS EXTERNOS
   const abrirWhatsApp = async () => {
     const numero = '5516991737383';
     const mensagem = 'Olá! Gostaria de entrar em contato com a AMO Orlândia.';
@@ -126,7 +133,6 @@ export function ContatoScreen() {
     'UNIMED - Por uma cidade mais limpa'
   ];
 
-  // 🚀 NOTIFICAÇÕES
   const mostrarSucesso = (mensagem: string) => {
     if (Platform.OS === 'web') {
       setSucesso(mensagem);
@@ -146,7 +152,6 @@ export function ContatoScreen() {
     }
   };
 
-  // 📧 ENVIO PRINCIPAL
   const handleSubmit = async () => {
     limparMensagens();
     setEnviando(true);
@@ -199,7 +204,6 @@ export function ContatoScreen() {
       console.log('=== [CONTATO] DADOS VALIDADOS ===');
       console.log('📤 [CONTATO] Enviando:', formData);
 
-      // 🧪 TESTE DE CONEXÃO PRIMEIRO
       console.log('🧪 [CONTATO] Testando conexão...');
       const conexaoOk = await apiService.testarConexao();
       
@@ -210,7 +214,6 @@ export function ContatoScreen() {
 
       console.log('✅ [CONTATO] Conexão OK, enviando formulário...');
 
-      // Enviar formulário
       const resultado = await apiService.enviarFormularioContato({
         nome: formData.nome,
         telefone: formData.telefone,
@@ -255,198 +258,257 @@ export function ContatoScreen() {
   };
 
   return (
-    <ScrollView style={[styles.container, { backgroundColor }]}>
-      <View style={[styles.card, { backgroundColor: cardColor }]}>
-        <Text style={[styles.title, { color: primaryColor }]}>📞 Contate-nos</Text>
-        <Text style={[styles.description, { color: textColor }]}>
-          Estamos sempre atendendo através do nosso formulário de contato.
-        </Text>
-
-        {/* 🔧 MENSAGENS */}
-        {erro ? (
-          <View style={[styles.messageContainer, styles.errorContainer]}>
-            <Text style={styles.errorMessageText}>❌ {erro}</Text>
-          </View>
-        ) : null}
-
-        {sucesso ? (
-          <View style={[styles.messageContainer, styles.successContainer]}>
-            <Text style={styles.successMessageText}>✅ {sucesso}</Text>
-          </View>
-        ) : null}
-
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      {/* ✅ NOVO: STATUS BAR */}
+      <StatusBar 
+        barStyle={theme.isDark ? "light-content" : "light-content"}
+        backgroundColor="#F2C335"
+      />
+      
+      {/* ✅ NOVO: HEADER RESPONSIVO */}
+      <View style={[
+        styles.header, 
+        { 
+          paddingTop: insets.top + 10,
+          backgroundColor: '#F2C335'
+        }
+      ]}>
+        <TouchableOpacity 
+          style={styles.backButton} 
+          onPress={() => router.back()}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
+        </TouchableOpacity>
         
-
-        {/* Informações de contato */}
-        <View style={styles.infoContainer}>
-          <View style={styles.infoItem}>
-            <Text style={styles.infoIcon}>📍</Text>
-            <Text style={[styles.infoText, { color: textColor }]}>
-              Av. Cinco, 48 A - Orlândia/SP
-            </Text>
-          </View>
-          <View style={styles.infoItem}>
-            <Text style={styles.infoIcon}>📱</Text>
-            <Text style={[styles.infoText, { color: textColor }]}>
-              (16) 99173-7383
-            </Text>
-          </View>
-          <View style={styles.infoItem}>
-            <Text style={styles.infoIcon}>📷</Text>
-            <Text style={[styles.infoText, { color: textColor }]}>
-              @amo.orlandia
-            </Text>
-          </View>
-        </View>
-
-        {/* Formulário */}
-        <Text style={[styles.formTitle, { color: primaryColor }]}>📝 Formulário de Contato</Text>
-
-        <View style={styles.form}>
-          {/* Nome */}
-          <Text style={[styles.label, { color: textColor }]}>Nome: *</Text>
-          <TextInput
-            style={[styles.input, { borderColor: primaryColor, color: textColor }]}
-            value={formData.nome}
-            onChangeText={handleNomeChange}
-            placeholder="Digite seu nome completo"
-            placeholderTextColor={textColor + '80'}
-            maxLength={50}
-            editable={!enviando}
-          />
-          {formData.nome.length > 0 && !validarNome(formData.nome) && (
-            <Text style={styles.fieldErrorText}>Nome deve conter apenas letras</Text>
-          )}
-
-          {/* Telefone */}
-          <Text style={[styles.label, { color: textColor }]}>
-            Telefone: * ({contarDigitosTelefone(formData.telefone)}/11)
-          </Text>
-          <TextInput
-            style={[styles.input, { borderColor: primaryColor, color: textColor }]}
-            value={formData.telefone}
-            onChangeText={handleTelefoneChange}
-            placeholder="(16) 99999-9999"
-            placeholderTextColor={textColor + '80'}
-            keyboardType="phone-pad"
-            maxLength={15}
-            editable={!enviando}
-          />
-          {formData.telefone.length > 0 && !validarTelefone(formData.telefone) && (
-            <Text style={styles.fieldErrorText}>Telefone deve ter 10 ou 11 dígitos</Text>
-          )}
-
-          {/* Email */}
-          <Text style={[styles.label, { color: textColor }]}>Email (opcional):</Text>
-          <TextInput
-            style={[styles.input, { borderColor: primaryColor, color: textColor }]}
-            value={formData.email}
-            onChangeText={handleEmailChange}
-                        placeholder="seu@email.com"
-            placeholderTextColor={textColor + '80'}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            editable={!enviando}
-          />
-          {formData.email.length > 0 && !validarEmail(formData.email) && (
-            <Text style={styles.fieldErrorText}>Email inválido</Text>
-          )}
-
-          {/* Assunto */}
-          <Text style={[styles.label, { color: textColor }]}>Assunto: *</Text>
-          {Platform.OS === 'web' ? (
-            <select
-              value={formData.assunto}
-              onChange={e => setFormData({ ...formData, assunto: e.target.value })}
-              disabled={enviando}
-              style={{
-                marginBottom: 15,
-                borderRadius: 8,
-                padding: 12,
-                fontSize: 16,
-                width: '100%',
-                borderColor: primaryColor,
-                borderWidth: 1,
-                color: textColor,
-                backgroundColor: cardColor,
-              }}
-            >
-              <option value="">Selecione o assunto</option>
-              {assuntosFrequentes.map(a => (
-                <option key={a} value={a}>{a}</option>
-              ))}
-            </select>
-          ) : (
-            <Picker
-              selectedValue={formData.assunto || ""}
-              onValueChange={(itemValue: string) => setFormData({ ...formData, assunto: itemValue || "" })}
-              enabled={!enviando}
-              style={{
-                marginBottom: 15,
-                backgroundColor: cardColor,
-                borderRadius: 8,
-                color: textColor,
-              }}
-              itemStyle={{
-                color: textColor,
-              }}
-            >
-              <Picker.Item label="Selecione o assunto" value="" />
-              {assuntosFrequentes.map(a => (
-                <Picker.Item key={a} label={a} value={a} />
-              ))}
-            </Picker>
-          )}
-
-          {/* Mensagem */}
-          <Text style={[styles.label, { color: textColor }]}>
-            Mensagem sobre o que você necessita: * ({formData.mensagem.length}/500)
-          </Text>
-          <TextInput
-            style={[styles.textArea, { borderColor: primaryColor, color: textColor }]}
-            value={formData.mensagem}
-            onChangeText={handleMensagemChange}
-            placeholder="Descreva detalhadamente o que você precisa... (mínimo 10 caracteres)"
-            placeholderTextColor={textColor + '80'}
-            multiline
-            numberOfLines={5}
-            maxLength={500}
-            editable={!enviando}
-          />
-          {formData.mensagem.length > 0 && formData.mensagem.length < 10 && (
-            <Text style={styles.fieldErrorText}>Mensagem deve ter pelo menos 10 caracteres</Text>
-          )}
-
-          {/* Botão de envio */}
-          <TouchableOpacity
-            style={[
-              styles.submitButton, 
-              { 
-                backgroundColor: enviando ? '#ccc' : primaryColor,
-                opacity: enviando ? 0.7 : 1
-              }
-            ]}
-            onPress={handleSubmit}
-            activeOpacity={0.7}
-            disabled={enviando}
-          >
-            <Text style={styles.submitButtonText}>
-              {enviando ? 'Enviando... ' : 'Enviar Mensagem '}
-            </Text>
-          </TouchableOpacity>
-
-         
-        </View>
+        <Text style={styles.headerTitle}>📞 Contate-nos</Text>
+        
+        <View style={styles.headerSpacer} />
       </View>
-    </ScrollView>
+
+      {/* ✅ SEU CONTEÚDO ORIGINAL (apenas mudei ScrollView para styles.content) */}
+      <ScrollView style={styles.content}>
+        <View style={[styles.card, { backgroundColor: cardColor }]}>
+          <Text style={[styles.title, { color: primaryColor }]}>📞 Contate-nos</Text>
+          <Text style={[styles.description, { color: textColor }]}>
+            Estamos sempre atendendo através do nosso formulário de contato.
+          </Text>
+
+          {/* 🔧 MENSAGENS */}
+          {erro ? (
+            <View style={[styles.messageContainer, styles.errorContainer]}>
+              <Text style={styles.errorMessageText}>❌ {erro}</Text>
+            </View>
+          ) : null}
+
+          {sucesso ? (
+            <View style={[styles.messageContainer, styles.successContainer]}>
+              <Text style={styles.successMessageText}>✅ {sucesso}</Text>
+            </View>
+          ) : null}
+
+          {/* Informações de contato */}
+          <View style={styles.infoContainer}>
+            <View style={styles.infoItem}>
+              <Text style={styles.infoIcon}>📍</Text>
+              <Text style={[styles.infoText, { color: textColor }]}>
+                Av. Cinco, 48 A - Orlândia/SP
+              </Text>
+            </View>
+            <View style={styles.infoItem}>
+              <Text style={styles.infoIcon}>📱</Text>
+              <Text style={[styles.infoText, { color: textColor }]}>
+                (16) 99173-7383
+              </Text>
+            </View>
+            <View style={styles.infoItem}>
+              <Text style={styles.infoIcon}>📷</Text>
+              <Text style={[styles.infoText, { color: textColor }]}>
+                @amo.orlandia
+              </Text>
+            </View>
+          </View>
+
+          {/* Formulário */}
+          <Text style={[styles.formTitle, { color: primaryColor }]}>📝 Formulário de Contato</Text>
+
+          <View style={styles.form}>
+            {/* Nome */}
+            <Text style={[styles.label, { color: textColor }]}>Nome: *</Text>
+            <TextInput
+              style={[styles.input, { borderColor: primaryColor, color: textColor }]}
+              value={formData.nome}
+              onChangeText={handleNomeChange}
+              placeholder="Digite seu nome completo"
+              placeholderTextColor={textColor + '80'}
+              maxLength={50}
+              editable={!enviando}
+            />
+            {formData.nome.length > 0 && !validarNome(formData.nome) && (
+              <Text style={styles.fieldErrorText}>Nome deve conter apenas letras</Text>
+            )}
+
+            {/* Telefone */}
+            <Text style={[styles.label, { color: textColor }]}>
+              Telefone: * ({contarDigitosTelefone(formData.telefone)}/11)
+            </Text>
+            <TextInput
+              style={[styles.input, { borderColor: primaryColor, color: textColor }]}
+              value={formData.telefone}
+              onChangeText={handleTelefoneChange}
+              placeholder="(16) 99999-9999"
+              placeholderTextColor={textColor + '80'}
+              keyboardType="phone-pad"
+              maxLength={15}
+              editable={!enviando}
+            />
+            {formData.telefone.length > 0 && !validarTelefone(formData.telefone) && (
+                            <Text style={styles.fieldErrorText}>Telefone deve ter 10 ou 11 dígitos</Text>
+            )}
+
+            {/* Email */}
+            <Text style={[styles.label, { color: textColor }]}>Email (opcional):</Text>
+            <TextInput
+              style={[styles.input, { borderColor: primaryColor, color: textColor }]}
+              value={formData.email}
+              onChangeText={handleEmailChange}
+              placeholder="seu@email.com"
+              placeholderTextColor={textColor + '80'}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              editable={!enviando}
+            />
+            {formData.email.length > 0 && !validarEmail(formData.email) && (
+              <Text style={styles.fieldErrorText}>Email inválido</Text>
+            )}
+
+            {/* Assunto */}
+            <Text style={[styles.label, { color: textColor }]}>Assunto: *</Text>
+            {Platform.OS === 'web' ? (
+              <select
+                value={formData.assunto}
+                onChange={e => setFormData({ ...formData, assunto: e.target.value })}
+                disabled={enviando}
+                style={{
+                  marginBottom: 15,
+                  borderRadius: 8,
+                  padding: 12,
+                  fontSize: 16,
+                  width: '100%',
+                  borderColor: primaryColor,
+                  borderWidth: 1,
+                  color: textColor,
+                  backgroundColor: cardColor,
+                }}
+              >
+                <option value="">Selecione o assunto</option>
+                {assuntosFrequentes.map(a => (
+                  <option key={a} value={a}>{a}</option>
+                ))}
+              </select>
+            ) : (
+              <Picker
+                selectedValue={formData.assunto || ""}
+                onValueChange={(itemValue: string) => setFormData({ ...formData, assunto: itemValue || "" })}
+                enabled={!enviando}
+                style={{
+                  marginBottom: 15,
+                  backgroundColor: cardColor,
+                  borderRadius: 8,
+                  color: textColor,
+                }}
+                itemStyle={{
+                  color: textColor,
+                }}
+              >
+                <Picker.Item label="Selecione o assunto" value="" />
+                {assuntosFrequentes.map(a => (
+                  <Picker.Item key={a} label={a} value={a} />
+                ))}
+              </Picker>
+            )}
+
+            {/* Mensagem */}
+            <Text style={[styles.label, { color: textColor }]}>
+              Mensagem sobre o que você necessita: * ({formData.mensagem.length}/500)
+            </Text>
+            <TextInput
+              style={[styles.textArea, { borderColor: primaryColor, color: textColor }]}
+              value={formData.mensagem}
+              onChangeText={handleMensagemChange}
+              placeholder="Descreva detalhadamente o que você precisa... (mínimo 10 caracteres)"
+              placeholderTextColor={textColor + '80'}
+              multiline
+              numberOfLines={5}
+              maxLength={500}
+              editable={!enviando}
+            />
+            {formData.mensagem.length > 0 && formData.mensagem.length < 10 && (
+              <Text style={styles.fieldErrorText}>Mensagem deve ter pelo menos 10 caracteres</Text>
+            )}
+
+            {/* Botão de envio */}
+            <TouchableOpacity
+              style={[
+                styles.submitButton, 
+                { 
+                  backgroundColor: enviando ? '#ccc' : primaryColor,
+                  opacity: enviando ? 0.7 : 1
+                }
+              ]}
+              onPress={handleSubmit}
+              activeOpacity={0.7}
+              disabled={enviando}
+            >
+              <Text style={styles.submitButtonText}>
+                {enviando ? 'Enviando... ' : 'Enviar Mensagem '}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* ESPAÇAMENTO FINAL */}
+        <View style={{ height: 20 }} />
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  // ✅ NOVOS ESTILOS PARA O HEADER
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingBottom: 16,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+  },
+  backButton: {
+    padding: 8,
+    marginRight: 12,
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    flex: 1,
+    textAlign: 'center',
+  },
+  headerSpacer: {
+    width: 40,
+  },
+  content: {
+    flex: 1,
     padding: 20,
   },
+  // ✅ SEUS ESTILOS ORIGINAIS (mantidos iguais)
   card: {
     borderRadius: 15,
     padding: 20,
@@ -468,7 +530,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     lineHeight: 22,
   },
-  // 🔧 ESTILOS DE MENSAGENS
   messageContainer: {
     padding: 15,
     borderRadius: 10,

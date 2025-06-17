@@ -1,4 +1,3 @@
-import { useThemeColor } from '@/hooks/useThemeColor';
 import React, { useState } from 'react';
 import {
   Image,
@@ -7,20 +6,24 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View
+  View,
+  StatusBar
 } from 'react-native';
+import { useRouter } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
+import { useTheme } from '../contexts/ThemeContext';
 
 interface DiretorMembro {
   nome: string;
   cargo: string;
   conselho: string;
-  
   contato?: string;
 }
 
 interface Parceria {
   nome: string;
-  logo?: any; // ✅ MUDANÇA: any para aceitar require()
+  logo?: any;
   descricao: string;
   site?: string;
 }
@@ -33,85 +36,74 @@ interface Reuniao {
 }
 
 export function AtuacaoAmoScreen() {
-  const backgroundColor = useThemeColor({}, 'background');
-  const textColor = useThemeColor({}, 'text');
-  const cardColor = useThemeColor({}, 'card');
+  const router = useRouter();
+  const insets = useSafeAreaInsets();
+  const { theme } = useTheme();
   const primaryColor = '#F2C335';
 
-  // 👥 DADOS DA DIRETORIA - ✅ CORRIGIDO COM PLACEHOLDERS
+  // 👥 DADOS DA DIRETORIA
   const diretoria: DiretorMembro[] = [
     // Conselho Administrativo
     {
       nome: 'Elter Gollino',
       cargo: 'Presidente',
       conselho: 'Conselho Administrativo',
-      // foto: require('../../assets/images/diretoria/elter.jpg'), // ✅ COMENTADO até ter a foto
-      contato: '(16) 99173-7383' // ✅ NÚMERO REAL DA AMO
+      contato: '(16) 99173-7383'
     },
     {
       nome: 'Fernando Marcos Siqueira',
       cargo: 'Vice Presidente',
       conselho: 'Conselho Administrativo',
-      // foto: require('../../assets/images/diretoria/fernando.jpg'),
     },
     // Diretoria Administrativa
     {
       nome: 'Marcelo Oliveira Fernandes',
       cargo: 'Presidente',
       conselho: 'Diretoria Administrativa',
-      // foto: require('../../assets/images/diretoria/marcelo.jpg'),
     },
     {
       nome: 'José Antonio da Silva',
       cargo: 'Vice Presidente',
       conselho: 'Diretoria Administrativa',
-      // foto: require('../../assets/images/diretoria/jose-antonio.jpg'),
     },
     // Conselho de Ética
     {
       nome: 'Fernanda Cristina Lamonato Claro',
       cargo: 'Primeiro Membro',
       conselho: 'Conselho de Ética',
-      // foto: require('../../assets/images/diretoria/fernanda.jpg'),
     },
     {
       nome: 'Sonia Maria Reis Silva',
       cargo: 'Segundo Membro',
       conselho: 'Conselho de Ética',
-      // foto: require('../../assets/images/diretoria/sonia.jpg'),
     },
     // Conselho Fiscal
     {
       nome: 'Jose Eugenio Alves Favaro',
       cargo: 'Primeiro Membro',
       conselho: 'Conselho Fiscal',
-      // foto: require('../../assets/images/diretoria/jose-eugenio.jpg'),
     },
     {
       nome: 'Jean Fernando Marques',
       cargo: 'Segundo Membro',
       conselho: 'Conselho Fiscal',
-      // foto: require('../../assets/images/diretoria/jean.jpg'),
     }
   ];
 
-  // 🤝 PARCERIAS - ✅ CORRIGIDO COM PLACEHOLDERS
+  // 🤝 PARCERIAS
   const parcerias: Parceria[] = [
     {
       nome: 'MORLAN',
-      // logo: require('../../assets/images/parceiros/morlan.png'), // ✅ COMENTADO
       descricao: 'Juntos por uma Orlândia sustentável',
       site: 'https://morlan.com.br'
     },
     {
       nome: 'UNIMED',
-      // logo: require('../../assets/images/parceiros/unimed.png'), // ✅ COMENTADO
       descricao: 'Cuidando da saúde da nossa comunidade',
       site: 'https://www.unimedaltamogiana.com.br/'
     },
     {
       nome: 'INTELLI',
-      // logo: require('../../assets/images/parceiros/intellitem.png'), // ✅ COMENTADO
       descricao: 'Tecnologia a serviço da comunidade',
       site: 'https://www.intelli.com.br/'
     },
@@ -125,7 +117,7 @@ export function AtuacaoAmoScreen() {
     }
   ];
 
-  // 📋 REUNIÕES IMPORTANTES - ✅ DADOS REALISTAS
+  // 📋 REUNIÕES IMPORTANTES
   const reunioesImportantes: Reuniao[] = [
     {
       data: '15/01/2025',
@@ -147,12 +139,12 @@ export function AtuacaoAmoScreen() {
     }
   ];
 
-  // 🏢 FOTOS DA SEDE - ✅ USANDO LOGO COMO PLACEHOLDER
+  // 🏢 FOTOS DA SEDE
   const fotosSede = [
-    require('../../assets/images/sede.png'), // ✅ PLACEHOLDER
-    require('../../assets/images/sede2.png'), // ✅ PLACEHOLDER
-    require('../../assets/images/sede3.png'), // ✅ PLACEHOLDER
-    require('../../assets/images/sede4.png'), // ✅ PLACEHOLDER
+    require('../../assets/images/sede.png'),
+    require('../../assets/images/sede2.png'),
+    require('../../assets/images/sede3.png'),
+    require('../../assets/images/sede4.png'),
   ];
 
   const [fotoSelecionada, setFotoSelecionada] = useState(0);
@@ -167,12 +159,10 @@ export function AtuacaoAmoScreen() {
   };
 
   const abrirAta = (ata: string) => {
-    // ✅ IMPLEMENTAÇÃO FUTURA - Por enquanto só log
     console.log('Abrir ata:', ata);
     // TODO: Implementar abertura de PDF ou link
   };
 
-  // ✅ FUNÇÃO PARA ABRIR GOOGLE MAPS
   const abrirMapa = async () => {
     const endereco = 'Av. Cinco, 48 A, Orlândia, SP';
     const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(endereco)}`;
@@ -186,14 +176,13 @@ export function AtuacaoAmoScreen() {
 
   // 👥 RENDERIZAR MEMBRO DA DIRETORIA
   const renderMembro = (membro: DiretorMembro) => (
-    <View key={`${membro.nome}-${membro.conselho}`} style={[styles.membroCard, { backgroundColor: cardColor }]}>
-      
+    <View key={`${membro.nome}-${membro.conselho}`} style={[styles.membroCard, { backgroundColor: theme.colors.card }]}>
       <View style={styles.membroInfo}>
-        <Text style={[styles.membroNome, { color: textColor }]}>{membro.nome}</Text>
+        <Text style={[styles.membroNome, { color: theme.colors.text }]}>{membro.nome}</Text>
         <Text style={[styles.membroCargo, { color: primaryColor }]}>{membro.cargo}</Text>
-        <Text style={[styles.membroConselho, { color: textColor }]}>{membro.conselho}</Text>
+        <Text style={[styles.membroConselho, { color: theme.colors.text }]}>{membro.conselho}</Text>
         {membro.contato && (
-          <Text style={[styles.membroContato, { color: textColor }]}>📱 {membro.contato}</Text>
+          <Text style={[styles.membroContato, { color: theme.colors.text }]}>📱 {membro.contato}</Text>
         )}
       </View>
     </View>
@@ -203,7 +192,7 @@ export function AtuacaoAmoScreen() {
   const renderParceria = (parceria: Parceria) => (
     <TouchableOpacity
       key={parceria.nome}
-      style={[styles.parceriaCard, { backgroundColor: cardColor }]}
+      style={[styles.parceriaCard, { backgroundColor: theme.colors.card }]}
       onPress={() => parceria.site && abrirSite(parceria.site)}
       disabled={!parceria.site}
     >
@@ -219,8 +208,8 @@ export function AtuacaoAmoScreen() {
         )}
       </View>
       <View style={styles.parceriaInfo}>
-        <Text style={[styles.parceriaNome, { color: textColor }]}>{parceria.nome}</Text>
-        <Text style={[styles.parceriaDescricao, { color: textColor }]}>{parceria.descricao}</Text>
+        <Text style={[styles.parceriaNome, { color: theme.colors.text }]}>{parceria.nome}</Text>
+        <Text style={[styles.parceriaDescricao, { color: theme.colors.text }]}>{parceria.descricao}</Text>
         {parceria.site && (
           <Text style={[styles.parceriaSite, { color: primaryColor }]}>🌐 Visitar site</Text>
         )}
@@ -229,187 +218,272 @@ export function AtuacaoAmoScreen() {
   );
 
   return (
-    <ScrollView style={[styles.container, { backgroundColor }]}>
-      {/* 🏢 HEADER COM FOTO DA SEDE */}
-      <View style={styles.headerContainer}>
-        <Image 
-          source={fotosSede[fotoSelecionada]} 
-          style={styles.headerImage}
-        />
-        <View style={styles.headerOverlay}>
-          <Text style={styles.headerTitle}>AMO Orlândia</Text>
-          <Text style={styles.headerSubtitle}>Nossa Atuação na Comunidade</Text>
-        </View>
-      </View>
-
-      {/* 📖 SOBRE A AMO */}
-      <View style={[styles.section, { backgroundColor: cardColor }]}>
-        <Text style={[styles.sectionTitle, { color: primaryColor }]}>Sobre a AMO</Text>
-        <Text style={[styles.sectionText, { color: textColor }]}>
-          A Associação de Moradores de Orlândia (AMO) foi fundada com o objetivo de representar 
-          e defender os interesses da comunidade orlandina. Trabalhamos para 
-          melhorar a qualidade de vida dos moradores através de projetos ambientais, 
-          sociais e de infraestrutura urbana.
-        </Text>
-        <Text style={[styles.sectionText, { color: textColor }]}>
-          Nossa missão é promover o desenvolvimento sustentável da cidade, 
-          fortalecendo a participação cidadã e criando pontes entre a comunidade e o poder público.
-        </Text>
-      </View>
-
-      {/*  NOSSA DIRETORIA */}
-      <View style={[styles.section, { backgroundColor: cardColor }]}>
-        <Text style={[styles.sectionTitle, { color: primaryColor }]}>Nossa Diretoria</Text>
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      {/* ✅ NOVO: STATUS BAR */}
+      <StatusBar 
+        barStyle={theme.isDark ? "light-content" : "light-content"}
+        backgroundColor="#F2C335"
+      />
+      
+      {/* ✅ NOVO: HEADER RESPONSIVO */}
+      <View style={[
+        styles.header, 
+        { 
+          paddingTop: insets.top + 10,
+          backgroundColor: '#F2C335'
+        }
+      ]}>
+        <TouchableOpacity 
+          style={styles.backButton} 
+          onPress={() => router.back()}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
+        </TouchableOpacity>
         
-        {/* Conselho Administrativo */}
-        <Text style={[styles.subSectionTitle, { color: textColor }]}>Conselho Administrativo</Text>
-        {diretoria.filter(m => m.conselho === 'Conselho Administrativo').map(renderMembro)}
+        <Text style={styles.headerTitle}>💼 Atuação da AMO</Text>
         
-        {/* Diretoria Administrativa */}
-        <Text style={[styles.subSectionTitle, { color: textColor }]}>Diretoria Administrativa</Text>
-        {diretoria.filter(m => m.conselho === 'Diretoria Administrativa').map(renderMembro)}
-        
-        {/* Conselho de Ética */}
-        <Text style={[styles.subSectionTitle, { color: textColor }]}>Conselho de Ética</Text>
-        {diretoria.filter(m => m.conselho === 'Conselho de Ética').map(renderMembro)}
-        
-        {/* Conselho Fiscal */}
-        <Text style={[styles.subSectionTitle, { color: textColor }]}>Conselho Fiscal</Text>
-        {diretoria.filter(m => m.conselho === 'Conselho Fiscal').map(renderMembro)}
+        <View style={styles.headerSpacer} />
       </View>
 
-      {/* 📋 REUNIÕES IMPORTANTES */}
-      <View style={[styles.section, { backgroundColor: cardColor }]}>
-        <Text style={[styles.sectionTitle, { color: primaryColor }]}>📋 Reuniões Importantes</Text>
-        {reunioesImportantes.map((reuniao, index) => (
-          <View key={index} style={[styles.reuniaoCard, { borderLeftColor: primaryColor }]}>
-            <View style={styles.reuniaoHeader}>
-              <Text style={[styles.reuniaoData, { color: primaryColor }]}>{reuniao.data}</Text>
-              <Text style={[styles.reuniaoTitulo, { color: textColor }]}>{reuniao.titulo}</Text>
-            </View>
-            <Text style={[styles.reuniaoResumo, { color: textColor }]}>{reuniao.resumo}</Text>
-            {reuniao.ata && (
-              <TouchableOpacity onPress={() => abrirAta(reuniao.ata!)}>
-                                <Text style={[styles.reuniaoAta, { color: primaryColor }]}>📄 Ver Ata Completa</Text>
-              </TouchableOpacity>
-            )}
-          </View>
-        ))}
-      </View>
-
-      {/* 🤝 PARCERIAS */}
-      <View style={[styles.section, { backgroundColor: cardColor }]}>
-        <Text style={[styles.sectionTitle, { color: primaryColor }]}>🤝 Nossas Parcerias</Text>
-        <Text style={[styles.sectionText, { color: textColor }]}>
-          Trabalhamos em conjunto com empresas e organizações que compartilham 
-          nossos valores de sustentabilidade e desenvolvimento comunitário.
-        </Text>
-        {parcerias.map(renderParceria)}
-      </View>
-
-      {/* 📷 GALERIA DA SEDE */}
-      <View style={[styles.section, { backgroundColor: cardColor }]}>
-        <Text style={[styles.sectionTitle, { color: primaryColor }]}>📷 Nossa Sede</Text>
-        <Text style={[styles.sectionText, { color: textColor }]}>
-          Conheça nossa sede localizada na Av. Cinco, 48 A - Orlândia/SP
-        </Text>
-        <View style={styles.galeriaContainer}>
+      {/* ✅ SEU CONTEÚDO ORIGINAL */}
+      <ScrollView style={styles.content}>
+        {/* 🏢 HEADER COM FOTO DA SEDE */}
+        <View style={styles.headerContainer}>
           <Image 
             source={fotosSede[fotoSelecionada]} 
-            style={styles.galeriaImagemPrincipal}
+            style={styles.headerImage}
           />
-          <ScrollView horizontal style={styles.galeriaThumbnails} showsHorizontalScrollIndicator={false}>
-            {fotosSede.map((foto, index) => (
-              <TouchableOpacity
-                key={index}
-                onPress={() => setFotoSelecionada(index)}
-                style={[
-                  styles.thumbnail,
-                  fotoSelecionada === index && { borderColor: primaryColor, borderWidth: 3 }
-                ]}
-              >
-                <Image 
-                  source={foto} 
-                  style={styles.thumbnailImage}
-                />
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        </View>
-      </View>
-
-      {/* 📍 NOSSA LOCALIZAÇÃO */}
-      <View style={[styles.section, { backgroundColor: cardColor }]}>
-        <Text style={[styles.sectionTitle, { color: primaryColor }]}>📍 Nossa Localização</Text>
-        <View style={styles.localizacaoContainer}>
-          <View style={styles.enderecoInfo}>
-            <Text style={[styles.enderecoTexto, { color: textColor }]}>
-              📍 Av. Cinco, 48 A - Orlândia/SP
-            </Text>
-            <Text style={[styles.enderecoTexto, { color: textColor }]}>
-              📧 contato@amoorlandia.org.br
-            </Text>
-            <Text style={[styles.enderecoTexto, { color: textColor }]}>
-              📷 @amo.orlandia
-            </Text>
+          <View style={styles.headerOverlay}>
+            <Text style={styles.headerTitleText}>AMO Orlândia</Text>
+            <Text style={styles.headerSubtitle}>Nossa Atuação na Comunidade</Text>
           </View>
+        </View>
+
+        {/* 📖 SOBRE A AMO */}
+        <View style={[styles.section, { backgroundColor: theme.colors.card }]}>
+          <Text style={[styles.sectionTitle, { color: primaryColor }]}>Sobre a AMO</Text>
+          <Text style={[styles.sectionText, { color: theme.colors.text }]}>
+            A Associação de Moradores de Orlândia (AMO) foi fundada com o objetivo de representar 
+            e defender os interesses da comunidade orlandina. Trabalhamos para 
+            melhorar a qualidade de vida dos moradores através de projetos ambientais, 
+            sociais e de infraestrutura urbana.
+          </Text>
+          <Text style={[styles.sectionText, { color: theme.colors.text }]}>
+            Nossa missão é promover o desenvolvimento sustentável da cidade, 
+            fortalecendo a participação cidadã e criando pontes entre a comunidade e o poder público.
+          </Text>
+        </View>
+
+        {/* 👥 NOSSA DIRETORIA */}
+        <View style={[styles.section, { backgroundColor: theme.colors.card }]}>
+          <Text style={[styles.sectionTitle, { color: primaryColor }]}>Nossa Diretoria</Text>
           
-          {/* ✅ MAPA CLICÁVEL */}
+          {/* Conselho Administrativo */}
+          <Text style={[styles.subSectionTitle, { color: theme.colors.text }]}>Conselho Administrativo</Text>
+          {diretoria.filter(m => m.conselho === 'Conselho Administrativo').map(renderMembro)}
+          
+          {/* Diretoria Administrativa */}
+          <Text style={[styles.subSectionTitle, { color: theme.colors.text }]}>Diretoria Administrativa</Text>
+          {diretoria.filter(m => m.conselho === 'Diretoria Administrativa').map(renderMembro)}
+          
+          {/* Conselho de Ética */}
+          <Text style={[styles.subSectionTitle, { color: theme.colors.text }]}>Conselho de Ética</Text>
+          {diretoria.filter(m => m.conselho === 'Conselho de Ética').map(renderMembro)}
+          
+          {/* Conselho Fiscal */}
+          <Text style={[styles.subSectionTitle, { color: theme.colors.text }]}>Conselho Fiscal</Text>
+          {diretoria.filter(m => m.conselho === 'Conselho Fiscal').map(renderMembro)}
+        </View>
+
+        {/* 📋 REUNIÕES IMPORTANTES */}
+        <View style={[styles.section, { backgroundColor: theme.colors.card }]}>
+          <Text style={[styles.sectionTitle, { color: primaryColor }]}>📋 Reuniões Importantes</Text>
+          {reunioesImportantes.map((reuniao, index) => (
+            <View key={index} style={[styles.reuniaoCard, { borderLeftColor: primaryColor }]}>
+              <View style={styles.reuniaoHeader}>
+                <Text style={[styles.reuniaoData, { color: primaryColor }]}>{reuniao.data}</Text>
+                <Text style={[styles.reuniaoTitulo, { color: theme.colors.text }]}>{reuniao.titulo}</Text>
+              </View>
+              <Text style={[styles.reuniaoResumo, { color: theme.colors.text }]}>{reuniao.resumo}</Text>
+              {reuniao.ata && (
+                <TouchableOpacity onPress={() => abrirAta(reuniao.ata!)}>
+                  <Text style={[styles.reuniaoAta, { color: primaryColor }]}>📄 Ver Ata Completa</Text>
+                </TouchableOpacity>
+              )}
+            </View>
+          ))}
+        </View>
+
+        {/* 🤝 PARCERIAS */}
+        <View style={[styles.section, { backgroundColor: theme.colors.card }]}>
+          <Text style={[styles.sectionTitle, { color: primaryColor }]}>🤝 Nossas Parcerias</Text>
+          <Text style={[styles.sectionText, { color: theme.colors.text }]}>
+            Trabalhamos em conjunto com empresas e organizações que compartilham 
+            nossos valores de sustentabilidade e desenvolvimento comunitário.
+          </Text>
+          {parcerias.map(renderParceria)}
+        </View>
+
+                {/* 📷 GALERIA DA SEDE */}
+        <View style={[styles.section, { backgroundColor: theme.colors.card }]}>
+          <Text style={[styles.sectionTitle, { color: primaryColor }]}>📷 Nossa Sede</Text>
+          <Text style={[styles.sectionText, { color: theme.colors.text }]}>
+            Conheça nossa sede localizada na Av. Cinco, 48 A - Orlândia/SP
+          </Text>
+          
+          {/* Foto Principal */}
+          <View style={styles.galeriaContainer}>
+            <Image 
+              source={fotosSede[fotoSelecionada]} 
+              style={styles.fotoSede}
+            />
+            
+            {/* Miniaturas */}
+            <ScrollView horizontal style={styles.miniaturas} showsHorizontalScrollIndicator={false}>
+              {fotosSede.map((foto, index) => (
+                <TouchableOpacity
+                  key={index}
+                  onPress={() => setFotoSelecionada(index)}
+                  style={[
+                    styles.miniatura,
+                    { borderColor: index === fotoSelecionada ? primaryColor : 'transparent' }
+                  ]}
+                >
+                  <Image source={foto} style={styles.miniaturaImage} />
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+
+          {/* Endereço */}
           <TouchableOpacity 
-            style={[styles.mapaPlaceholder, { backgroundColor: primaryColor + '20' }]}
+            style={[styles.enderecoButton, { backgroundColor: primaryColor }]}
             onPress={abrirMapa}
-            activeOpacity={0.7}
           >
-            <Text style={[styles.mapaTexto, { color: primaryColor }]}>
-              🗺️ Ver no Google Maps
-            </Text>
-            <Text style={[styles.mapaSubTexto, { color: textColor }]}>
-              Toque para abrir a localização
-            </Text>
+            <Text style={styles.enderecoIcon}>📍</Text>
+            <View style={styles.enderecoInfo}>
+              <Text style={styles.enderecoTitulo}>Nossa Localização</Text>
+              <Text style={styles.enderecoTexto}>Av. Cinco, 48 A - Orlândia/SP</Text>
+            </View>
           </TouchableOpacity>
         </View>
-      </View>
 
-      {/* 📞 COMO PARTICIPAR */}
-      <View style={[styles.section, { backgroundColor: cardColor }]}>
-        <Text style={[styles.sectionTitle, { color: primaryColor }]}>🤝 Como Participar</Text>
-        <View style={styles.participarContainer}>
+        {/* 🎯 ÁREAS DE ATUAÇÃO */}
+        <View style={[styles.section, { backgroundColor: theme.colors.card }]}>
+          <Text style={[styles.sectionTitle, { color: primaryColor }]}>🎯 Áreas de Atuação</Text>
           
-          
-          <View style={styles.participarItem}>
-            <Text style={styles.participarIcon}>📝</Text>
-            <View style={styles.participarTexto}>
-              <Text style={[styles.participarTitulo, { color: textColor }]}>Associe-se</Text>
-              <Text style={[styles.participarDescricao, { color: textColor }]}>
-                Torne-se um associado e tenha voz ativa nas decisões da comunidade
+          <View style={styles.atuacaoGrid}>
+            <View style={[styles.atuacaoItem, { backgroundColor: theme.colors.surface }]}>
+              <Text style={styles.atuacaoIcon}>🌱</Text>
+              <Text style={[styles.atuacaoTitulo, { color: theme.colors.text }]}>Meio Ambiente</Text>
+              <Text style={[styles.atuacaoDescricao, { color: theme.colors.text }]}>
+                Projetos de sustentabilidade e preservação ambiental
               </Text>
             </View>
-          </View>
-          
-          <View style={styles.participarItem}>
-            <Text style={styles.participarIcon}>🌱</Text>
-            <View style={styles.participarTexto}>
-              <Text style={[styles.participarTitulo, { color: textColor }]}>Projetos Ambientais</Text>
-              <Text style={[styles.participarDescricao, { color: textColor }]}>
-                Participe do Projeto Limpai e outras iniciativas de sustentabilidade
+
+            <View style={[styles.atuacaoItem, { backgroundColor: theme.colors.surface }]}>
+              <Text style={styles.atuacaoIcon}>🏘️</Text>
+              <Text style={[styles.atuacaoTitulo, { color: theme.colors.text }]}>Infraestrutura</Text>
+              <Text style={[styles.atuacaoDescricao, { color: theme.colors.text }]}>
+                Melhorias urbanas e qualidade de vida
               </Text>
             </View>
-          </View>
 
-          <View style={styles.participarItem}>
-            <Text style={styles.participarIcon}>📱</Text>
-            <View style={styles.participarTexto}>
-              <Text style={[styles.participarTitulo, { color: textColor }]}>Redes Sociais</Text>
-              <Text style={[styles.participarDescricao, { color: textColor }]}>
-                Siga-nos no Instagram @amo.orlandia
+            <View style={[styles.atuacaoItem, { backgroundColor: theme.colors.surface }]}>
+              <Text style={styles.atuacaoIcon}>👥</Text>
+              <Text style={[styles.atuacaoTitulo, { color: theme.colors.text }]}>Social</Text>
+              <Text style={[styles.atuacaoDescricao, { color: theme.colors.text }]}>
+                Programas comunitários e assistência social
+              </Text>
+            </View>
+
+            <View style={[styles.atuacaoItem, { backgroundColor: theme.colors.surface }]}>
+              <Text style={styles.atuacaoIcon}>📚</Text>
+              <Text style={[styles.atuacaoTitulo, { color: theme.colors.text }]}>Educação</Text>
+              <Text style={[styles.atuacaoDescricao, { color: theme.colors.text }]}>
+                Conscientização e capacitação da comunidade
               </Text>
             </View>
           </View>
         </View>
-      </View>
 
-      
-    </ScrollView>
+        {/* 🏆 CONQUISTAS */}
+        <View style={[styles.section, { backgroundColor: theme.colors.card }]}>
+          <Text style={[styles.sectionTitle, { color: primaryColor }]}>🏆 Nossas Conquistas</Text>
+          
+          <View style={styles.conquistasList}>
+            <View style={styles.conquistaItem}>
+              <Text style={styles.conquistaIcon}>✅</Text>
+              <Text style={[styles.conquistaTexto, { color: theme.colors.text }]}>
+                Implementação da Política de Reserva de Móveis
+              </Text>
+            </View>
+
+            <View style={styles.conquistaItem}>
+              <Text style={styles.conquistaIcon}>✅</Text>
+              <Text style={[styles.conquistaTexto, { color: theme.colors.text }]}>
+                Criação do sistema de denúncias ambientais
+              </Text>
+            </View>
+
+            <View style={styles.conquistaItem}>
+              <Text style={styles.conquistaIcon}>✅</Text>
+              <Text style={[styles.conquistaTexto, { color: theme.colors.text }]}>
+                Parcerias estratégicas com empresas locais
+              </Text>
+            </View>
+
+            <View style={styles.conquistaItem}>
+              <Text style={styles.conquistaIcon}>✅</Text>
+              <Text style={[styles.conquistaTexto, { color: theme.colors.text }]}>
+                Desenvolvimento do aplicativo AMO Orlândia
+              </Text>
+            </View>
+
+            <View style={styles.conquistaItem}>
+              <Text style={styles.conquistaIcon}>✅</Text>
+              <Text style={[styles.conquistaTexto, { color: theme.colors.text }]}>
+                Organização de eventos comunitários
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        {/* 📞 COMO PARTICIPAR */}
+        <View style={[styles.ctaSection, { 
+          backgroundColor: theme.isDark ? '#1B4D3E' : '#E8F5E8',
+          borderColor: '#39BF24'
+        }]}>
+          <Text style={[styles.ctaTitle, { color: '#39BF24' }]}>
+            🤝 Como Participar da AMO?
+          </Text>
+          <Text style={[styles.ctaText, { color: theme.colors.text }]}>
+            Faça parte da nossa comunidade! Você pode participar como associado, 
+            voluntário ou apoiador dos nossos projetos.
+          </Text>
+          
+          <View style={styles.ctaButtons}>
+            <TouchableOpacity 
+              style={[styles.ctaButton, { backgroundColor: '#9EBF26' }]}
+              onPress={() => router.push('/associe-se')}
+            >
+              <Text style={styles.ctaButtonText}>🤝 Associe-se</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={[styles.ctaButton, { backgroundColor: '#F2C335' }]}
+              onPress={() => router.push('/contato')}
+            >
+              <Text style={styles.ctaButtonText}>📞 Contato</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* ESPAÇAMENTO FINAL */}
+        <View style={{ height: 20 }} />
+      </ScrollView>
+    </View>
   );
 }
 
@@ -417,11 +491,39 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  
-  // 🏢 HEADER
+  // ✅ HEADER STYLES
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingBottom: 16,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+  },
+  backButton: {
+    padding: 8,
+    marginRight: 12,
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    flex: 1,
+    textAlign: 'center',
+  },
+  headerSpacer: {
+    width: 40,
+  },
+  content: {
+    flex: 1,
+  },
+  // HEADER CONTAINER
   headerContainer: {
-    height: 250,
     position: 'relative',
+    height: 200,
   },
   headerImage: {
     width: '100%',
@@ -433,10 +535,10 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: 'rgba(0,0,0,0.6)',
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
     padding: 20,
   },
-  headerTitle: {
+  headerTitleText: {
     fontSize: 28,
     fontWeight: 'bold',
     color: '#fff',
@@ -444,16 +546,14 @@ const styles = StyleSheet.create({
   },
   headerSubtitle: {
     fontSize: 16,
-    color: '#fff',
-    opacity: 0.9,
+    color: 'rgba(255, 255, 255, 0.9)',
   },
-
-  // 📖 SEÇÕES
+  // SECTION STYLES
   section: {
     margin: 15,
     padding: 20,
-    borderRadius: 12,
-    elevation: 2,
+    borderRadius: 15,
+    elevation: 3,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -463,65 +563,40 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: 'bold',
     marginBottom: 15,
+    textAlign: 'center',
   },
   sectionText: {
     fontSize: 16,
     lineHeight: 24,
-    marginBottom: 10,
+    marginBottom: 15,
+    textAlign: 'justify',
   },
   subSectionTitle: {
     fontSize: 18,
-    fontWeight: '600',
-    marginTop: 20,
-    marginBottom: 15,
-  },
-
-  // 👥 MEMBROS DA DIRETORIA
-  membroCard: {
-    flexDirection: 'row',
-    padding: 15,
-    marginBottom: 15,
-    borderRadius: 10,
-    elevation: 1,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-  },
-  membroFoto: {
-    marginRight: 15,
-  },
-  fotoImage: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    resizeMode: 'cover',
-  },
-  fotoPlaceholder: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  fotoPlaceholderText: {
-    color: '#fff',
-    fontSize: 18,
     fontWeight: 'bold',
+    marginTop: 20,
+    marginBottom: 10,
+  },
+  // MEMBRO STYLES
+  membroCard: {
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 10,
+    borderLeftWidth: 4,
+    borderLeftColor: '#F2C335',
   },
   membroInfo: {
     flex: 1,
-    justifyContent: 'center',
   },
   membroNome: {
     fontSize: 16,
     fontWeight: 'bold',
-    marginBottom: 2,
+    marginBottom: 5,
   },
   membroCargo: {
     fontSize: 14,
     fontWeight: '600',
-    marginBottom: 2,
+    marginBottom: 3,
   },
   membroConselho: {
     fontSize: 12,
@@ -530,16 +605,15 @@ const styles = StyleSheet.create({
   },
   membroContato: {
     fontSize: 12,
-    opacity: 0.7,
+    fontStyle: 'italic',
   },
-
-  // 📋 REUNIÕES
+  // REUNIÃO STYLES
   reuniaoCard: {
     padding: 15,
+    borderRadius: 10,
     marginBottom: 15,
     borderLeftWidth: 4,
     backgroundColor: 'rgba(242, 195, 53, 0.1)',
-    borderRadius: 8,
   },
   reuniaoHeader: {
     marginBottom: 10,
@@ -551,7 +625,7 @@ const styles = StyleSheet.create({
   },
   reuniaoTitulo: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: 'bold',
   },
   reuniaoResumo: {
     fontSize: 14,
@@ -560,16 +634,15 @@ const styles = StyleSheet.create({
   },
   reuniaoAta: {
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: 'bold',
   },
-
-  // 🤝 PARCERIAS
+  // PARCERIA STYLES
   parceriaCard: {
     flexDirection: 'row',
     padding: 15,
-    marginBottom: 15,
     borderRadius: 10,
-    elevation: 1,
+    marginBottom: 10,
+    elevation: 2,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
@@ -582,7 +655,6 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-    resizeMode: 'contain',
   },
   logoPlaceholder: {
     width: 50,
@@ -593,12 +665,11 @@ const styles = StyleSheet.create({
   },
   logoPlaceholderText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
   },
   parceriaInfo: {
     flex: 1,
-    justifyContent: 'center',
   },
   parceriaNome: {
     fontSize: 16,
@@ -612,117 +683,147 @@ const styles = StyleSheet.create({
   },
   parceriaSite: {
     fontSize: 12,
-    fontWeight: '500',
+    fontWeight: 'bold',
   },
-
-  // 📷 GALERIA
+  // GALERIA STYLES
   galeriaContainer: {
-    marginTop: 10,
+    marginBottom: 15,
   },
-  galeriaImagemPrincipal: {
+  fotoSede: {
     width: '100%',
     height: 200,
     borderRadius: 10,
+    marginBottom: 10,
     resizeMode: 'cover',
-    marginBottom: 15,
   },
-  galeriaThumbnails: {
+  miniaturas: {
     flexDirection: 'row',
   },
-  thumbnail: {
+  miniatura: {
     marginRight: 10,
+    borderWidth: 2,
     borderRadius: 8,
-    overflow: 'hidden',
   },
-  thumbnailImage: {
+  miniaturaImage: {
     width: 60,
-    height: 60,
+    height: 45,
+    borderRadius: 6,
     resizeMode: 'cover',
   },
-
-  // 📍 LOCALIZAÇÃO
-  localizacaoContainer: {
-    marginTop: 10,
-  },
-  enderecoInfo: {
-    marginBottom: 20,
-  },
-  enderecoTexto: {
-    fontSize: 16,
-    marginBottom: 8,
-  },
-  mapaPlaceholder: {
-    height: 120,
-    borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 2,
-    borderStyle: 'dashed',
-  },
-  mapaTexto: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 5,
-  },
-  mapaSubTexto: {
-    fontSize: 14,
-    opacity: 0.8,
-  },
-
-  // 🤝 COMO PARTICIPAR
-  participarContainer: {
-    marginTop: 10,
-  },
-  participarItem: {
+  // ENDEREÇO STYLES
+  enderecoButton: {
     flexDirection: 'row',
-    marginBottom: 20,
-    alignItems: 'flex-start',
-  },
-  participarIcon: {
-    fontSize: 24,
-    marginRight: 15,
-    marginTop: 5,
-  },
-  participarTexto: {
-    flex: 1,
-  },
-    participarTitulo: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 5,
-  },
-  participarDescricao: {
-    fontSize: 14,
-    lineHeight: 20,
-    opacity: 0.8,
-  },
-
-  // 📊 ESTATÍSTICAS
-  estatisticasContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 15,
-  },
-  estatisticaItem: {
-    flex: 1,
     alignItems: 'center',
     padding: 15,
-    marginHorizontal: 5,
     borderRadius: 10,
-    borderWidth: 2,
-    backgroundColor: 'rgba(242, 195, 53, 0.1)',
+    marginTop: 10,
   },
-  estatisticaNumero: {
+  enderecoIcon: {
     fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 5,
+    marginRight: 15,
   },
-  estatisticaTexto: {
+  enderecoInfo: {
+    flex: 1,
+  },
+  enderecoTitulo: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  enderecoTexto: {
+    color: 'rgba(255, 255, 255, 0.9)',
+    fontSize: 14,
+  },
+  // ATUAÇÃO STYLES
+  atuacaoGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  atuacaoItem: {
+    width: '48%',
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 10,
+    alignItems: 'center',
+  },
+  atuacaoIcon: {
+    fontSize: 32,
+    marginBottom: 10,
+  },
+    atuacaoTitulo: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  atuacaoDescricao: {
     fontSize: 12,
     textAlign: 'center',
-    fontWeight: '500',
+    lineHeight: 16,
+  },
+  // CONQUISTAS STYLES
+  conquistasList: {
+    gap: 12,
+  },
+  conquistaItem: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    paddingVertical: 8,
+  },
+  conquistaIcon: {
+    fontSize: 18,
+    marginRight: 12,
+    marginTop: 2,
+  },
+  conquistaTexto: {
+    fontSize: 16,
+    flex: 1,
+    lineHeight: 22,
+  },
+  // CTA STYLES
+  ctaSection: {
+    margin: 15,
+    padding: 20,
+    borderRadius: 15,
+    alignItems: 'center',
+    borderWidth: 2,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  ctaTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  ctaText: {
+    fontSize: 16,
+    textAlign: 'center',
+    marginBottom: 20,
+    lineHeight: 22,
+  },
+  ctaButtons: {
+    flexDirection: 'row',
+    gap: 15,
+  },
+  ctaButton: {
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 25,
+    minWidth: 120,
+    alignItems: 'center',
+  },
+  ctaButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 
 export default AtuacaoAmoScreen;
+
 

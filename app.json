@@ -8,7 +8,7 @@
     "userInterfaceStyle": "light",
     "scheme": "amo-orlandia",
     "splash": {
-      "image": "./assets/images/splash.png",
+      "image": "./assets/images/icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#39BF24"
     },
@@ -22,7 +22,9 @@
         "CFBundleURLTypes": [
           {
             "CFBundleURLName": "amo-orlandia",
-            "CFBundleURLSchemes": ["amo-orlandia"]
+            "CFBundleURLSchemes": [
+              "amo-orlandia"
+            ]
           }
         ]
       }
@@ -36,7 +38,8 @@
       "permissions": [
         "android.permission.CAMERA",
         "android.permission.READ_EXTERNAL_STORAGE",
-        "android.permission.WRITE_EXTERNAL_STORAGE"
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.RECORD_AUDIO"
       ],
       "intentFilters": [
         {
@@ -47,7 +50,10 @@
               "scheme": "amo-orlandia"
             }
           ],
-          "category": ["BROWSABLE", "DEFAULT"]
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
         }
       ]
     },
@@ -68,6 +74,12 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "0cc04a71-43bb-4dc0-8173-154172ad1e57"
+      }
     }
   }
 }

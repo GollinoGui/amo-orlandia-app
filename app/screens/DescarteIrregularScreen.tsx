@@ -1,4 +1,4 @@
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { Ionicons } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';
 import { useRouter } from 'expo-router';
 import React from 'react';
@@ -7,18 +7,19 @@ import {
   Linking,
   Platform,
   ScrollView,
+  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
   View
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTheme } from '../contexts/ThemeContext';
 
 export function DescarteIrregularScreen() {
-  const backgroundColor = useThemeColor({}, 'background');
-  const textColor = useThemeColor({}, 'text');
-  const cardColor = useThemeColor({}, 'card');
   const router = useRouter();
-  const primaryColor = '#39BF24';
+  const insets = useSafeAreaInsets();
+  const { theme } = useTheme();
 
   // 📋 FUNÇÃO PARA COPIAR EMAIL
   const copiarEmail = async () => {
@@ -27,11 +28,10 @@ export function DescarteIrregularScreen() {
     try {
       await Clipboard.setStringAsync(email);
       
-      // 🎉 NOTIFICAÇÃO DE SUCESSO
       if (Platform.OS === 'web') {
         Alert.alert(
           '📋 Email Copiado!', 
-          `O email ${email} foi copiado para sua área de transferência!\n\nVocê pode colar em qualquer app de email.`,
+          `O email ${email} foi copiado para sua área de transferência!`,
           [{ text: '✅ OK', style: 'default' }]
         );
       } else {
@@ -57,7 +57,6 @@ export function DescarteIrregularScreen() {
     }
   };
 
-  // 📧 FUNÇÃO PARA TENTAR ABRIR GMAIL (MOBILE)
   const tentarAbrirGmail = async () => {
     try {
       const gmailUrl = 'googlegmail://';
@@ -66,7 +65,6 @@ export function DescarteIrregularScreen() {
       if (canOpenGmail) {
         await Linking.openURL(gmailUrl);
       } else {
-        // Tenta abrir qualquer app de email
         const emailUrl = 'mailto:';
         await Linking.openURL(emailUrl);
       }
@@ -75,12 +73,10 @@ export function DescarteIrregularScreen() {
     }
   };
 
-  // 🔗 FUNÇÃO PARA IR PARA CONTATO
   const irParaContato = () => {
     router.push('/contato');
   };
 
-  // 🔗 FUNÇÃO PARA INSTAGRAM DA PREFEITURA
   const abrirInstagramPrefeitura = async () => {
     const url = 'https://www.instagram.com/prefeituramunicipalorlandia/';
     
@@ -91,7 +87,6 @@ export function DescarteIrregularScreen() {
     }
   };
 
-  // 🔗 FUNÇÃO PARA LIGAR PREFEITURA
   const ligarPrefeitura = async () => {
     const telefone = 'tel:+551638263600';
     
@@ -108,220 +103,278 @@ export function DescarteIrregularScreen() {
   };
 
   return (
-    <ScrollView style={[styles.container, { backgroundColor }]}>
-      {/* HEADER PRINCIPAL */}
-      <View style={[styles.headerCard, { backgroundColor: primaryColor }]}>
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      {/* STATUS BAR */}
+      <StatusBar 
+        barStyle={theme.isDark ? "light-content" : "light-content"}
+        backgroundColor="#E74C3C"
+      />
+      
+      {/* HEADER RESPONSIVO */}
+      <View style={[
+        styles.header, 
+        { 
+          paddingTop: insets.top + 10,
+          backgroundColor: '#E74C3C'
+        }
+      ]}>
+        <TouchableOpacity 
+          style={styles.backButton} 
+          onPress={() => router.back()}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
+        </TouchableOpacity>
+        
         <Text style={styles.headerTitle}>📸 Descarte Irregular</Text>
-        <Text style={styles.headerSubtitle}>
-          Denuncie descartes irregulares e ajude a manter Orlândia limpa!
-        </Text>
+        
+        <View style={styles.headerSpacer} />
       </View>
 
-      {/* INFORMAÇÕES SOBRE CATA GALHO */}
-      <View style={[styles.card, { backgroundColor: cardColor }]}>
-                <Text style={[styles.cardTitle, { color: '#F2C335' }]}>
-          🚛 Campanha Cata Galho
-        </Text>
-        <Text style={[styles.cardText, { color: textColor }]}>
-          A Prefeitura de Orlândia realiza a campanha "Cata Galho", passando pelas ruas 
-          da cidade para recolher objetos descartados de forma adequada.
-        </Text>
-        
-        <View style={styles.infoList}>
-          <Text style={[styles.listItem, { color: textColor }]}>
-            • 🗓️ Cronograma semanal por bairros
-          </Text>
-          <Text style={[styles.listItem, { color: textColor }]}>
-            • 🪑 Móveis velhos e objetos grandes
-          </Text>
-          <Text style={[styles.listItem, { color: textColor }]}>
-            • 🌿 Galhos e restos de poda
-          </Text>
-          <Text style={[styles.listItem, { color: textColor }]}>
-            • 🏗️ Entulhos de pequenas reformas
+      <ScrollView style={styles.content}>
+        {/* HEADER CARD */}
+        <View style={[styles.headerCard, { backgroundColor: theme.colors.card }]}>
+          <Text style={[styles.headerSubtitle, { color: theme.colors.text }]}>
+            Denuncie descartes irregulares e ajude a manter Orlândia limpa!
           </Text>
         </View>
-        
 
-        <TouchableOpacity 
-          style={[styles.actionButton, { backgroundColor: '#E4405F' }]}
-          onPress={abrirInstagramPrefeitura}
-        >
-          <Text style={styles.actionButtonText}>
-            Mais Informações no Instagram da Prefeitura
+        {/* INFORMAÇÕES SOBRE CATA GALHO */}
+        <View style={[styles.card, { backgroundColor: theme.colors.card }]}>
+          <Text style={[styles.cardTitle, { color: '#F2C335' }]}>
+            🚛 Campanha Cata Galho
           </Text>
-        </TouchableOpacity>
-      </View>
-      <View style={[styles.card, { backgroundColor: cardColor }]}>
-        <Text style={[styles.cardTitle, { color: '#9B59B6' }]}>
-          🚫 Tipos de Descarte Irregular
-        </Text>
-        
-        <View style={styles.violationGrid}>
-          <View style={styles.violationItem}>
-            <Text style={styles.violationIcon}>🪑</Text>
-            <Text style={[styles.violationText, { color: textColor }]}>
-              Móveis na rua fora do dia do Cata Galho
-            </Text>
-          </View>
-          
-          <View style={styles.violationItem}>
-            <Text style={styles.violationIcon}>🗑️</Text>
-            <Text style={[styles.violationText, { color: textColor }]}>
-              Lixo doméstico em locais inadequados
-            </Text>
-          </View>
-          
-          <View style={styles.violationItem}>
-            <Text style={styles.violationIcon}>🏗️</Text>
-            <Text style={[styles.violationText, { color: textColor }]}>
-              Entulho de construção em vias públicas
-            </Text>
-          </View>
-          
-          <View style={styles.violationItem}>
-            <Text style={styles.violationIcon}>🌿</Text>
-            <Text style={[styles.violationText, { color: textColor }]}>
-              Galhos e restos de poda fora do cronograma
-            </Text>
-          </View>
-        </View>
-      </View>
-
-      {/* COMO DENUNCIAR */}
-      <View style={[styles.card, { backgroundColor: cardColor }]}>
-        <Text style={[styles.cardTitle, { color: '#E74C3C' }]}>
-          🚨 Como Denunciar Descarte Irregular
-        </Text>
-        
-        <View style={styles.stepContainer}>
-          <View style={styles.step}>
-            <Text style={styles.stepNumber}>1</Text>
-            <Text style={[styles.stepText, { color: textColor }]}>
-              📷 Tire fotos do descarte irregular
-            </Text>
-          </View>
-          
-          <View style={styles.step}>
-            <Text style={styles.stepNumber}>2</Text>
-            <Text style={[styles.stepText, { color: textColor }]}>
-              📍 Anote o endereço exato ou ponto de referência
-            </Text>
-          </View>
-          
-          <View style={styles.step}>
-            <Text style={styles.stepNumber}>3</Text>
-            <Text style={[styles.stepText, { color: textColor }]}>
-              📞 Entre em contato pelos canais abaixo
-            </Text>
-          </View>
-        </View>
-      </View>
-
-      {/* CANAIS DE DENÚNCIA */}
-      <View style={[styles.card, { backgroundColor: cardColor }]}>
-        <Text style={[styles.cardTitle, { color: primaryColor }]}>
-          📞 Canais de Denúncia
-        </Text>
-        
-        <TouchableOpacity 
-          style={[styles.contactButton, { backgroundColor: '#3498DB' }]}
-          onPress={ligarPrefeitura}
-        >
-          <Text style={styles.contactIcon}>📞</Text>
-          <View style={styles.contactInfo}>
-            <Text style={styles.contactTitle}>Prefeitura de Orlândia</Text>
-            <Text style={styles.contactSubtitle}>(16) 3826-3600</Text>
-          </View>
-        </TouchableOpacity>
-
-        {/* EMAIL - COPIA AUTOMATICAMENTE AO CLICAR */}
-        <TouchableOpacity 
-          style={[styles.contactButton, { backgroundColor: '#E67E22' }]}
-          onPress={copiarEmail}
-        >
-          <Text style={styles.contactIcon}>📧</Text>
-          <View style={styles.contactInfo}>
-            <Text style={styles.contactTitle}>Email da Prefeitura</Text>
-            <Text style={styles.contactSubtitle}>faleconosco@orlandia.sp.gov.br</Text>
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity 
-          style={[styles.contactButton, { backgroundColor: '#E4405F' }]}
-          onPress={abrirInstagramPrefeitura}
-        >
-          <Text style={styles.contactIcon}>📷</Text>
-          <View style={styles.contactInfo}>
-            <Text style={styles.contactTitle}>Instagram Prefeitura</Text>
-            <Text style={styles.contactSubtitle}>@prefeituramunicipalorlandia</Text>
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity 
-          style={[styles.contactButton, { backgroundColor: '#F2C335' }]}
-          onPress={irParaContato}
-        >
-          <Text style={styles.contactIcon}>📝</Text>
-          <View style={styles.contactInfo}>
-            <Text style={styles.contactTitle}>Formulário de Contato</Text>
-            <Text style={styles.contactSubtitle}>Use nosso formulário completo</Text>
-          </View>
-        </TouchableOpacity>
-      </View>
-
-     
-
-      {/* FUNCIONALIDADE AGORA DISPONÍVEL */}
-      <View style={[styles.card, { backgroundColor: '#E8F5E8', borderColor: '#27AE60', borderWidth: 2 }]}>
-        <Text style={[styles.cardTitle, { color: '#27AE60' }]}>
-          🚀 Funcionalidade Disponível!
-        </Text>
-        <Text style={[styles.cardText, { color: '#2C3E50' }]}>
-          Agora você pode fazer denúncias diretamente pelo app com:
-        </Text>
-        
-        <View style={styles.futureFeatures}>
-          <Text style={[styles.futureFeature, { color: '#27AE60' }]}>✅ Câmera integrada</Text>
-          <Text style={[styles.futureFeature, { color: '#27AE60' }]}>✅ GPS automático</Text>
-          <Text style={[styles.futureFeature, { color: '#27AE60' }]}>✅ Múltiplas fotos</Text>
-          <Text style={[styles.futureFeature, { color: '#F39C12' }]}>🚧 Envio para autoridades</Text>
-        </View>
-
-        <TouchableOpacity 
-          style={[styles.actionButton, { backgroundColor: '#27AE60', marginTop: 15 }]}
-          onPress={() => router.push('/denuncia')}
-        >
-          <Text style={styles.actionButtonText}>
-            🚀 Fazer Denúncia Agora!
+          <Text style={[styles.cardText, { color: theme.colors.text }]}>
+            A Prefeitura de Orlândia realiza a campanha "Cata Galho", passando pelas ruas 
+            da cidade para recolher objetos descartados de forma adequada.
           </Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+          
+          <View style={styles.infoList}>
+            <Text style={[styles.listItem, { color: theme.colors.text }]}>
+              • 🗓️ Cronograma semanal por bairros
+            </Text>
+            <Text style={[styles.listItem, { color: theme.colors.text }]}>
+              • 🪑 Móveis velhos e objetos grandes
+            </Text>
+            <Text style={[styles.listItem, { color: theme.colors.text }]}>
+              • 🌿 Galhos e restos de poda
+            </Text>
+            <Text style={[styles.listItem, { color: theme.colors.text }]}>
+              • 🏗️ Entulhos de pequenas reformas
+            </Text>
+          </View>
+
+          <TouchableOpacity 
+            style={[styles.actionButton, { backgroundColor: '#E4405F' }]}
+            onPress={abrirInstagramPrefeitura}
+          >
+            <Text style={styles.actionButtonText}>
+              Mais Informações no Instagram da Prefeitura
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* TIPOS DE DESCARTE IRREGULAR */}
+        <View style={[styles.card, { backgroundColor: theme.colors.card }]}>
+          <Text style={[styles.cardTitle, { color: '#9B59B6' }]}>
+            🚫 Tipos de Descarte Irregular
+          </Text>
+          
+          <View style={styles.violationGrid}>
+            <View style={[styles.violationItem, { backgroundColor: theme.colors.surface }]}>
+              <Text style={styles.violationIcon}>🪑</Text>
+              <Text style={[styles.violationText, { color: theme.colors.text }]}>
+                Móveis na rua fora do dia do Cata Galho
+              </Text>
+            </View>
+            
+            <View style={[styles.violationItem, { backgroundColor: theme.colors.surface }]}>
+              <Text style={styles.violationIcon}>🗑️</Text>
+              <Text style={[styles.violationText, { color: theme.colors.text }]}>
+                Lixo doméstico em locais inadequados
+              </Text>
+            </View>
+            
+            <View style={[styles.violationItem, { backgroundColor: theme.colors.surface }]}>
+              <Text style={styles.violationIcon}>🏗️</Text>
+              <Text style={[styles.violationText, { color: theme.colors.text }]}>
+                Entulho de construção em vias públicas
+              </Text>
+            </View>
+            
+            <View style={[styles.violationItem, { backgroundColor: theme.colors.surface }]}>
+              <Text style={styles.violationIcon}>🌿</Text>
+              <Text style={[styles.violationText, { color: theme.colors.text }]}>
+                Galhos e restos de poda fora do cronograma
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        {/* COMO DENUNCIAR */}
+        <View style={[styles.card, { backgroundColor: theme.colors.card }]}>
+          <Text style={[styles.cardTitle, { color: '#E74C3C' }]}>
+            🚨 Como Denunciar Descarte Irregular
+          </Text>
+          
+          <View style={styles.stepContainer}>
+            <View style={styles.step}>
+              <Text style={styles.stepNumber}>1</Text>
+              <Text style={[styles.stepText, { color: theme.colors.text }]}>
+                📷 Tire fotos do descarte irregular
+              </Text>
+            </View>
+            
+            <View style={styles.step}>
+              <Text style={styles.stepNumber}>2</Text>
+              <Text style={[styles.stepText, { color: theme.colors.text }]}>
+                📍 Anote o endereço exato ou ponto de referência
+              </Text>
+            </View>
+            
+            <View style={styles.step}>
+              <Text style={styles.stepNumber}>3</Text>
+              <Text style={[styles.stepText, { color: theme.colors.text }]}>
+                📞 Entre em contato pelos canais abaixo
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        {/* CANAIS DE DENÚNCIA */}
+        <View style={[styles.card, { backgroundColor: theme.colors.card }]}>
+          <Text style={[styles.cardTitle, { color: '#39BF24' }]}>
+            📞 Canais de Denúncia
+          </Text>
+          
+          <TouchableOpacity 
+            style={[styles.contactButton, { backgroundColor: '#3498DB' }]}
+            onPress={ligarPrefeitura}
+          >
+            <Text style={styles.contactIcon}>📞</Text>
+            <View style={styles.contactInfo}>
+              <Text style={styles.contactTitle}>Prefeitura de Orlândia</Text>
+              <Text style={styles.contactSubtitle}>(16) 3826-3600</Text>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={[styles.contactButton, { backgroundColor: '#E67E22' }]}
+            onPress={copiarEmail}
+          >
+            <Text style={styles.contactIcon}>📧</Text>
+            <View style={styles.contactInfo}>
+              <Text style={styles.contactTitle}>Email da Prefeitura</Text>
+              <Text style={styles.contactSubtitle}>faleconosco@orlandia.sp.gov.br</Text>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={[styles.contactButton, { backgroundColor: '#E4405F' }]}
+            onPress={abrirInstagramPrefeitura}
+          >
+                        <Text style={styles.contactIcon}>📷</Text>
+            <View style={styles.contactInfo}>
+              <Text style={styles.contactTitle}>Instagram Prefeitura</Text>
+              <Text style={styles.contactSubtitle}>@prefeituramunicipalorlandia</Text>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={[styles.contactButton, { backgroundColor: '#F2C335' }]}
+            onPress={irParaContato}
+          >
+            <Text style={styles.contactIcon}>📝</Text>
+            <View style={styles.contactInfo}>
+              <Text style={styles.contactTitle}>Formulário de Contato</Text>
+              <Text style={styles.contactSubtitle}>Use nosso formulário completo</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+
+        {/* FUNCIONALIDADE DISPONÍVEL */}
+        <View style={[styles.card, { 
+          backgroundColor: theme.isDark ? '#1B4D3E' : '#E8F5E8', 
+          borderColor: '#27AE60', 
+          borderWidth: 2 
+        }]}>
+          <Text style={[styles.cardTitle, { color: '#27AE60' }]}>
+            🚀 Funcionalidade Disponível!
+          </Text>
+          <Text style={[styles.cardText, { color: theme.colors.text }]}>
+            Agora você pode fazer denúncias diretamente pelo app com:
+          </Text>
+          
+          <View style={styles.futureFeatures}>
+            <Text style={[styles.futureFeature, { color: '#27AE60' }]}>✅ Câmera integrada</Text>
+            <Text style={[styles.futureFeature, { color: '#27AE60' }]}>✅ GPS automático</Text>
+            <Text style={[styles.futureFeature, { color: '#27AE60' }]}>✅ Múltiplas fotos</Text>
+            <Text style={[styles.futureFeature, { color: '#F39C12' }]}>🚧 Envio para autoridades</Text>
+          </View>
+
+          <TouchableOpacity 
+            style={[styles.actionButton, { backgroundColor: '#27AE60', marginTop: 15 }]}
+            onPress={() => router.push('/denuncia')}
+          >
+            <Text style={styles.actionButtonText}>
+              🚀 Fazer Denúncia Agora!
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* ESPAÇAMENTO FINAL */}
+        <View style={{ height: 20 }} />
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingBottom: 16,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+  },
+  backButton: {
+    padding: 8,
+    marginRight: 12,
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    flex: 1,
+    textAlign: 'center',
+  },
+  headerSpacer: {
+    width: 40, // Para balancear o botão de voltar
+  },
+  content: {
+    flex: 1,
     padding: 15,
   },
   headerCard: {
-    padding: 25,
+    padding: 20,
     borderRadius: 15,
     marginBottom: 20,
     alignItems: 'center',
-  },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#fff',
-    textAlign: 'center',
-    marginBottom: 10,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   headerSubtitle: {
     fontSize: 16,
-    color: 'rgba(255, 255, 255, 0.9)',
     textAlign: 'center',
     lineHeight: 22,
   },
@@ -420,7 +473,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 15,
-    backgroundColor: 'rgba(155, 89, 182, 0.1)',
     borderRadius: 10,
     borderLeftWidth: 4,
     borderLeftColor: '#9B59B6',

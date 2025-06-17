@@ -1,10 +1,31 @@
+// ✅ TEMPLATE PARA COPIAR E COLAR
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
+import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { Alert, Image, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import {
+  Alert,
+  Image,
+  Platform,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
+} from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTheme } from '../contexts/ThemeContext';
 import apiService from '../services/apiService';
 
 export function PoliticaReservaScreen() {
+  const router = useRouter();
+  const insets = useSafeAreaInsets();
+  const { theme } = useTheme();
+  
+  // ✅ MANTIVE TODAS AS SUAS VARIÁVEIS ORIGINAIS
   const backgroundColor = useThemeColor({}, 'background');
   const textColor = useThemeColor({}, 'text');
   const primaryColor = '#39BF24';
@@ -25,10 +46,10 @@ export function PoliticaReservaScreen() {
   const [enviando, setEnviando] = useState(false);
 
   const patrocinadores = [
-        'MORLAN - Juntos por uma Orlândia sustentável',
-        'UNIMED - Cuidando do meio ambiente',
-        'INTELLI - Por uma cidade mais limpa'
-      ];
+    'MORLAN - Juntos por uma Orlândia sustentável',
+    'UNIMED - Cuidando do meio ambiente',
+    'INTELLI - Por uma cidade mais limpa'
+  ];
 
   // ✅ FUNÇÕES DE VALIDAÇÃO (universais)
   const validarNome = (nome: string) => {
@@ -369,7 +390,7 @@ export function PoliticaReservaScreen() {
     } catch (error) {
       console.error('❌ [UNIVERSAL] Erro:', error);
       mostrarErro('Erro de conexão. Verifique sua internet e tente novamente.');
-    } finally {
+        } finally {
       setEnviando(false);
     }
   };
@@ -388,245 +409,307 @@ export function PoliticaReservaScreen() {
   };
 
   return (
-    <ScrollView style={[styles.container, { backgroundColor }]}>
-      <View style={[styles.card, { backgroundColor: cardColor }]}>
-        <Text style={[styles.title, { color: primaryColor }]}>🪑 Política de Reserva de Móveis</Text>
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      {/* ✅ NOVO: STATUS BAR */}
+      <StatusBar 
+        barStyle={theme.isDark ? "light-content" : "light-content"}
+        backgroundColor="#72BF24"
+      />
+      
+      {/* ✅ NOVO: HEADER RESPONSIVO */}
+      <View style={[
+        styles.header, 
+        { 
+          paddingTop: insets.top + 10,
+          backgroundColor: '#72BF24'
+        }
+      ]}>
+        <TouchableOpacity 
+          style={styles.backButton} 
+          onPress={() => router.back()}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          <Ionicons name="arrow-back" size={24} color="#FFFFFF" />
+        </TouchableOpacity>
         
-        <Text style={[styles.description, { color: textColor }]}>
-          Se você entrou aqui, é porque tem algum tipo de móvel, objeto ou eletrodoméstico para descartar.
-        </Text>
+        <Text style={styles.headerTitle}>🪑 Política de Reserva</Text>
         
-        <Text style={[styles.subtitle, { color: textColor }]}>Vamos começar:</Text>
+        <View style={styles.headerSpacer} />
+      </View>
 
-        {/* 🔧 SISTEMA DE MENSAGENS UNIVERSAL */}
-        {erro ? (
-          <View style={[styles.messageContainer, styles.errorContainer]}>
-            <Text style={styles.errorMessageText}>❌ {erro}</Text>
-          </View>
-        ) : null}
-
-        {sucesso ? (
-          <View style={[styles.messageContainer, styles.successContainer]}>
-            <Text style={styles.successMessageText}>✅ {sucesso}</Text>
-          </View>
-        ) : null}
-
-        <View style={styles.form}>
-          {/* Nome */}
-          <Text style={[styles.label, { color: textColor }]}>Seu nome: *</Text>
-          <TextInput
-            style={[styles.input, { borderColor: primaryColor, color: textColor }]}
-            value={formData.nome}
-            onChangeText={handleNomeChange}
-            placeholder="Digite seu nome completo"
-            placeholderTextColor={textColor + '80'}
-            maxLength={50}
-            editable={!enviando}
-          />
-          {formData.nome.length > 0 && !validarNome(formData.nome) && (
-            <Text style={styles.fieldErrorText}>Nome deve conter apenas letras</Text>
-          )}
-
-          {/* Telefone */}
-          <Text style={[styles.label, { color: textColor }]}>
-            Seu telefone: * ({contarDigitosTelefone(formData.telefone)}/11)
-          </Text>
-          <TextInput
-            style={[styles.input, { borderColor: primaryColor, color: textColor }]}
-            value={formData.telefone}
-            onChangeText={handleTelefoneChange}
-            placeholder="(16) 99999-9999"
-            placeholderTextColor={textColor + '80'}
-            keyboardType="phone-pad"
-            maxLength={15}
-            editable={!enviando}
-          />
-          {formData.telefone.length > 0 && !validarTelefone(formData.telefone) && (
-            <Text style={styles.fieldErrorText}>Telefone deve ter 10 ou 11 dígitos</Text>
-          )}
-
-          {/* Telefone de contato */}
-          <Text style={[styles.label, { color: textColor }]}>
-            Um telefone de contato, parente ou vizinho: ({contarDigitosTelefone(formData.telefoneContato)}/11)
-          </Text>
-          <TextInput
-            style={[styles.input, { borderColor: primaryColor, color: textColor }]}
-            value={formData.telefoneContato}
-            onChangeText={handleTelefoneContatoChange}
-            placeholder="(16) 99999-9999"
-            placeholderTextColor={textColor + '80'}
-            keyboardType="phone-pad"
-            maxLength={15}
-            editable={!enviando}
-          />
-
-          {/* Endereço */}
-          <Text style={[styles.label, { color: textColor }]}>
-            Endereço exato e referências próximas: * ({formData.endereco.length}/200)
-          </Text>
-          <TextInput
-            style={[styles.textArea, { borderColor: primaryColor, color: textColor }]}
-            value={formData.endereco}
-            onChangeText={handleEnderecoChange}
-            placeholder="Rua, número, bairro e pontos de referência (mínimo 10 caracteres)"
-            placeholderTextColor={textColor + '80'}
-            multiline
-            numberOfLines={3}
-            maxLength={200}
-            editable={!enviando}
-          />
-          {formData.endereco.length > 0 && formData.endereco.length < 10 && (
-            <Text style={styles.fieldErrorText}>Endereço deve ter pelo menos 10 caracteres</Text>
-          )}
-
-          {/* 🔧 CAMPO DE FOTO UNIVERSAL */}
-          <Text style={[styles.label, { color: textColor }]}>
-            Foto do móvel/objeto (opcional):
-            {Platform.OS === 'web' ? ' 🌐' : ' 📱'}
+      {/* ✅ SEU CONTEÚDO ORIGINAL */}
+      <ScrollView style={styles.content}>
+        <View style={[styles.card, { backgroundColor: cardColor }]}>
+          <Text style={[styles.title, { color: primaryColor }]}>🪑 Política de Reserva de Móveis</Text>
+          
+          <Text style={[styles.description, { color: textColor }]}>
+            Se você entrou aqui, é porque tem algum tipo de móvel, objeto ou eletrodoméstico para descartar.
           </Text>
           
-          {formData.fotoMovel ? (
-            <View style={styles.fotoContainer}>
-              <Image source={{ uri: formData.fotoMovel }} style={styles.fotoPreview} />
-              <View style={styles.fotoButtons}>
-                <TouchableOpacity
-                  style={[styles.fotoButton, { backgroundColor: primaryColor }]}
-                  onPress={adicionarFoto}
-                  disabled={enviando}
-                >
-                  <Text style={styles.fotoButtonText}>
-                    📷 Trocar {Platform.OS === 'web' ? 'Arquivo' : 'Foto'}
-                  </Text>
-                </TouchableOpacity>
-                
-                <TouchableOpacity
-                  style={[styles.fotoButton, { backgroundColor: '#E74C3C' }]}
-                  onPress={removerFoto}
-                  disabled={enviando}
-                >
-                  <Text style={styles.fotoButtonText}>🗑️ Remover</Text>
-                </TouchableOpacity>
-              </View>
+          <Text style={[styles.subtitle, { color: textColor }]}>Vamos começar:</Text>
+
+          {/* 🔧 SISTEMA DE MENSAGENS UNIVERSAL */}
+          {erro ? (
+            <View style={[styles.messageContainer, styles.errorContainer]}>
+              <Text style={styles.errorMessageText}>❌ {erro}</Text>
             </View>
-          ) : (
+          ) : null}
+
+          {sucesso ? (
+            <View style={[styles.messageContainer, styles.successContainer]}>
+              <Text style={styles.successMessageText}>✅ {sucesso}</Text>
+            </View>
+          ) : null}
+
+          <View style={styles.form}>
+            {/* Nome */}
+            <Text style={[styles.label, { color: textColor }]}>Seu nome: *</Text>
+            <TextInput
+              style={[styles.input, { borderColor: primaryColor, color: textColor }]}
+              value={formData.nome}
+              onChangeText={handleNomeChange}
+              placeholder="Digite seu nome completo"
+              placeholderTextColor={textColor + '80'}
+              maxLength={50}
+              editable={!enviando}
+            />
+            {formData.nome.length > 0 && !validarNome(formData.nome) && (
+              <Text style={styles.fieldErrorText}>Nome deve conter apenas letras</Text>
+            )}
+
+            {/* Telefone */}
+            <Text style={[styles.label, { color: textColor }]}>
+              Seu telefone: * ({contarDigitosTelefone(formData.telefone)}/11)
+            </Text>
+            <TextInput
+              style={[styles.input, { borderColor: primaryColor, color: textColor }]}
+              value={formData.telefone}
+              onChangeText={handleTelefoneChange}
+              placeholder="(16) 99999-9999"
+              placeholderTextColor={textColor + '80'}
+              keyboardType="phone-pad"
+              maxLength={15}
+              editable={!enviando}
+            />
+            {formData.telefone.length > 0 && !validarTelefone(formData.telefone) && (
+              <Text style={styles.fieldErrorText}>Telefone deve ter 10 ou 11 dígitos</Text>
+            )}
+
+            {/* Telefone de contato */}
+            <Text style={[styles.label, { color: textColor }]}>
+              Um telefone de contato, parente ou vizinho: ({contarDigitosTelefone(formData.telefoneContato)}/11)
+            </Text>
+            <TextInput
+              style={[styles.input, { borderColor: primaryColor, color: textColor }]}
+              value={formData.telefoneContato}
+              onChangeText={handleTelefoneContatoChange}
+              placeholder="(16) 99999-9999"
+              placeholderTextColor={textColor + '80'}
+              keyboardType="phone-pad"
+              maxLength={15}
+              editable={!enviando}
+            />
+
+            {/* Endereço */}
+            <Text style={[styles.label, { color: textColor }]}>
+              Endereço exato e referências próximas: * ({formData.endereco.length}/200)
+            </Text>
+            <TextInput
+              style={[styles.textArea, { borderColor: primaryColor, color: textColor }]}
+              value={formData.endereco}
+              onChangeText={handleEnderecoChange}
+              placeholder="Rua, número, bairro e pontos de referência (mínimo 10 caracteres)"
+              placeholderTextColor={textColor + '80'}
+              multiline
+              numberOfLines={3}
+              maxLength={200}
+              editable={!enviando}
+            />
+            {formData.endereco.length > 0 && formData.endereco.length < 10 && (
+              <Text style={styles.fieldErrorText}>Endereço deve ter pelo menos 10 caracteres</Text>
+            )}
+
+            {/* 🔧 CAMPO DE FOTO UNIVERSAL */}
+            <Text style={[styles.label, { color: textColor }]}>
+              Foto do móvel/objeto (opcional):
+              {Platform.OS === 'web' ? ' 🌐' : ' 📱'}
+            </Text>
+            
+            {formData.fotoMovel ? (
+              <View style={styles.fotoContainer}>
+                <Image source={{ uri: formData.fotoMovel }} style={styles.fotoPreview} />
+                <View style={styles.fotoButtons}>
+                  <TouchableOpacity
+                    style={[styles.fotoButton, { backgroundColor: primaryColor }]}
+                    onPress={adicionarFoto}
+                    disabled={enviando}
+                  >
+                    <Text style={styles.fotoButtonText}>
+                      📷 Trocar {Platform.OS === 'web' ? 'Arquivo' : 'Foto'}
+                    </Text>
+                  </TouchableOpacity>
+                  
+                  <TouchableOpacity
+                    style={[styles.fotoButton, { backgroundColor: '#E74C3C' }]}
+                    onPress={removerFoto}
+                    disabled={enviando}
+                  >
+                    <Text style={styles.fotoButtonText}>🗑️ Remover</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            ) : (
+              <TouchableOpacity
+                style={[styles.addFotoButton, { borderColor: primaryColor }]}
+                onPress={adicionarFoto}
+                disabled={enviando}
+              >
+                <Text style={styles.addFotoIcon}>
+                  {Platform.OS === 'web' ? '📁' : '📷'}
+                </Text>
+                <Text style={[styles.addFotoText, { color: textColor }]}>
+                  {Platform.OS === 'web' 
+                    ? 'Escolher arquivo de imagem' 
+                    : 'Adicionar foto do móvel'
+                  }
+                </Text>
+                <Text style={[styles.addFotoSubtext, { color: textColor }]}>
+                  {Platform.OS === 'web'
+                    ? 'Clique para selecionar uma imagem do seu computador'
+                    : 'Toque para tirar uma foto ou escolher da galeria'
+                  }
+                </Text>
+              </TouchableOpacity>
+            )}
+
+            {/* Dias de espera */}
+            <Text style={[styles.label, { color: textColor }]}>
+              Quantos dias você consegue ficar com esse objeto até a AMO ir retirar? *
+            </Text>
+            <View style={styles.radioGroup}>
+              {['02 dias', '03 dias', '01 semana'].map((opcao) => (
+                <TouchableOpacity
+                  key={opcao}
+                  style={[
+                    styles.radioButton,
+                    { 
+                      borderColor: primaryColor,
+                      backgroundColor: formData.diasEspera === opcao ? primaryColor + '20' : 'transparent'
+                    }
+                  ]}
+                  onPress={() => {
+                    setFormData({...formData, diasEspera: opcao});
+                    limparMensagens();
+                  }}
+                  disabled={enviando}
+                >
+                  <View style={[
+                    styles.radioCircle,
+                    { 
+                      borderColor: primaryColor,
+                      backgroundColor: formData.diasEspera === opcao ? primaryColor : 'transparent'
+                    }
+                  ]} />
+                  <Text style={[styles.radioText, { color: textColor }]}>{opcao}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            {/* Apto para doação */}
+            <Text style={[styles.label, { color: textColor }]}>
+              Seu objeto/móvel está apto a ser doado a uma família carente? *
+            </Text>
+            <View style={styles.radioGroup}>
+              {['Sim', 'Não'].map((opcao) => (
+                <TouchableOpacity
+                  key={opcao}
+                  style={[
+                    styles.radioButton,
+                    { 
+                      borderColor: primaryColor,
+                      backgroundColor: formData.aptoDoacao === opcao ? primaryColor + '20' : 'transparent'
+                    }
+                  ]}
+                  onPress={() => {
+                    setFormData({...formData, aptoDoacao: opcao});
+                    limparMensagens();
+                  }}
+                  disabled={enviando}
+                >
+                  <View style={[
+                    styles.radioCircle,
+                    { 
+                      borderColor: primaryColor,
+                      backgroundColor: formData.aptoDoacao === opcao ? primaryColor : 'transparent'
+                    }
+                  ]} />
+                  <Text style={[styles.radioText, { color: textColor }]}>{opcao}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            {/* Botão de envio */}
             <TouchableOpacity
-              style={[styles.addFotoButton, { borderColor: primaryColor }]}
-              onPress={adicionarFoto}
+              style={[
+                styles.submitButton, 
+                { 
+                  backgroundColor: enviando ? '#ccc' : primaryColor,
+                  opacity: enviando ? 0.7 : 1
+                }
+              ]}
+              onPress={handleSubmit}
+              activeOpacity={0.7}
               disabled={enviando}
             >
-              <Text style={styles.addFotoIcon}>
-                {Platform.OS === 'web' ? '📁' : '📷'}
-              </Text>
-              <Text style={[styles.addFotoText, { color: textColor }]}>
-                {Platform.OS === 'web' 
-                  ? 'Escolher arquivo de imagem' 
-                  : 'Adicionar foto do móvel'
-                }
-              </Text>
-              <Text style={[styles.addFotoSubtext, { color: textColor }]}>
-                {Platform.OS === 'web'
-                  ? 'Clique para selecionar uma imagem do seu computador'
-                  : 'Toque para tirar uma foto ou escolher da galeria'
-                }
+              <Text style={styles.submitButtonText}>
+                {enviando ? 'Enviando... ⏳' : 'Enviar formulário ✅'}
               </Text>
             </TouchableOpacity>
-          )}
-
-          {/* Dias de espera */}
-          <Text style={[styles.label, { color: textColor }]}>
-            Quantos dias você consegue ficar com esse objeto até a AMO ir retirar? *
-          </Text>
-          <View style={styles.radioGroup}>
-            {['02 dias', '03 dias', '01 semana'].map((opcao) => (
-              <TouchableOpacity
-                key={opcao}
-                style={[
-                  styles.radioButton,
-                  { 
-                    borderColor: primaryColor,
-                    backgroundColor: formData.diasEspera === opcao ? primaryColor + '20' : 'transparent'
-                  }
-                ]}
-                onPress={() => {
-                  setFormData({...formData, diasEspera: opcao});
-                  limparMensagens();
-                }}
-                disabled={enviando}
-              >
-                <View style={[
-                  styles.radioCircle,
-                  { 
-                    borderColor: primaryColor,
-                    backgroundColor: formData.diasEspera === opcao ? primaryColor : 'transparent'
-                  }
-                ]} />
-                <Text style={[styles.radioText, { color: textColor }]}>{opcao}</Text>
-              </TouchableOpacity>
-            ))}
           </View>
-
-          {/* Apto para doação */}
-          <Text style={[styles.label, { color: textColor }]}>
-            Seu objeto/móvel está apto a ser doado a uma família carente? *
-          </Text>
-          <View style={styles.radioGroup}>
-            {['Sim', 'Não'].map((opcao) => (
-              <TouchableOpacity
-                key={opcao}
-                style={[
-                  styles.radioButton,
-                  { 
-                    borderColor: primaryColor,
-                    backgroundColor: formData.aptoDoacao === opcao ? primaryColor + '20' : 'transparent'
-                  }
-                ]}
-                onPress={() => {
-                  setFormData({...formData, aptoDoacao: opcao});
-                  limparMensagens();
-                }}
-                disabled={enviando}
-              >
-                <View style={[
-                  styles.radioCircle,
-                  { 
-                    borderColor: primaryColor,
-                    backgroundColor: formData.aptoDoacao === opcao ? primaryColor : 'transparent'
-                  }
-                ]} />
-                <Text style={[styles.radioText, { color: textColor }]}>{opcao}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-
-          {/* Botão de envio */}
-          <TouchableOpacity
-            style={[
-              styles.submitButton, 
-              { 
-                backgroundColor: enviando ? '#ccc' : primaryColor,
-                opacity: enviando ? 0.7 : 1
-              }
-            ]}
-            onPress={handleSubmit}
-            activeOpacity={0.7}
-            disabled={enviando}
-          >
-            <Text style={styles.submitButtonText}>
-              {enviando ? 'Enviando... ⏳' : 'Enviar formulário ✅'}
-            </Text>
-          </TouchableOpacity>
-
         </View>
-      </View>
-    </ScrollView>
+
+        {/* ESPAÇAMENTO FINAL */}
+        <View style={{ height: 20 }} />
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  // ✅ NOVOS ESTILOS PARA O HEADER
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingBottom: 16,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+  },
+  backButton: {
+    padding: 8,
+    marginRight: 12,
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    flex: 1,
+    textAlign: 'center',
+  },
+  headerSpacer: {
+    width: 40,
+  },
+  content: {
+    flex: 1,
     padding: 20,
   },
+  // ✅ SEUS ESTILOS ORIGINAIS (mantidos iguais)
   card: {
     borderRadius: 15,
     padding: 20,
@@ -723,7 +806,7 @@ const styles = StyleSheet.create({
   radioText: {
     fontSize: 16,
   },
-  submitButton: {
+    submitButton: {
     padding: 15,
     borderRadius: 10,
     alignItems: 'center',
@@ -760,7 +843,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 8,
     borderRadius: 8,
-        flex: 1,
+    flex: 1,
     alignItems: 'center',
   },
   fotoButtonText: {
@@ -792,12 +875,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     lineHeight: 16,
   },
-  
-  platformText: {
-    fontSize: 12,
-    opacity: 0.8,
-    fontWeight: '500',
-  },
 });
-// No final do arquivo:
-export default PoliticaReservaScreen; // ou o nome da sua função/componente
+
+export default PoliticaReservaScreen;
+
