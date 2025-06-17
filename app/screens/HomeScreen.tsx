@@ -1,9 +1,12 @@
+import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useTheme } from '../contexts/ThemeContext';
 
-export  function HomeScreen() {
+export function HomeScreen() {
   const router = useRouter();
+  const { theme, toggleTheme } = useTheme();
 
   const menuItems = [
     {
@@ -54,7 +57,6 @@ export  function HomeScreen() {
       route: 'quem-somos',
       color: '#72BF24'
     },
-    
     {
       id: 8,
       title: 'Contate-nos',
@@ -63,20 +65,20 @@ export  function HomeScreen() {
       route: 'contato',
       color: '#F2C335'
     },
-      {
-    id: 9, // ou o próximo número disponível
-    title: 'Associe-se à AMO',
-    subtitle: 'Torne-se um associado da AMO Orlândia',
-    emoji: '🤝',
-    route: '/associe-se',
-    color: '#9EBF26'
-      },
+    {
+      id: 9,
+      title: 'Associe-se à AMO',
+      subtitle: 'Torne-se um associado da AMO Orlândia',
+      emoji: '🤝',
+      route: '/associe-se',
+      color: '#9EBF26'
+    },
   ];
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={[styles.container, { backgroundColor: theme.colors.background }]}>
       {/* Header */}
-      <View style={styles.header}>
+      <View style={[styles.header, { backgroundColor: theme.colors.primary }]}>
         <View style={styles.logoContainer}>
           <Image 
             source={require('../../assets/images/logo.jpg')}
@@ -89,6 +91,19 @@ export  function HomeScreen() {
             Associação de Moradores de Orlândia
           </Text>
         </View>
+
+        {/* 🌙 BOTÃO DE TEMA ADICIONADO */}
+        <TouchableOpacity 
+          style={styles.themeButton}
+          onPress={toggleTheme}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          <Ionicons 
+            name={theme.isDark ? "sunny" : "moon"} 
+            size={24} 
+            color="#FFFFFF" 
+          />
+        </TouchableOpacity>
       </View>
 
       <View style={styles.menuContainer}>
@@ -98,7 +113,9 @@ export  function HomeScreen() {
             style={[
               styles.menuButton,
               { 
-                backgroundColor: item.color + '15',
+                backgroundColor: theme.isDark 
+                  ? item.color + '25' 
+                  : item.color + '15',
                 borderLeftColor: item.color,
               }
             ]}
@@ -109,18 +126,28 @@ export  function HomeScreen() {
                 <Text style={styles.emoji}>{item.emoji}</Text>
               </View>
               <View style={styles.textContainer}>
-                <Text style={styles.buttonTitle}>{item.title}</Text>
-                <Text style={styles.buttonSubtitle}>{item.subtitle}</Text>
+                <Text style={[styles.buttonTitle, { color: theme.colors.text }]}>
+                  {item.title}
+                </Text>
+                <Text style={[styles.buttonSubtitle, { color: theme.colors.text, opacity: 0.7 }]}>
+                  {item.subtitle}
+                </Text>
               </View>
             </View>
           </TouchableOpacity>
         ))}
       </View>
 
-      <View style={styles.footer}>
-        <Text style={styles.footerText}>📍 Av. Cinco, 48 A - Orlândia/SP</Text>
-        <Text style={styles.footerText}>📱 WhatsApp: (16) 99173-7383</Text>
-        <Text style={styles.footerText}>📷 @amo.orlandia</Text>
+      <View style={[styles.footer, { backgroundColor: theme.colors.card }]}>
+        <Text style={[styles.footerText, { color: theme.colors.text }]}>
+          📍 Av. Cinco, 48 A - Orlândia/SP
+        </Text>
+        <Text style={[styles.footerText, { color: theme.colors.text }]}>
+          📱 WhatsApp: (16) 99173-7383
+        </Text>
+        <Text style={[styles.footerText, { color: theme.colors.text }]}>
+          📷 @amo.orlandia
+        </Text>
       </View>
     </ScrollView>
   );
@@ -129,13 +156,11 @@ export  function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
   },
   header: {
     paddingTop: 60,
     paddingBottom: 30,
     paddingHorizontal: 20,
-    backgroundColor: '#39BF24',
     borderBottomLeftRadius: 25,
     borderBottomRightRadius: 25,
     elevation: 5,
@@ -143,7 +168,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-    
+    position: 'relative',
   },
   logoContainer: {
     alignItems: 'center',
@@ -165,13 +190,29 @@ const styles = StyleSheet.create({
     textShadowColor: 'rgba(0, 0, 0, 0.3)',
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 2,
-    
   },
   subtitle: {
     fontSize: 16,
     color: 'rgba(255, 255, 255, 0.9)',
     textAlign: 'center',
     fontWeight: '500',
+  },
+  // 🌙 ESTILO DO BOTÃO DE TEMA
+  themeButton: {
+    position: 'absolute',
+    top: 70,
+    right: 20,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
   menuContainer: {
     padding: 20,
@@ -186,7 +227,6 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
-    
   },
   buttonContent: {
     flexDirection: 'row',
@@ -210,28 +250,24 @@ const styles = StyleSheet.create({
   buttonTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#333',
     marginBottom: 4,
   },
   buttonSubtitle: {
     fontSize: 14,
-    color: '#666',
     lineHeight: 18,
   },
   footer: {
-    backgroundColor: '#f8f9fa',
     padding: 25,
     marginTop: 20,
     alignItems: 'center',
     borderTopWidth: 1,
-    borderTopColor: '#e9ecef',
+    borderTopColor: 'rgba(0,0,0,0.1)',
   },
   footerText: {
     fontSize: 14,
-    color: '#666',
     marginBottom: 8,
     textAlign: 'center',
   },
 });
-// No final do arquivo:
-export default HomeScreen; // ou o nome da sua função/componente
+
+export default HomeScreen;

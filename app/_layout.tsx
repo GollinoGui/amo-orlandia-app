@@ -9,6 +9,7 @@ import 'react-native-reanimated';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { CustomSplashScreen } from '../components/CustomSplashScreen';
 import { ThemeProvider } from './contexts/ThemeContext';
+
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
@@ -21,7 +22,7 @@ export default function RootLayout() {
   });
 
   // ✅ USEEFFECT SEMPRE APÓS OS STATES
-   useEffect(() => {
+  useEffect(() => {
     if (loaded) {
       setAppIsReady(true);
       SplashScreen.hideAsync();
@@ -29,7 +30,7 @@ export default function RootLayout() {
   }, [loaded]);
 
   // Função para criar o botão de voltar customizado
-    const createHeaderLeft = () => {
+  const createHeaderLeft = () => {
     const router = useRouter();
     return () => (
       <TouchableOpacity 
@@ -68,7 +69,7 @@ export default function RootLayout() {
     );
   };
 
-if (!loaded) {
+  if (!loaded) {
     return null;
   }
 
@@ -116,7 +117,7 @@ if (!loaded) {
                 fontWeight: 'bold',
                 fontSize: Platform.OS === 'ios' ? 18 : 16,
               },
-              headerShown:false,
+              headerShown: false, // ✅ DESABILITAR HEADER PADRÃO
               headerLeft: createHeaderLeft(),
               gestureEnabled: true,
               presentation: 'card',
@@ -130,7 +131,7 @@ if (!loaded) {
               headerStyle: { backgroundColor: '#E74C3C' },
               headerTintColor: '#fff',
               headerTitleStyle: { fontWeight: 'bold' },
-              headerShown:false,
+              headerShown: false, // ✅ DESABILITAR HEADER PADRÃO
               headerLeft: createHeaderLeft()
             }} 
           />
@@ -145,7 +146,7 @@ if (!loaded) {
                 fontWeight: 'bold',
                 fontSize: Platform.OS === 'ios' ? 18 : 16,
               },
-              headerShown:false,
+              headerShown: false, // ✅ DESABILITAR HEADER PADRÃO
               headerLeft: createHeaderLeft(),
               gestureEnabled: true,
               presentation: 'card',
@@ -178,7 +179,7 @@ if (!loaded) {
                 fontWeight: 'bold',
                 fontSize: Platform.OS === 'ios' ? 18 : 16,
               },
-              headerShown:false,
+              headerShown: false, // ✅ DESABILITAR HEADER PADRÃO
               headerLeft: createHeaderLeft(),
               gestureEnabled: true,
               presentation: 'card',
@@ -195,7 +196,7 @@ if (!loaded) {
                 fontWeight: 'bold',
                 fontSize: Platform.OS === 'ios' ? 18 : 16,
               },
-              headerShown:false,
+              headerShown: false, // ✅ DESABILITAR HEADER PADRÃO
               headerLeft: createHeaderLeft(),
               gestureEnabled: true,
               presentation: 'card',
@@ -212,7 +213,7 @@ if (!loaded) {
                 fontWeight: 'bold',
                 fontSize: Platform.OS === 'ios' ? 18 : 16,
               },
-              headerShown:false,
+              headerShown: false, // ✅ DESABILITAR HEADER PADRÃO
               headerLeft: createHeaderLeft(),
               gestureEnabled: true,
               presentation: 'card',
@@ -229,7 +230,7 @@ if (!loaded) {
                 fontWeight: 'bold',
                 fontSize: Platform.OS === 'ios' ? 18 : 16,
               },
-              headerShown:false,
+              headerShown: false, // ✅ DESABILITAR HEADER PADRÃO
               headerLeft: createHeaderLeft(),
               gestureEnabled: true,
               presentation: 'card',
@@ -246,7 +247,7 @@ if (!loaded) {
                 fontWeight: 'bold',
                 fontSize: Platform.OS === 'ios' ? 18 : 16,
               },
-              headerShown:false,
+              headerShown: false, // ✅ DESABILITAR HEADER PADRÃO
               headerLeft: createHeaderLeft(),
               gestureEnabled: true,
               presentation: 'card',
@@ -270,7 +271,7 @@ if (!loaded) {
                 fontWeight: 'bold',
                 fontSize: Platform.OS === 'ios' ? 18 : 16,
               },
-              headerShown:false,
+              headerShown: false, // ✅ DESABILITAR HEADER PADRÃO
               headerLeft: createHeaderLeft(),
               gestureEnabled: true,
               presentation: 'card',
@@ -287,7 +288,7 @@ if (!loaded) {
                 fontWeight: 'bold',
                 fontSize: Platform.OS === 'ios' ? 18 : 16,
               },
-              headerShown:false,
+              headerShown: false, // ✅ DESABILITAR HEADER PADRÃO
               headerLeft: createHeaderLeft(),
               gestureEnabled: true,
               presentation: 'card',
@@ -315,5 +316,3 @@ if (!loaded) {
     </SafeAreaProvider>
   );
 }
-
-
