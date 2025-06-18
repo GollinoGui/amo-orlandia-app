@@ -1,12 +1,38 @@
-import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useTheme } from '../contexts/ThemeContext';
-import { createShadow, createTextShadow } from '../utils/shadows';
+import {
+  Dimensions,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
+} from 'react-native';
+
+// 📱 OBTER DIMENSÕES DA TELA
+const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+
+// 🔧 FUNÇÃO PARA RESPONSIVIDADE
+const getResponsiveSize = (size: number) => {
+  const baseWidth = 375; // iPhone SE como base
+  return (screenWidth / baseWidth) * size;
+};
+
+// 🔧 FUNÇÃO PARA TEXTO RESPONSIVO
+const getResponsiveFontSize = (size: number) => {
+  const scale = screenWidth / 375;
+  const newSize = size * scale;
+  
+  // Limitar tamanhos mínimos e máximos
+  if (newSize < size * 0.8) return size * 0.8;
+  if (newSize > size * 1.2) return size * 1.2;
+  
+  return newSize;
+};
+
 export function HomeScreen() {
   const router = useRouter();
-  const { theme, toggleTheme } = useTheme();
 
   const menuItems = [
     {
@@ -26,7 +52,7 @@ export function HomeScreen() {
       color: '#72BF24'
     },
     {
-       id: 3,
+      id: 3,
       title: 'Eventos AMO',
       subtitle: 'Participe dos nossos eventos',
       emoji: '📅',
@@ -76,12 +102,12 @@ export function HomeScreen() {
   ];
 
   return (
-    <ScrollView style={[styles.container, { backgroundColor: theme.colors.background }]}>
+    <ScrollView style={styles.container}>
       {/* Header */}
-      <View style={[styles.header, { backgroundColor: theme.colors.primary }]}>
+      <View style={styles.header}>
         <View style={styles.logoContainer}>
           <Image 
-            source={require('../../assets/images/icon.png')}
+            source={require('../../assets/images/logo.jpg')}
             style={styles.logo}
             resizeMode="contain"
           />
@@ -91,19 +117,6 @@ export function HomeScreen() {
             Associação de Moradores de Orlândia
           </Text>
         </View>
-
-        {/* 🌙 BOTÃO DE TEMA ADICIONADO */}
-        <TouchableOpacity 
-          style={styles.themeButton}
-          onPress={toggleTheme}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-        >
-          <Ionicons 
-            name={theme.isDark ? "sunny" : "moon"} 
-            size={24} 
-            color="#FFFFFF" 
-          />
-        </TouchableOpacity>
       </View>
 
       <View style={styles.menuContainer}>
@@ -113,9 +126,7 @@ export function HomeScreen() {
             style={[
               styles.menuButton,
               { 
-                backgroundColor: theme.isDark 
-                  ? item.color + '25' 
-                  : item.color + '15',
+                backgroundColor: item.color + '15',
                 borderLeftColor: item.color,
               }
             ]}
@@ -126,10 +137,10 @@ export function HomeScreen() {
                 <Text style={styles.emoji}>{item.emoji}</Text>
               </View>
               <View style={styles.textContainer}>
-                <Text style={[styles.buttonTitle, { color: theme.colors.text }]}>
+                <Text style={styles.buttonTitle} numberOfLines={2} adjustsFontSizeToFit>
                   {item.title}
                 </Text>
-                <Text style={[styles.buttonSubtitle, { color: theme.colors.text, opacity: 0.7 }]}>
+                <Text style={styles.buttonSubtitle} numberOfLines={2} adjustsFontSizeToFit>
                   {item.subtitle}
                 </Text>
               </View>
@@ -138,14 +149,15 @@ export function HomeScreen() {
         ))}
       </View>
 
-      <View style={[styles.footer, { backgroundColor: theme.colors.card }]}>
-        <Text style={[styles.footerText, { color: theme.colors.text }]}>
+      <View style={styles.footer}>
+        <Text style={styles.footerText} numberOfLines={1} adjustsFontSizeToFit>
           📍 Av. Cinco, 48 A - Orlândia/SP
         </Text>
-        <Text style={[styles.footerText, { color: theme.colors.text }]}>
+        <Text style={styles.footerText} numberOfLines={1} adjustsFontSizeToFit>
           📱 WhatsApp: (16) 99173-7383
         </Text>
-        <Text style={[styles.footerText, { color: theme.colors.text }]}>
+        {/* ✅ TEXTO DO INSTAGRAM CORRIGIDO */}
+        <Text style={styles.footerText} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>
           📷 @amo.orlandia
         </Text>
       </View>
@@ -156,103 +168,122 @@ export function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#fff',
   },
   header: {
-    paddingTop: 60,
-    paddingBottom: 30,
-    paddingHorizontal: 20,
+    paddingTop: getResponsiveSize(60),
+    paddingBottom: getResponsiveSize(30),
+    paddingHorizontal: getResponsiveSize(20),
+    backgroundColor: '#39BF24',
     borderBottomLeftRadius: 25,
     borderBottomRightRadius: 25,
-     ...createShadow(5),
-    position: 'relative',
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
   logoContainer: {
     alignItems: 'center',
   },
   logo: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    marginBottom: 15,
+    width: getResponsiveSize(100),
+    height: getResponsiveSize(100),
+    borderRadius: getResponsiveSize(50),
+    marginBottom: getResponsiveSize(15),
     borderWidth: 3,
     borderColor: '#fff',
   },
   title: {
-    fontSize: 28,
+    fontSize: getResponsiveFontSize(28),
     fontWeight: 'bold',
     color: '#fff',
     textAlign: 'center',
-    marginBottom: 5,
-    ...createTextShadow(1, 1, 2, 'rgba(0, 0, 0, 0.3)'),
+    marginBottom: getResponsiveSize(5),
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
   },
   subtitle: {
-    fontSize: 16,
+    fontSize: getResponsiveFontSize(16),
     color: 'rgba(255, 255, 255, 0.9)',
     textAlign: 'center',
     fontWeight: '500',
-  },
-  // 🌙 ESTILO DO BOTÃO DE TEMA
-  themeButton: {
-    position: 'absolute',
-    top: 70,
-    right: 20,
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    ...createShadow(3),
+    // ✅ RESPONSIVIDADE PARA TEXTOS LONGOS
+    paddingHorizontal: getResponsiveSize(10),
+    lineHeight: getResponsiveFontSize(20),
   },
   menuContainer: {
-    padding: 20,
-    paddingTop: 30,
+    padding: getResponsiveSize(20),
+    paddingTop: getResponsiveSize(30),
   },
   menuButton: {
-    marginBottom: 15,
+    marginBottom: getResponsiveSize(15),
     borderRadius: 15,
     borderLeftWidth: 5,
-    ...createShadow(2, '#000', 0.1, 2),
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    // ✅ ALTURA MÍNIMA PARA CONSISTÊNCIA
+    minHeight: getResponsiveSize(80),
   },
   buttonContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 20,
+    padding: getResponsiveSize(20),
+    // ✅ GARANTIR ALINHAMENTO
+    minHeight: getResponsiveSize(80),
   },
   iconContainer: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
+    width: getResponsiveSize(60),
+    height: getResponsiveSize(60),
+    borderRadius: getResponsiveSize(30),
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 15,
+    marginRight: getResponsiveSize(15),
+    // ✅ TAMANHO FIXO PARA CONSISTÊNCIA
+    flexShrink: 0,
   },
   emoji: {
-    fontSize: 28,
+    fontSize: getResponsiveFontSize(28),
   },
   textContainer: {
     flex: 1,
+    // ✅ GARANTIR QUE O TEXTO USE TODO O ESPAÇO
+    paddingRight: getResponsiveSize(10),
   },
   buttonTitle: {
-    fontSize: 18,
+    fontSize: getResponsiveFontSize(18),
     fontWeight: 'bold',
-    marginBottom: 4,
+    color: '#333',
+    marginBottom: getResponsiveSize(4),
+    // ✅ ALTURA DE LINHA PARA CONSISTÊNCIA
+    lineHeight: getResponsiveFontSize(22),
   },
   buttonSubtitle: {
-    fontSize: 14,
-    lineHeight: 18,
+    fontSize: getResponsiveFontSize(14),
+    color: '#666',
+    lineHeight: getResponsiveFontSize(18),
   },
   footer: {
-    padding: 25,
-    marginTop: 20,
+    backgroundColor: '#f8f9fa',
+    padding: getResponsiveSize(25),
+    marginTop: getResponsiveSize(20),
     alignItems: 'center',
     borderTopWidth: 1,
-    borderTopColor: 'rgba(0,0,0,0.1)',
+    borderTopColor: '#e9ecef',
   },
   footerText: {
-    fontSize: 14,
-    marginBottom: 8,
+    fontSize: getResponsiveFontSize(14),
+    color: '#666',
+    marginBottom: getResponsiveSize(8),
     textAlign: 'center',
+    // ✅ LARGURA MÁXIMA PARA EVITAR CORTES
+    maxWidth: screenWidth - getResponsiveSize(40),
+    // ✅ ALTURA DE LINHA CONSISTENTE
+    lineHeight: getResponsiveFontSize(18),
   },
 });
 
