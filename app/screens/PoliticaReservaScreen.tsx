@@ -27,9 +27,9 @@ export function PoliticaReservaScreen() {
   
   // ✅ MANTIVE TODAS AS SUAS VARIÁVEIS ORIGINAIS
   const backgroundColor = useThemeColor({}, 'background');
-  const textColor = useThemeColor({}, 'text');
+   const textColor = theme.isDark ? '#FFFFFF' : '#1A1A1A';
   const primaryColor = '#39BF24';
-  const cardColor = useThemeColor({}, 'card');
+  const cardColor = theme.isDark ? '#2D2D2D' : '#FFFFFF';
 
   const [formData, setFormData] = useState({
     nome: '',
@@ -440,13 +440,17 @@ export function PoliticaReservaScreen() {
       {/* ✅ SEU CONTEÚDO ORIGINAL */}
       <ScrollView style={styles.content}>
         <View style={[styles.card, { backgroundColor: cardColor }]}>
-          <Text style={[styles.title, { color: primaryColor }]}>Política de Reserva de Móveis</Text>
+          <Text style={[styles.title, { color: theme.colors.primary }]}>
+             Política de Reserva de Móveis
+          </Text>
           
           <Text style={[styles.description, { color: textColor }]}>
             Tem algum tipo de móvel, objeto ou eletrodoméstico para descartar/doar?.
           </Text>
           
-          <Text style={[styles.subtitle, { color: textColor }]}>Vamos começar:</Text>
+          <Text style={[styles.subtitle, { color: textColor }]}>
+            Vamos começar:
+          </Text>
 
           {/* 🔧 SISTEMA DE MENSAGENS UNIVERSAL */}
           {erro ? (
@@ -463,7 +467,9 @@ export function PoliticaReservaScreen() {
 
           <View style={styles.form}>
             {/* Nome */}
-            <Text style={[styles.label, { color: textColor }]}>Seu nome: *</Text>
+            <Text style={[styles.label, { color: textColor }]}>
+              Seu nome: *
+            </Text>
             <TextInput
               style={[styles.input, { borderColor: primaryColor, color: textColor }]}
               value={formData.nome}
@@ -482,7 +488,7 @@ export function PoliticaReservaScreen() {
               Seu telefone: * ({contarDigitosTelefone(formData.telefone)}/11)
             </Text>
             <TextInput
-              style={[styles.input, { borderColor: primaryColor, color: textColor }]}
+              style={[styles.input, { borderColor: primaryColor, color: textColor}]}
               value={formData.telefone}
               onChangeText={handleTelefoneChange}
               placeholder="(16) 99999-9999"
@@ -500,7 +506,7 @@ export function PoliticaReservaScreen() {
               Um telefone de contato, parente ou vizinho: ({contarDigitosTelefone(formData.telefoneContato)}/11)
             </Text>
             <TextInput
-              style={[styles.input, { borderColor: primaryColor, color: textColor }]}
+              style={[styles.input, { borderColor: primaryColor, color: textColor}]}
               value={formData.telefoneContato}
               onChangeText={handleTelefoneContatoChange}
               placeholder="(16) 99999-9999"
@@ -515,7 +521,7 @@ export function PoliticaReservaScreen() {
               Endereço exato e referências próximas: * ({formData.endereco.length}/200)
             </Text>
             <TextInput
-              style={[styles.textArea, { borderColor: primaryColor, color: textColor }]}
+              style={[styles.textArea, { borderColor: primaryColor, color: textColor}]}
               value={formData.endereco}
               onChangeText={handleEnderecoChange}
               placeholder="Rua, número, bairro e pontos de referência (mínimo 10 caracteres)"

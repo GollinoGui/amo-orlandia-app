@@ -3,7 +3,7 @@ import { useRouter } from 'expo-router';
 import React from 'react';
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../contexts/ThemeContext';
-
+import { createShadow, createTextShadow } from '../utils/shadows';
 export function HomeScreen() {
   const router = useRouter();
   const { theme, toggleTheme } = useTheme();
@@ -163,11 +163,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     borderBottomLeftRadius: 25,
     borderBottomRightRadius: 25,
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+     ...createShadow(5),
     position: 'relative',
   },
   logoContainer: {
@@ -187,9 +183,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     textAlign: 'center',
     marginBottom: 5,
-    textShadowColor: 'rgba(0, 0, 0, 0.3)',
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
+    ...createTextShadow(1, 1, 2, 'rgba(0, 0, 0, 0.3)'),
   },
   subtitle: {
     fontSize: 16,
@@ -208,11 +202,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    ...createShadow(3),
   },
   menuContainer: {
     padding: 20,
@@ -222,11 +212,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     borderRadius: 15,
     borderLeftWidth: 5,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
+    ...createShadow(2, '#000', 0.1, 2),
   },
   buttonContent: {
     flexDirection: 'row',

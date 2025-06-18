@@ -1,17 +1,17 @@
-import React, { useState } from 'react';
-import { 
-  Linking, 
-  Modal, 
-  ScrollView, 
-  StyleSheet, 
-  Text, 
-  TouchableOpacity, 
-  View,
-  StatusBar
-} from 'react-native';
-import { useRouter } from 'expo-router';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import React, { useState } from 'react';
+import {
+  Linking,
+  Modal,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
+} from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from '../contexts/ThemeContext';
 
 interface Servico {
@@ -424,7 +424,7 @@ export function ServicosPublicosScreen() {
       <ScrollView style={styles.content}>
         {/* HEADER CARD */}
         <View style={[styles.headerCard, { backgroundColor: theme.colors.card }]}>
-          <Text style={[styles.title, { color: '#39BF24' }]}>🏥 Serviços Públicos</Text>
+          <Text style={[styles.title, { color: '#39BF24' }]}>Serviços Públicos</Text>
           <Text style={[styles.description, { color: theme.colors.text }]}>
             Encontre informações sobre os principais serviços públicos disponíveis em Orlândia. 
             Clique em cada serviço para ver detalhes completos.

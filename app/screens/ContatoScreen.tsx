@@ -15,9 +15,9 @@ export function ContatoScreen() {
   
   // ✅ MANTIVE TODAS AS SUAS VARIÁVEIS ORIGINAIS
   const backgroundColor = useThemeColor({}, 'background');
-  const textColor = useThemeColor({}, 'text');
+  const textColor = theme.isDark ? '#FFFFFF' : '#1A1A1A';
   const primaryColor = '#F2C335';
-  const cardColor = useThemeColor({}, 'card');
+   const cardColor = theme.isDark ? '#2D2D2D' : '#FFFFFF';
 
   const assuntosFrequentes = [
     "Mal atendimento",
@@ -286,15 +286,15 @@ export function ContatoScreen() {
         <View style={styles.headerSpacer} />
       </View>
 
-      {/* ✅ SEU CONTEÚDO ORIGINAL (apenas mudei ScrollView para styles.content) */}
+      {/* CONTEÚDO ORIGINAL (mudança no ScrollView para styles.content) */}
       <ScrollView style={styles.content}>
         <View style={[styles.card, { backgroundColor: cardColor }]}>
-          <Text style={[styles.title, { color: primaryColor }]}>📞 Contate-nos</Text>
+          <Text style={[styles.title, { color: primaryColor }]}>Contate-nos</Text>
           <Text style={[styles.description, { color: textColor }]}>
             Estamos sempre atendendo através do nosso formulário de contato.
           </Text>
 
-          {/* 🔧 MENSAGENS */}
+          {/*  MENSAGENS */}
           {erro ? (
             <View style={[styles.messageContainer, styles.errorContainer]}>
               <Text style={styles.errorMessageText}>❌ {erro}</Text>
@@ -336,7 +336,7 @@ export function ContatoScreen() {
             {/* Nome */}
             <Text style={[styles.label, { color: textColor }]}>Nome: *</Text>
             <TextInput
-              style={[styles.input, { borderColor: primaryColor, color: textColor }]}
+              style={[styles.input, { borderColor: primaryColor, color: textColor}]}
               value={formData.nome}
               onChangeText={handleNomeChange}
               placeholder="Digite seu nome completo"
@@ -353,7 +353,7 @@ export function ContatoScreen() {
               Telefone: * ({contarDigitosTelefone(formData.telefone)}/11)
             </Text>
             <TextInput
-              style={[styles.input, { borderColor: primaryColor, color: textColor }]}
+              style={[styles.input, { borderColor: primaryColor, color: textColor}]}
               value={formData.telefone}
               onChangeText={handleTelefoneChange}
               placeholder="(16) 99999-9999"
@@ -369,7 +369,7 @@ export function ContatoScreen() {
             {/* Email */}
             <Text style={[styles.label, { color: textColor }]}>Email (opcional):</Text>
             <TextInput
-              style={[styles.input, { borderColor: primaryColor, color: textColor }]}
+              style={[styles.input, { borderColor: primaryColor, color: textColor}]}
               value={formData.email}
               onChangeText={handleEmailChange}
               placeholder="seu@email.com"
@@ -508,7 +508,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
   },
-  // ✅ SEUS ESTILOS ORIGINAIS (mantidos iguais)
+  
   card: {
     borderRadius: 15,
     padding: 20,
@@ -617,6 +617,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 12,
     fontSize: 16,
+    
   },
   textArea: {
     borderWidth: 1,
@@ -625,6 +626,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     minHeight: 100,
     textAlignVertical: 'top',
+    backgroundColor: 'transparent',
   },
   submitButton: {
     padding: 15,

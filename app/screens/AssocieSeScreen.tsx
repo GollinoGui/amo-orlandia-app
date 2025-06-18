@@ -332,7 +332,7 @@ export function AssocieSeScreen() {
       <ScrollView style={styles.content}>
         {/* HEADER CARD */}
         <View style={[styles.headerCard, { backgroundColor: theme.colors.card }]}>
-          <Text style={[styles.title, { color: '#9EBF26' }]}>🤝 Associe-se à AMO Orlândia</Text>
+          <Text style={[styles.title, { color: '#9EBF26' }]}>Associe-se à AMO Orlândia</Text>
           <Text style={[styles.description, { color: theme.colors.text }]}>
             Faça parte da nossa comunidade e ajude a construir uma Orlândia melhor para todos. 
             Preencha o formulário abaixo para se tornar um associado.

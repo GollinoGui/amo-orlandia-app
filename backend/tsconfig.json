@@ -16,7 +16,7 @@
   },
   "include": [
     "src/**/*"
-  ],
+, "../app/utils/shadows.ts"  ],
   "exclude": [
     "node_modules",
     "dist"

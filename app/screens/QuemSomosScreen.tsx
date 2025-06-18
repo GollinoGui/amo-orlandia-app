@@ -293,12 +293,7 @@ export function QuemSomosScreen() {
               </Text>
             </View>
             
-            <View style={styles.compromissoItem}>
-              <Text style={styles.compromissoIcon}>✅</Text>
-              <Text style={[styles.compromissoTexto, { color: theme.colors.text }]}>
-                Desenvolvimento sustentável e responsabilidade ambiental
-              </Text>
-            </View>
+        
             
             <View style={styles.compromissoItem}>
               <Text style={styles.compromissoIcon}>✅</Text>

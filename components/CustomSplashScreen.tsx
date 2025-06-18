@@ -5,7 +5,8 @@ import {
   StyleSheet,
   Text,
   View,
-  Image
+  Image,
+  Platform
 } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
@@ -13,6 +14,35 @@ const { width, height } = Dimensions.get('window');
 interface CustomSplashScreenProps {
   onFinish: () => void;
 }
+
+// 🔧 UTILITÁRIOS DE SHADOW PARA WEB/MOBILE
+const createShadow = (elevation: number) => {
+  if (Platform.OS === 'web') {
+    return {
+      boxShadow: `0px ${elevation}px ${elevation * 0.8}px rgba(0, 0, 0, 0.25)`,
+    };
+  }
+  return {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: elevation },
+    shadowOpacity: 0.25,
+    shadowRadius: elevation * 0.8,
+    elevation,
+  };
+};
+
+const createTextShadow = (offsetX: number, offsetY: number, blur: number, color: string) => {
+  if (Platform.OS === 'web') {
+    return {
+      textShadow: `${offsetX}px ${offsetY}px ${blur}px ${color}`,
+    };
+  }
+  return {
+    textShadowColor: color,
+    textShadowOffset: { width: offsetX, height: offsetY },
+    textShadowRadius: blur,
+  };
+};
 
 export function CustomSplashScreen({ onFinish }: CustomSplashScreenProps) {
   // Estados de animação
@@ -31,7 +61,7 @@ export function CustomSplashScreen({ onFinish }: CustomSplashScreenProps) {
     Animated.timing(fadeAnim, {
       toValue: 1,
       duration: 1000,
-      useNativeDriver: true,
+      useNativeDriver: Platform.OS !== 'web', // ✅ Condicional para web
     }).start();
 
     // Animação flutuante do logo
@@ -40,12 +70,12 @@ export function CustomSplashScreen({ onFinish }: CustomSplashScreenProps) {
         Animated.timing(logoFloat, {
           toValue: -10,
           duration: 1500,
-          useNativeDriver: true,
+          useNativeDriver: Platform.OS !== 'web', // ✅ Condicional para web
         }),
         Animated.timing(logoFloat, {
           toValue: 0,
           duration: 1500,
-          useNativeDriver: true,
+          useNativeDriver: Platform.OS !== 'web', // ✅ Condicional para web
         }),
       ])
     ).start();
@@ -74,12 +104,12 @@ export function CustomSplashScreen({ onFinish }: CustomSplashScreenProps) {
             Animated.timing(dot, {
               toValue: 1,
               duration: 600,
-              useNativeDriver: true,
+              useNativeDriver: Platform.OS !== 'web', // ✅ Condicional para web
             }),
             Animated.timing(dot, {
               toValue: 0.4,
               duration: 600,
-              useNativeDriver: true,
+              useNativeDriver: Platform.OS !== 'web', // ✅ Condicional para web
             }),
           ]),
           { iterations: -1 }
@@ -102,7 +132,7 @@ export function CustomSplashScreen({ onFinish }: CustomSplashScreenProps) {
       Animated.timing(fadeAnim, {
         toValue: 0,
         duration: 500,
-        useNativeDriver: true,
+        useNativeDriver: Platform.OS !== 'web', // ✅ Condicional para web
       }).start(() => {
         onFinish();
       });
@@ -335,18 +365,14 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#F2C335',
     marginBottom: 5,
-    textShadowColor: 'rgba(0, 0, 0, 0.3)',
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
+    ...createTextShadow(1, 1, 2, 'rgba(0, 0, 0, 0.3)'), // ✅ Corrigido
   },
   logoText: {
     fontSize: 16,
     fontWeight: 'bold',
     color: '#fff',
     letterSpacing: 1,
-    textShadowColor: 'rgba(0, 0, 0, 0.3)',
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
+    ...createTextShadow(1, 1, 2, 'rgba(0, 0, 0, 0.3)'), // ✅ Corrigido
   },
 
   // TÍTULO
@@ -360,9 +386,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     letterSpacing: 4,
     lineHeight: 52,
-    textShadowColor: 'rgba(0, 0, 0, 0.4)',
-    textShadowOffset: { width: 2, height: 2 },
-    textShadowRadius: 4,
+    ...createTextShadow(2, 2, 4, 'rgba(0, 0, 0, 0.4)'), // ✅ Corrigido
   },
 
   // SUBTÍTULO
@@ -372,9 +396,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 60,
     lineHeight: 24,
-    textShadowColor: 'rgba(0, 0, 0, 0.3)',
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
+    ...createTextShadow(1, 1, 2, 'rgba(0, 0, 0, 0.3)'), // ✅ Corrigido
   },
 
   // LOADING
@@ -386,9 +408,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: 'rgba(255, 255, 255, 0.9)',
     marginBottom: 20,
-    textShadowColor: 'rgba(0, 0, 0, 0.3)',
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
+    ...createTextShadow(1, 1, 2, 'rgba(0, 0, 0, 0.3)'), // ✅ Corrigido
   },
 
   // BOLINHAS DE LOADING
@@ -435,11 +455,7 @@ const styles = StyleSheet.create({
     bottom: 40,
     alignSelf: 'center',
     fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.8)',
-    textShadowColor: 'rgba(0, 0, 0, 0.3)',
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
+    color: 'rgba(255, 255, 255, 0.7)',
+    ...createTextShadow(1, 1, 2, 'rgba(0, 0, 0, 0.3)'), // ✅ Corrigido
   },
 });
-
-export default CustomSplashScreen;

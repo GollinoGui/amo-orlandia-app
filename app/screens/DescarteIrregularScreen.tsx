@@ -141,7 +141,7 @@ export function DescarteIrregularScreen() {
 
         {/* INFORMAÇÕES SOBRE CATA GALHO */}
         <View style={[styles.card, { backgroundColor: theme.colors.card }]}>
-          <Text style={[styles.cardTitle, { color: '#F2C335' }]}>
+          <Text style={[styles.cardTitle, { color: theme.colors.primary }]}>
             🚛 Campanha Cata Galho
           </Text>
           <Text style={[styles.cardText, { color: theme.colors.text }]}>
@@ -176,7 +176,7 @@ export function DescarteIrregularScreen() {
 
         {/* TIPOS DE DESCARTE IRREGULAR */}
         <View style={[styles.card, { backgroundColor: theme.colors.card }]}>
-          <Text style={[styles.cardTitle, { color: '#9B59B6' }]}>
+          <Text style={[styles.cardTitle, { color: theme.colors.primary }]}>
             🚫 Tipos de Descarte Irregular
           </Text>
           
@@ -213,7 +213,7 @@ export function DescarteIrregularScreen() {
 
         {/* COMO DENUNCIAR */}
         <View style={[styles.card, { backgroundColor: theme.colors.card }]}>
-          <Text style={[styles.cardTitle, { color: '#E74C3C' }]}>
+          <Text style={[styles.cardTitle, { color: theme.colors.primary }]}>
             🚨 Como Denunciar Descarte Irregular
           </Text>
           
@@ -243,7 +243,7 @@ export function DescarteIrregularScreen() {
 
         {/* CANAIS DE DENÚNCIA */}
         <View style={[styles.card, { backgroundColor: theme.colors.card }]}>
-          <Text style={[styles.cardTitle, { color: '#39BF24' }]}>
+          <Text style={[styles.cardTitle, { color: theme.colors.primary }]}>
             📞 Canais de Denúncia
           </Text>
           
