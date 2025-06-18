@@ -77,9 +77,8 @@
             "BROWSABLE",
             "DEFAULT"
           ]
-        }]
-       
-      
+        }
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -94,7 +93,8 @@
           "photosPermission": "O app acessa suas fotos para permitir que você escolha uma imagem do móvel.",
           "cameraPermission": "O app acessa sua câmera para permitir que você tire uma foto do móvel."
         }
-      ]
+      ],
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true
