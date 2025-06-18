@@ -440,10 +440,10 @@ export function PoliticaReservaScreen() {
       {/* ✅ SEU CONTEÚDO ORIGINAL */}
       <ScrollView style={styles.content}>
         <View style={[styles.card, { backgroundColor: cardColor }]}>
-          <Text style={[styles.title, { color: primaryColor }]}>🪑 Política de Reserva de Móveis</Text>
+          <Text style={[styles.title, { color: primaryColor }]}>Política de Reserva de Móveis</Text>
           
           <Text style={[styles.description, { color: textColor }]}>
-            Se você entrou aqui, é porque tem algum tipo de móvel, objeto ou eletrodoméstico para descartar.
+            Tem algum tipo de móvel, objeto ou eletrodoméstico para descartar/doar?.
           </Text>
           
           <Text style={[styles.subtitle, { color: textColor }]}>Vamos começar:</Text>
@@ -532,7 +532,7 @@ export function PoliticaReservaScreen() {
             {/* 🔧 CAMPO DE FOTO UNIVERSAL */}
             <Text style={[styles.label, { color: textColor }]}>
               Foto do móvel/objeto (opcional):
-              {Platform.OS === 'web' ? ' 🌐' : ' 📱'}
+              {Platform.OS === 'web' ? ' ' : ' '}
             </Text>
             
             {formData.fotoMovel ? (
@@ -662,7 +662,7 @@ export function PoliticaReservaScreen() {
               disabled={enviando}
             >
               <Text style={styles.submitButtonText}>
-                {enviando ? 'Enviando... ⏳' : 'Enviar formulário ✅'}
+                {enviando ? 'Enviando... ' : 'Enviar formulário '}
               </Text>
             </TouchableOpacity>
           </View>

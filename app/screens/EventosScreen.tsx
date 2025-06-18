@@ -152,7 +152,7 @@ export function EventosScreen() {
       {/* ✅ SEU CONTEÚDO ORIGINAL */}
       <ScrollView style={styles.content}>
         <View style={[styles.headerCard, { backgroundColor: theme.colors.card }]}>
-          <Text style={[styles.title, { color: '#F2C335' }]}>📅 Eventos AMO</Text>
+          <Text style={[styles.title, { color: '#F2C335' }]}> Eventos AMO</Text>
           <Text style={[styles.description, { color: theme.colors.text }]}>
             Acompanhe nossos eventos passados e futuros. Participe e faça a diferença em Orlândia!
           </Text>

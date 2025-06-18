@@ -1,17 +1,17 @@
+import { Ionicons } from '@expo/vector-icons';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
 import {
+  Alert,
+  Linking,
   ScrollView,
+  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
-  StatusBar,
-  Alert,
-  Linking
+  View
 } from 'react-native';
-import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../contexts/ThemeContext';
 
 interface Evento {
@@ -320,7 +320,7 @@ export function EventoDetalhesScreen() {
             borderColor: '#4CAF50'
           }]}>
             <Text style={[styles.ctaTitle, { color: '#4CAF50' }]}>
-              🎉 Participe deste Evento!
+              Participe deste Evento!
             </Text>
             <Text style={[styles.ctaText, { color: theme.colors.text }]}>
               Entre em contato conosco e confirme sua participação. Juntos fazemos a diferença!
@@ -330,7 +330,7 @@ export function EventoDetalhesScreen() {
               onPress={abrirWhatsApp}
             >
               <Text style={styles.ctaButtonText}>
-                📱 Confirmar Participação
+                 Confirmar Participação
               </Text>
             </TouchableOpacity>
           </View>

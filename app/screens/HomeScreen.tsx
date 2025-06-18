@@ -81,7 +81,7 @@ export function HomeScreen() {
       <View style={[styles.header, { backgroundColor: theme.colors.primary }]}>
         <View style={styles.logoContainer}>
           <Image 
-            source={require('../../assets/images/logo.jpg')}
+            source={require('../../assets/images/icon.png')}
             style={styles.logo}
             resizeMode="contain"
           />

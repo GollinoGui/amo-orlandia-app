@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  Animated, 
+import {
+  Animated,
   Dimensions,
+  StyleSheet,
+  Text,
+  View,
   Image
 } from 'react-native';
 
@@ -133,10 +133,21 @@ export function CustomSplashScreen({ onFinish }: CustomSplashScreenProps) {
           ]}
         >
           <View style={styles.logoCircle}>
-            {/* Tente carregar logo real, senão usa fallback */}
+            {/* ✅ LOGO REAL DA AMO */}
+            <Image 
+              source={require('../assets/images/icon.png')}
+              style={styles.logoImage}
+              resizeMode="cover"
+              onError={() => {
+                // Se a logo não carregar, mostra fallback
+                console.log('Logo não carregou, usando fallback');
+              }}
+            />
+            
+            {/* ✅ FALLBACK SEM EMOJI DA CASA */}
             <View style={styles.logoFallback}>
-              <Text style={styles.logoHouse}>🏠</Text>
-              <Text style={styles.logoText}>AMO</Text>
+              <Text style={styles.logoAMO}>AMO</Text>
+              <Text style={styles.logoText}>ORLÂNDIA</Text>
             </View>
           </View>
         </Animated.View>
@@ -301,19 +312,41 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 4,
     borderColor: 'rgba(255, 255, 255, 0.3)',
+    position: 'relative',
   },
+  
+  // ✅ LOGO REAL DA AMO
+  logoImage: {
+    width: 160,
+    height: 160,
+    borderRadius: 80,
+    position: 'absolute',
+    backgroundColor: '#fff',
+  },
+  
+  // ✅ FALLBACK SEM EMOJI DA CASA
   logoFallback: {
     alignItems: 'center',
+    position: 'absolute',
+    opacity: 0, // Escondido por padrão, só aparece se a logo não carregar
   },
-  logoHouse: {
-    fontSize: 60,
+  logoAMO: {
+    fontSize: 40,
+    fontWeight: 'bold',
+    color: '#F2C335',
     marginBottom: 5,
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
   },
   logoText: {
-    fontSize: 20,
+    fontSize: 16,
     fontWeight: 'bold',
     color: '#fff',
-    letterSpacing: 2,
+    letterSpacing: 1,
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
   },
 
   // TÍTULO

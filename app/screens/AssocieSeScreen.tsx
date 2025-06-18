@@ -341,7 +341,7 @@ export function AssocieSeScreen() {
 
         {/* BENEFÍCIOS DA ASSOCIAÇÃO */}
         <View style={[styles.beneficiosCard, { backgroundColor: theme.colors.card }]}>
-          <Text style={[styles.beneficiosTitle, { color: '#39BF24' }]}>✨ Benefícios da Associação</Text>
+          <Text style={[styles.beneficiosTitle, { color: '#39BF24' }]}> Benefícios da Associação</Text>
           
           <View style={styles.beneficiosList}>
             <View style={styles.beneficioItem}>
@@ -351,12 +351,6 @@ export function AssocieSeScreen() {
               </Text>
             </View>
             
-            <View style={styles.beneficioItem}>
-              <Text style={styles.beneficioIcon}>📢</Text>
-              <Text style={[styles.beneficioTexto, { color: theme.colors.text }]}>
-                Participação prioritária em projetos e eventos
-              </Text>
-            </View>
             
             <View style={styles.beneficioItem}>
               <Text style={styles.beneficioIcon}>🤝</Text>
@@ -628,21 +622,14 @@ export function AssocieSeScreen() {
             <View style={styles.infoItem}>
               <Text style={styles.infoIcon}>📞</Text>
               <Text style={[styles.infoText, { color: theme.colors.text }]}>
-                Entraremos em contato pelo telefone informado para confirmar os dados
-              </Text>
-            </View>
-            
-            <View style={styles.infoItem}>
-              <Text style={styles.infoIcon}>💳</Text>
-              <Text style={[styles.infoText, { color: theme.colors.text }]}>
-                A associação é gratuita e não possui mensalidades
+                Entraremos em contato pelo telefone/e-mail informado para confirmar os dados
               </Text>
             </View>
             
             <View style={styles.infoItem}>
               <Text style={styles.infoIcon}>📧</Text>
               <Text style={[styles.infoText, { color: theme.colors.text }]}>
-                Você receberá um email de confirmação quando sua associação for aprovada
+                Você receberá um email de confirmação se sua associação for aprovada
               </Text>
             </View>
           </View>
@@ -658,7 +645,7 @@ export function AssocieSeScreen() {
                 Q: A associação tem algum custo?
               </Text>
               <Text style={[styles.resposta, { color: theme.colors.text }]}>
-                R: Não! A associação à AMO Orlândia é totalmente gratuita.
+                R: R$ 35,00 por mês para ajudar na manutenção da SEDE (Aluguel - agua - energia - Secretaria/o)
               </Text>
             </View>
             

@@ -1,17 +1,17 @@
-import React, { useState } from 'react';
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import React from 'react';
 import {
   Image,
   Linking,
   ScrollView,
+  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
-  StatusBar
+  View
 } from 'react-native';
-import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../contexts/ThemeContext';
 
 interface TimelineMomento {
@@ -183,7 +183,7 @@ export function QuemSomosScreen() {
 
         {/* NOSSA MISSÃO */}
         <View style={[styles.section, { backgroundColor: theme.colors.card }]}>
-          <Text style={[styles.sectionTitle, { color: '#39BF24' }]}>🎯 Nossa Missão</Text>
+          <Text style={[styles.sectionTitle, { color: '#39BF24' }]}> Nossa Missão</Text>
           <Text style={[styles.sectionText, { color: theme.colors.text }]}>
             A AMO Orlândia tem como missão representar e defender os interesses da comunidade orlandina, 
             promovendo o desenvolvimento sustentável, a qualidade de vida e o bem-estar social através 
@@ -193,7 +193,7 @@ export function QuemSomosScreen() {
 
         {/* NOSSA VISÃO */}
         <View style={[styles.section, { backgroundColor: theme.colors.card }]}>
-          <Text style={[styles.sectionTitle, { color: '#72BF24' }]}>👁️ Nossa Visão</Text>
+          <Text style={[styles.sectionTitle, { color: '#72BF24' }]}> Nossa Visão</Text>
           <Text style={[styles.sectionText, { color: theme.colors.text }]}>
             Ser reconhecida como a principal associação de moradores de Orlândia, referência em 
             transparência, inovação e efetividade na promoção de melhorias urbanas e sociais, 
@@ -203,7 +203,7 @@ export function QuemSomosScreen() {
 
         {/* NOSSOS VALORES */}
         <View style={[styles.section, { backgroundColor: theme.colors.card }]}>
-          <Text style={[styles.sectionTitle, { color: '#9EBF26' }]}>💎 Nossos Valores</Text>
+          <Text style={[styles.sectionTitle, { color: '#9EBF26' }]}> Nossos Valores</Text>
           
           <View style={styles.valoresGrid}>
             {valores.map((valor, index) => (

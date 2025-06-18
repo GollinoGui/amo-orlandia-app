@@ -8,8 +8,8 @@
     "userInterfaceStyle": "light",
     "scheme": "amo-orlandia",
     "splash": {
-      "image": "./assets/images/icon.png",
-      "resizeMode": "contain",
+      "image": "./assets/images/splash.png",
+      "resizeMode": "cover",
       "backgroundColor": "#39BF24"
     },
     "ios": {
