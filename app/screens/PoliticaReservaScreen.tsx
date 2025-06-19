@@ -44,6 +44,7 @@ export function PoliticaReservaScreen() {
   const [erro, setErro] = useState('');
   const [sucesso, setSucesso] = useState('');
   const [enviando, setEnviando] = useState(false);
+  const [ultimoEnvio, setUltimoEnvio] = useState<number | null>(null);
 
  const patrocinadores = [
     'MORLAN - Juntos por uma Orlândia sustentável',
@@ -318,8 +319,15 @@ export function PoliticaReservaScreen() {
   // 📧 FUNÇÃO DE ENVIO UNIVERSAL
   const handleSubmit = async () => {
     limparMensagens();
-    setEnviando(true);
     
+    setEnviando(true);
+    const agora = Date.now();
+    if (ultimoEnvio && agora - ultimoEnvio < 30000) { // 30 segundos de cooldown
+      mostrarErro('⏳ Você acabou de enviar um formulário. Aguarde alguns segundos.');
+      setEnviando(false);
+      return;
+      }
+
     try {
       console.log('=== [UNIVERSAL] VALIDAÇÕES ===');
 
@@ -392,7 +400,8 @@ export function PoliticaReservaScreen() {
         const mensagemSucesso = `Seu formulário foi enviado com sucesso!\n\n Cortesia da:\n${patrocinadorAleatorio}`;
         
         mostrarSucesso(mensagemSucesso);
-        
+        setUltimoEnvio(Date.now());
+
         // Se for web, limpar formulário após delay
         if (Platform.OS === 'web') {
           setTimeout(() => {

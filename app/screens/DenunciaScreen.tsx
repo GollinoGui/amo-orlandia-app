@@ -68,6 +68,7 @@ export function DenunciaScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const primaryColor = '#E74C3C';
+  const [cooldownAtivo, setCooldownAtivo] = useState(false);
 
   const [formData, setFormData] = useState<DenunciaData>({
     tipo: '',
@@ -532,7 +533,10 @@ export function DenunciaScreen() {
   // ✅ ATUALIZAR A FUNÇÃO enviarDenuncia (que chama as validações)
 const enviarDenuncia = async () => {
   console.log('=== [DENUNCIA] INICIANDO VALIDAÇÕES ===');
-  
+  if (cooldownAtivo) {
+  mostrarErro('Você acabou de enviar. Aguarde alguns segundos antes de tentar novamente.');
+  return;
+}
   // Limpar mensagens anteriores
   setErro('');
   setSucesso('');
@@ -664,6 +668,9 @@ ${patrocinadorAleatorio}`;
     mostrarErro('Erro inesperado ao enviar denúncia. Verifique sua conexão e tente novamente.');
   } finally {
     setEnviando(false);
+    setCooldownAtivo(true);
+    setTimeout(() => setCooldownAtivo(false), 15000); // 15 segundos
+
   }
 };
 

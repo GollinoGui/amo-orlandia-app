@@ -33,7 +33,7 @@ export function AssocieSeScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { theme } = useTheme();
-
+  const [cooldownAtivo, setCooldownAtivo] = useState(false);
   const [formData, setFormData] = useState<FormularioAssociacaoData>({
     nomeCompleto: '',
     dataNascimento: '',
@@ -190,6 +190,10 @@ export function AssocieSeScreen() {
   // 📧 FUNÇÃO DE ENVIO
   const handleSubmit = async () => {
     limparMensagens();
+    if (cooldownAtivo) {
+    mostrarErro('Você acabou de enviar. Aguarde alguns segundos antes de tentar novamente.');
+    return;
+}
     setEnviando(true);
     
     try {
@@ -294,6 +298,10 @@ export function AssocieSeScreen() {
       mostrarErro('Erro de conexão. Verifique sua internet e tente novamente.');
     } finally {
       setEnviando(false);
+      setCooldownAtivo(true);
+setTimeout(() => {
+  setCooldownAtivo(false);
+}, 15000);
     }
   };
 

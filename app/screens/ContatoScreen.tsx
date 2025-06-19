@@ -2,6 +2,7 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 import { Ionicons } from '@expo/vector-icons';
 import { Picker } from '@react-native-picker/picker';
 import { useRouter } from 'expo-router';
+
 import React, { useState } from 'react';
 import { Alert, Linking, Platform, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -12,7 +13,7 @@ export function ContatoScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { theme } = useTheme();
-  
+  const [ultimoEnvio, setUltimoEnvio] = useState<number | null>(null);
   // ✅ MANTIVE TODAS AS SUAS VARIÁVEIS ORIGINAIS
   const backgroundColor = useThemeColor({}, 'background');
   const textColor = theme.isDark ? '#FFFFFF' : '#1A1A1A';
@@ -172,7 +173,12 @@ export function ContatoScreen() {
   const handleSubmit = async () => {
     limparMensagens();
     setEnviando(true);
-    
+    const agora = Date.now();
+    if (ultimoEnvio && agora - ultimoEnvio < 60000) {
+      mostrarErro('Você acabou de enviar uma mensagem. Aguarde 1 minuto antes de tentar novamente.');
+      setEnviando(false);
+      return;
+    }
     try {
       console.log('=== [CONTATO] INICIANDO ENVIO ===');
       console.log('📱 [CONTATO] Plataforma:', Platform.OS);
@@ -241,6 +247,7 @@ export function ContatoScreen() {
         const patrocinadorAleatorio = patrocinadores[Math.floor(Math.random() * patrocinadores.length)];
         const mensagemSucesso = `Sua mensagem foi enviada com sucesso!\n\n Cortesia da:\n${patrocinadorAleatorio}`;
         mostrarSucesso(mensagemSucesso);
+        setUltimoEnvio(Date.now());
 
         if (Platform.OS === 'web') {
           setTimeout(() => {
