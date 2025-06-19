@@ -131,11 +131,22 @@ export function ContatoScreen() {
     'MORLAN - Juntos por uma Orlândia sustentável',
     'UNIMED - Cuidando do meio ambiente',
     'INTELLI - Por uma cidade mais limpa',
-    'ZAP - Tecnologia e Sustentabilidade',
+    'ZAP MONTAGENS - Tecnologia e Sustentabilidade',
     'BREJEIRO - Cuidando do nosso futuro',
     'OIMASA - Inovação e Sustentabilidade',
     'HOTEL SÃO MARCOS - Conforto e Sustentabilidade',
     'GOLLINO COMERCIAL - Soluções Sustentáveis para Orlândia',
+    'A.ALVES - Construindo um futuro melhor',
+    'COLANJO - Juntos por uma Orlândia mais verde',
+    'ESTRELA - Apoiando a Sustentabilidade',
+    'HAMAMURA - Tradição e Sustentabilidade',
+    'PREFEITURA - Orlândia Sustentável',
+    'RODOGHEL - Transporte Sustentável',
+    'SUPERMERCADO RECANTO - Compras Sustentáveis',
+    'SUPERMERCADO MAIZENA - Economia e Sustentabilidade',
+    'TANGARA - Juntos por uma Orlândia melhor',
+    'COOPERLOL - Cooperativa de Orlândia',
+    'OLIMAC - Construindo um futuro sustentável',
   ];
 
 
