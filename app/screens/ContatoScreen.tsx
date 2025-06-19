@@ -222,12 +222,8 @@ export function ContatoScreen() {
       console.log('📤 [CONTATO] Enviando:', formData);
 
       console.log('🧪 [CONTATO] Testando conexão...');
-      const conexaoOk = await apiService.testarConexao();
       
-      if (!conexaoOk) {
-        mostrarErro('Sem conexão com o servidor. Verifique sua internet.');
-        return;
-      }
+      
 
       console.log('✅ [CONTATO] Conexão OK, enviando formulário...');
 

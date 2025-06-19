@@ -1,23 +1,12 @@
 import { Platform } from 'react-native';
 
-// 🌐 IP CORRETO CONFIGURADO
+// 🔥 FIREBASE FUNCTIONS URL CORRETA
 const getApiBaseUrl = () => {
-  if (Platform.OS === 'web') {
-    return 'https://amo-orlandia-app-production.up.railway.app/api';
-  }
-    // 🚀 RAILWAY URL - SEMPRE ONLINE
-  if (__DEV__) {
-    // Em desenvolvimento, pode escolher:
-    return 'amo-orlandia-app-production.up.railway.app/api'; // Online
-    // return 'http://192.168.1.102:3000/api'; // Local (descomente se quiser)
-  }
-  
-  // Em produção, sempre Railway
-  return 'amo-orlandia-app-production.up.railway.app/api';
+  // URL do Firebase Functions do seu projeto
+  return 'https://us-central1-amo-orlandia-8c114.cloudfunctions.net';
 };
 
-
-const API_BASE_URL = getApiBaseUrl();
+const API_BASE_URL = 'https://us-central1-amo-orlandia-8c114.cloudfunctions.net';
 
 interface FormularioReservaData {
   nome: string;
@@ -50,6 +39,7 @@ interface FormularioDenunciaData {
   telefone: string;
   email: string;
 }
+
 interface FormularioAssociacaoData {
   nomeCompleto: string;
   dataNascimento: string;
@@ -79,63 +69,18 @@ class ApiService {
       throw error;
     }
   }
+
   
 
-  // 🔧 MÉTODO DE TESTE DE CONECTIVIDADE
-  async testarConectividade(): Promise<boolean> {
-  try {
-    console.log('🧪 [API] Testando conectividade...');
-    console.log('🔗 [API] URL base:', API_BASE_URL);
-    
-    const response = await this.fetchWithTimeout(`${API_BASE_URL}/health`, {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-      },
-    }, 10000);
-    
-    console.log('📊 [API] Status conectividade:', response.status);
-    return response.ok;
-  } catch (error) {
-    console.error('❌ [API] Erro conectividade:', error);
-    return false;
-  }
-} 
-
-  // 🧪 TESTE DE CONEXÃO
-  async testarConexao(): Promise<boolean> {
-  try {
-    console.log('🧪 [API] Testando conexão:', API_BASE_URL);
-    console.log('🧪 [API] Plataforma:', Platform.OS);
-    
-    const response = await this.fetchWithTimeout(`${API_BASE_URL}/health`, {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-      },
-    }, 10000);
-    
-    if (!response.ok) {
-      console.error('❌ [API] Status não OK:', response.status);
-      return false;
-    }
-
-    const result = await response.json() as { message: string };
-    console.log('✅ [API] Conexão OK:', result.message);
-    return true;
-  } catch (error) {
-    console.error('❌ [API] Erro de conexão:', error);
-    return false;
-  }
-}
+  
   // 📧 RESERVA
   async enviarFormularioReserva(data: FormularioReservaData): Promise<{ success: boolean; message: string }> {
     try {
-      console.log('📤 [API] Enviando reserva...');
-      console.log('🔗 [API] URL:', `${API_BASE_URL}/email/reserva`);
+      console.log('📤 [API] Enviando reserva para Firebase...');
+      console.log('🔗 [API] URL:', `${API_BASE_URL}/enviarFormularioReserva`);
       console.log('📱 [API] Plataforma:', Platform.OS);
       
-      const response = await this.fetchWithTimeout(`${API_BASE_URL}/email/reserva`, {
+      const response = await this.fetchWithTimeout(`${API_BASE_URL}/enviarFormularioReserva`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -148,15 +93,15 @@ class ApiService {
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('❌ [API] Erro do servidor:', errorText);
+        console.error('❌ [API] Erro do Firebase:', errorText);
         throw new Error(`HTTP ${response.status}`);
       }
 
       const result = await response.json() as { success: boolean; message: string };
-      console.log('✅ [API] Sucesso:', result);
+      console.log('✅ [API] Sucesso Firebase:', result);
       return result;
     } catch (error) {
-      console.error('❌ [API] Erro reserva:', error);
+      console.error('❌ [API] Erro reserva Firebase:', error);
       
       if (error instanceof Error && error.name === 'AbortError') {
         return { success: false, message: 'Timeout: Conexão muito lenta.' };
@@ -164,7 +109,7 @@ class ApiService {
       
       return { 
         success: false, 
-        message: `Erro de conexão (${Platform.OS}). Verifique sua internet.` 
+        message: `Erro de conexão Firebase (${Platform.OS}). Verifique sua internet.` 
       };
     }
   }
@@ -172,12 +117,12 @@ class ApiService {
   // 📞 CONTATO
   async enviarFormularioContato(data: FormularioContatoData): Promise<{ success: boolean; message: string }> {
     try {
-      console.log('📤 [API] Enviando contato...');
-      console.log('🔗 [API] URL:', `${API_BASE_URL}/email/contato`);
+      console.log('📤 [API] Enviando contato para Firebase...');
+      console.log('🔗 [API] URL:', `${API_BASE_URL}/enviarFormularioContato`);
       console.log('📱 [API] Plataforma:', Platform.OS);
       console.log('📤 [API] Dados:', data);
       
-      const response = await this.fetchWithTimeout(`${API_BASE_URL}/email/contato`, {
+      const response = await this.fetchWithTimeout(`${API_BASE_URL}/enviarFormularioContato`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -190,15 +135,15 @@ class ApiService {
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('❌ [API] Erro do servidor:', errorText);
+        console.error('❌ [API] Erro do Firebase:', errorText);
         throw new Error(`HTTP ${response.status}`);
       }
 
       const result = await response.json() as { success: boolean; message: string };
-      console.log('✅ [API] Sucesso:', result);
+      console.log('✅ [API] Sucesso Firebase:', result);
       return result;
     } catch (error) {
-      console.error('❌ [API] Erro contato:', error);
+      console.error('❌ [API] Erro contato Firebase:', error);
       
       if (error instanceof Error && error.name === 'AbortError') {
         return { success: false, message: 'Timeout: Conexão muito lenta.' };
@@ -206,172 +151,137 @@ class ApiService {
       
       return { 
         success: false, 
-        message: `Erro de conexão (${Platform.OS}). Verifique sua internet.` 
+        message: `Erro de conexão Firebase (${Platform.OS}). Verifique sua internet.` 
       };
     }
   }
 
-  // 🤝 ASSOCIAÇÃO - FUNÇÃO CORRIGIDA
+  // 🤝 ASSOCIAÇÃO
   async enviarFormularioAssociacao(data: FormularioAssociacaoData): Promise<{ success: boolean; message: string }> {
-  try {
-    console.log('📤 [API] Enviando associação...');
-    console.log('🔗 [API] URL:', `${API_BASE_URL}/email/associacao`);
-    console.log('📤 [API] Dados:', data);
-    
-    const response = await this.fetchWithTimeout(`${API_BASE_URL}/email/associacao`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-      body: JSON.stringify(data),
-    }, 60000);
+    try {
+      console.log('📤 [API] Enviando associação para Firebase...');
+      console.log('🔗 [API] URL:', `${API_BASE_URL}/enviarFormularioAssociacao`);
+      console.log('📤 [API] Dados:', data);
+      
+      const response = await this.fetchWithTimeout(`${API_BASE_URL}/enviarFormularioAssociacao`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify(data),
+      }, 60000);
 
-    console.log('📥 [API] Status resposta:', response.status);
+      console.log('📥 [API] Status resposta:', response.status);
 
-    if (!response.ok) {
-      let errorText = 'Erro desconhecido';
-      try {
-        const errorData = await response.json();
-        errorText = errorData.message || errorText;
-        console.error('❌ [API] Erro do servidor:', errorData);
-      } catch (e) {
+      if (!response.ok) {
+        let errorText = 'Erro desconhecido';
         try {
-          errorText = await response.text();
-        } catch (e2) {
-          console.error('❌ [API] Erro ao ler resposta:', e2);
+          const errorData = await response.json();
+          errorText = errorData.message || errorText;
+          console.error('❌ [API] Erro do Firebase:', errorData);
+        } catch (e) {
+          try {
+            errorText = await response.text();
+          } catch (e2) {
+            console.error('❌ [API] Erro ao ler resposta:', e2);
+          }
         }
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
       }
-      throw new Error(`HTTP ${response.status}: ${errorText}`);
-    }
 
-    const result = await response.json();
-    console.log('✅ [API] Sucesso:', result);
-    return result;
-  } catch (error: unknown) {
-    console.error('❌ [API] Erro associação:', error);
-    
-    if (error instanceof Error && error.name === 'AbortError') {
-      return { success: false, message: 'Timeout: Conexão muito lenta.' };
-    }
-    
-    if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
+      const result = await response.json();
+      console.log('✅ [API] Sucesso Firebase:', result);
+      return result;
+    } catch (error: unknown) {
+      console.error('❌ [API] Erro associação Firebase:', error);
+      
+      if (error instanceof Error && error.name === 'AbortError') {
+        return { success: false, message: 'Timeout: Conexão muito lenta.' };
+      }
+      
+      if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
+        return { 
+          success: false, 
+          message: `Erro de conexão Firebase. Verifique sua internet.` 
+        };
+      }
+      
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
       return { 
         success: false, 
-        message: `Erro de conexão. Verifique se o backend está rodando.` 
+        message: `Erro Firebase: ${errorMessage}` 
       };
     }
-    
-    const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
-    return { 
-      success: false, 
-      message: `Erro: ${errorMessage}` 
-    };
   }
-}
+
+  // 🚨 DENÚNCIA
+  // Adicione esta função DENTRO da classe ApiService, após a função enviarFormularioAssociacao
+
 async enviarFormularioDenuncia(data: FormularioDenunciaData): Promise<{ success: boolean; message: string }> {
   try {
-    console.log('📤 [API] Enviando denúncia...');
-    console.log('🔗 [API] URL:', `${API_BASE_URL}/email/denuncia`);
-    
-    // PREPARAR FORMDATA PARA FOTOS
+    console.log('📤 [API] Enviando denúncia para Firebase...');
     const formData = new FormData();
-    formData.append('tipo', data.tipo);
-    formData.append('descricao', data.descricao);
-    formData.append('endereco', data.endereco);
-    formData.append('nomeCompleto', data.nomeCompleto);
-    formData.append('telefone', data.telefone);
-    formData.append('email', data.email);
-    
-    // ADICIONAR COORDENADAS SE EXISTIR
+
+    formData.append('tipo', data.tipo || '');
+    formData.append('descricao', data.descricao || '');
+    formData.append('endereco', data.endereco || '');
+    formData.append('nomeCompleto', data.nomeCompleto || '');
+    formData.append('telefone', data.telefone || '');
+    formData.append('email', data.email || '');
+
     if (data.coordenadas) {
-      formData.append('latitude', data.coordenadas.latitude.toString());
-      formData.append('longitude', data.coordenadas.longitude.toString());
-    }
-    
-    // ADICIONAR FOTOS SE EXISTIREM
-    if (data.fotos && data.fotos.length > 0) {
-      for (let i = 0; i < data.fotos.length; i++) {
-        const foto = data.fotos[i];
-        
-        try {
-          if (foto.startsWith('data:')) {
-            // FOTO BASE64 (web)
-            const response = await fetch(foto);
-            const blob = await response.blob();
-            formData.append('fotos', blob, `denuncia-foto-${i + 1}.jpg`);
-          } else if (foto.startsWith('file://') || foto.startsWith('content://')) {
-            // FOTO URI (mobile)
-            const fileInfo = {
-              uri: foto,
-              type: 'image/jpeg',
-              name: `denuncia-foto-${i + 1}.jpg`,
-            };
-            formData.append('fotos', fileInfo as any);
-          } else {
-            // FOTO HTTP/HTTPS
-            const response = await fetch(foto);
-            const blob = await response.blob();
-            formData.append('fotos', blob, `denuncia-foto-${i + 1}.jpg`);
-          }
-        } catch (photoError) {
-          console.warn(`⚠️ [API] Erro ao processar foto ${i + 1}:`, photoError);
-          // Continua sem esta foto específica
-        }
-      }
+       formData.append('latitude', String(data.coordenadas.latitude ?? ''));
+  formData.append('longitude', String(data.coordenadas.longitude ?? ''));
     }
 
-    console.log('📤 [API] FormData preparado, enviando...');
+    for (let i = 0; i < data.fotos.length; i++) {
+  const uri = data.fotos[i];
+  if (!uri) continue;
 
-    const response = await this.fetchWithTimeout(`${API_BASE_URL}/email/denuncia`, {
-      method: 'POST',
-      body: formData,
-      // NÃO definir Content-Type - deixar o browser definir automaticamente para multipart/form-data
-    }, 60000);
+  try {
+    const response = await fetch(uri);
+    const blob = await response.blob();
+    formData.append('foto', blob, `foto-${i}.jpg`);
+  } catch (error) {
+    console.warn(`⚠️ Falha ao anexar a foto ${i}:`, error);
+  }
+}
 
-    console.log('📥 [API] Status:', response.status);
-
+    const headers: any = {
+  Accept: 'application/json'
+}; 
+console.log('[FORM] Dados sendo enviados:', {
+  tipo: data.tipo,
+  descricao: data.descricao,
+  endereco: data.endereco,
+  nomeCompleto: data.nomeCompleto,
+  telefone: data.telefone,
+  email: data.email,
+  fotos: data.fotos.length
+});
+// NÃO coloque Content-Type aqui!
+const response = await fetch(`${API_BASE_URL}/enviarFormularioDenuncia`, {
+  method: 'POST',
+  headers, // ← importante não definir Content-Type!
+  body: formData
+});
     if (!response.ok) {
-      let errorText = 'Erro desconhecido';
-      try {
-        const errorData = await response.json();
-        errorText = errorData.message || errorText;
-        console.error('❌ [API] Erro do servidor:', errorData);
-      } catch (e) {
-        try {
-          errorText = await response.text();
-          console.error('❌ [API] Erro texto:', errorText);
-        } catch (e2) {
-          console.error('❌ [API] Erro ao ler resposta:', e2);
-        }
-      }
-      throw new Error(`HTTP ${response.status}: ${errorText}`);
+      const errorData = await response.json();
+      throw new Error(errorData.message || 'Erro ao enviar denúncia');
     }
 
     const result = await response.json();
-    console.log('✅ [API] Denúncia enviada:', result);
+    console.log('✅ [API] Denúncia enviada com sucesso:', result);
     return result;
   } catch (error) {
-    console.error('❌ [API] Erro denúncia:', error);
-    
-    if (error instanceof Error && error.name === 'AbortError') {
-      return { success: false, message: 'Timeout: Conexão muito lenta.' };
-    }
-    
-    if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
-      return { 
-        success: false, 
-        message: `Erro de conexão. Verifique sua internet.` 
-      };
-    }
-    
-    const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
-    return { 
-      success: false, 
-      message: `Erro: ${errorMessage}` 
+    console.error('❌ [API] Erro ao enviar denúncia:', error);
+    return {
+      success: false,
+      message: 'Erro ao enviar denúncia. Verifique sua internet ou tente novamente.'
     };
   }
 }
 }
-
-export default new ApiService();
+const apiService = new ApiService();
+export default apiService;

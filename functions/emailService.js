@@ -1,71 +1,34 @@
-import nodemailer from 'nodemailer';
+const nodemailer = require('nodemailer');
+const { defineSecret } = require('firebase-functions/params');
 
-interface EmailData {
-  nome: string;
-  telefone: string;
-  telefoneContato?: string;
-  endereco: string;
-  diasEspera: string;
-  aptoDoacao: string;
-  fotoMovel?: string;
-}
-
-interface ContatoData {
-  nome: string;
-  telefone: string;
-  email?: string;
-  mensagem: string;
-  assunto: string;
-  totalAssunto: number;
-}
-
-interface AssociacaoData {
-  nomeCompleto: string;
-  dataNascimento: string;
-  telefone: string;
-  email: string;
-  enderecoCompleto: string;
-  profissao: string;
-  motivoAssociacao: string;
-  comoConheceu: string;
-}
-interface DenunciaData {
-  tipo: string;
-  descricao: string;
-  endereco: string;
-  coordenadas?: {
-    latitude: number;
-    longitude: number;
-  };
-  fotos: string[];
-  nomeCompleto: string;
-  telefone: string;
-  email: string;
-}
-
+// ✅ Para v2, usar secrets em vez de config
 class EmailService {
-  private transporter;
-
   constructor() {
     console.log('🔧 [EMAIL] Inicializando EmailService...');
     
-    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-      console.error('❌ [EMAIL] ERRO: Credenciais de email não configuradas!');
-      throw new Error('Credenciais de email não configuradas');
-    }
+    // Para v2, vamos usar variáveis de ambiente por enquanto
+    const emailUser = process.env.EMAIL_USER || 'euamoorlandia@gmail.com';
+    const emailPass = process.env.EMAIL_PASS || 'utmy ybmo mpqh hytz';
+    const emailFrom = process.env.EMAIL_FROM || 'AMO Orlandia <euamoorlandia@gmail.com>';
+    const emailTo = process.env.EMAIL_TO || 'euamoorlandia@gmail.com';
 
     this.transporter = nodemailer.createTransport({
-      service: 'gmail',
+      host: 'smtp.gmail.com',
+      port: 587,
+      secure: false,
       auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
+        user: emailUser,
+        pass: emailPass,
       },
     });
+
+    this.emailFrom = emailFrom;
+    this.emailTo = emailTo;
 
     console.log('✅ [EMAIL] Transporter criado com sucesso');
   }
 
-  async verificarConexao(): Promise<boolean> {
+  async verificarConexao() {
     try {
       console.log('🧪 [EMAIL] Verificando conexão...');
       await this.transporter.verify();
@@ -77,13 +40,13 @@ class EmailService {
     }
   }
 
-  async enviarEmailTeste(): Promise<boolean> {
+  async enviarEmailTeste() {
     try {
       console.log('🧪 [EMAIL] Enviando email de teste...');
       
       const mailOptions = {
-        from: process.env.EMAIL_FROM,
-        to: process.env.EMAIL_TO,
+        from: this.emailFrom,
+to: this.emailTo,
         subject: '🧪 Teste AMO Orlândia - ' + new Date().toLocaleString('pt-BR'),
         html: `
           <h2>🧪 Email de Teste</h2>
@@ -102,16 +65,16 @@ class EmailService {
     }
   }
 
-  async enviarFormularioReserva(data: EmailData): Promise<boolean> {
+  async enviarFormularioReserva(data) {
     try {
       console.log('📧 [EMAIL] Enviando formulário de reserva...');
       console.log('📸 [EMAIL] Foto anexada:', data.fotoMovel ? 'SIM' : 'NÃO');
       
       const htmlContent = this.gerarHTMLReserva(data);
       
-      const mailOptions: any = {
-        from: process.env.EMAIL_FROM,
-        to: process.env.EMAIL_TO,
+      const mailOptions = {
+        from: this.emailFrom,
+to: this.emailTo,
         subject: `🪑 Nova Solicitação de Reserva de Móvel - ${data.nome}`,
         html: htmlContent,
       };
@@ -134,46 +97,46 @@ class EmailService {
     }
   }
 
-  async enviarFormularioContato(data: ContatoData): Promise<boolean> {
-  try {
-    console.log('📧 [EMAIL] Iniciando envio de contato...');
-    console.log('📧 [EMAIL] Dados recebidos:', JSON.stringify(data, null, 2));
-    
-    const htmlContent = this.gerarHTMLContato(data);
-    console.log('📧 [EMAIL] HTML gerado com sucesso');
-    
-    const mailOptions = {
-      from: process.env.EMAIL_FROM,
-      to: process.env.EMAIL_TO,
-      subject: `📞 Nova Mensagem de Contato - ${data.nome}`,
-      html: htmlContent,
-      replyTo: data.email || undefined
-    };
+  async enviarFormularioContato(data) {
+    try {
+      console.log('📧 [EMAIL] Iniciando envio de contato...');
+      console.log('📧 [EMAIL] Dados recebidos:', JSON.stringify(data, null, 2));
+      
+      const htmlContent = this.gerarHTMLContato(data);
+      console.log('📧 [EMAIL] HTML gerado com sucesso');
+      
+      const mailOptions = {
+        from: this.emailFrom,
+to: this.emailTo,
+        subject: `📞 Nova Mensagem de Contato - ${data.nome}`,
+        html: htmlContent,
+        replyTo: data.email || undefined
+      };
 
-    console.log('📧 [EMAIL] Opções do email:', {
-      from: mailOptions.from,
-      to: mailOptions.to,
-      subject: mailOptions.subject,
-      hasReplyTo: !!mailOptions.replyTo
-    });
+      console.log('📧 [EMAIL] Opções do email:', {
+        from: mailOptions.from,
+        to: mailOptions.to,
+        subject: mailOptions.subject,
+        hasReplyTo: !!mailOptions.replyTo
+      });
 
-    const result = await this.transporter.sendMail(mailOptions);
-    console.log('✅ [EMAIL] Email de contato enviado:', result.messageId);
-    return true;
-  } catch (error) {
-    console.error('❌ [EMAIL] Erro detalhado ao enviar email de contato:', error);
-    return false;
+      const result = await this.transporter.sendMail(mailOptions);
+      console.log('✅ [EMAIL] Email de contato enviado:', result.messageId);
+      return true;
+    } catch (error) {
+      console.error('❌ [EMAIL] Erro detalhado ao enviar email de contato:', error);
+      return false;
+    }
   }
-}
 
-  async enviarFormularioAssociacao(data: AssociacaoData): Promise<boolean> {
+  async enviarFormularioAssociacao(data) {
     try {
       console.log('📧 [EMAIL] Enviando formulário de associação...');
       const htmlContent = this.gerarHTMLAssociacao(data);
       
       const mailOptions = {
-        from: process.env.EMAIL_FROM,
-        to: process.env.EMAIL_TO,
+        from: this.emailFrom,
+to: this.emailTo,
         subject: `🤝 Nova Solicitação de Associação - ${data.nomeCompleto}`,
         html: htmlContent,
         replyTo: data.email
@@ -188,7 +151,41 @@ class EmailService {
     }
   }
 
-  private gerarHTMLReserva(data: EmailData): string {
+  async enviarFormularioDenuncia(data) {
+    try {
+      console.log('🚨 [EMAIL] Enviando formulário de denúncia...');
+      console.log('📸 [EMAIL] Fotos anexadas:', data.fotos.length);
+      
+      const htmlContent = this.gerarHTMLDenuncia(data);
+      
+      const mailOptions = {
+        from: this.emailFrom,
+to: this.emailTo,
+        subject: `🚨 Nova Denúncia de Descarte Irregular - ${data.nomeCompleto}`,
+        html: htmlContent,
+        replyTo: data.email
+      };
+
+      // ANEXAR FOTOS SE EXISTIREM
+      if (data.fotos.length > 0) {
+        mailOptions.attachments = data.fotos.map((foto, index) => ({
+          filename: `denuncia-foto-${index + 1}.jpg`,
+          path: foto,
+          cid: `foto-denuncia-${index + 1}`
+        }));
+        console.log('📎 [EMAIL] Anexos adicionados:', data.fotos.length);
+      }
+
+      const result = await this.transporter.sendMail(mailOptions);
+      console.log('✅ [EMAIL] Email de denúncia enviado:', result.messageId);
+      return true;
+    } catch (error) {
+      console.error('❌ [EMAIL] Erro ao enviar email de denúncia:', error);
+      return false;
+    }
+  }
+
+  gerarHTMLReserva(data) {
     return `
       <!DOCTYPE html>
       <html>
@@ -266,7 +263,7 @@ class EmailService {
     `;
   }
 
-  private gerarHTMLContato(data: ContatoData): string {
+  gerarHTMLContato(data) {
     return `
     <!DOCTYPE html>
     <html>
@@ -328,9 +325,9 @@ class EmailService {
     </body>
     </html>
   `;
-}
+  }
 
-  private gerarHTMLAssociacao(data: AssociacaoData): string {
+  gerarHTMLAssociacao(data) {
     return `
       <!DOCTYPE html>
       <html>
@@ -349,7 +346,7 @@ class EmailService {
         </style>
       </head>
       <body>
-        <div class="container">
+                <div class="container">
           <div class="header">
             <h1>🤝 Nova Solicitação de Associação</h1>
             <p>AMO Orlândia - Formulário de Associação</p>
@@ -361,59 +358,54 @@ class EmailService {
             </div>
             
             <div class="section">
-              <h3>📋 Dados Pessoais</h3>
+              <h3>👤 Dados Pessoais</h3>
               <div class="field">
-                <span class="label">👤 Nome Completo:</span>
+                <span class="label">Nome Completo:</span>
                 <span class="value">${data.nomeCompleto}</span>
               </div>
               <div class="field">
-                <span class="label">📅 Data de Nascimento:</span>
+                <span class="label">Data de Nascimento:</span>
                 <span class="value">${data.dataNascimento}</span>
               </div>
-            </div>
-
-            <div class="section">
-              <h3>📞 Contato</h3>
               <div class="field">
-                <span class="label">📱 Telefone:</span>
+                <span class="label">Telefone:</span>
                 <span class="value">${data.telefone}</span>
               </div>
               <div class="field">
-                <span class="label">📧 Email:</span>
+                <span class="label">Email:</span>
                 <span class="value">${data.email}</span>
               </div>
+            </div>
+            
+            <div class="section">
+              <h3>📍 Endereço</h3>
               <div class="field">
-                <span class="label">📍 Endereço:</span>
                 <span class="value">${data.enderecoCompleto}</span>
               </div>
             </div>
-
+            
             <div class="section">
               <h3>💼 Informações Profissionais</h3>
               <div class="field">
-                <span class="label">👔 Profissão:</span>
+                <span class="label">Profissão:</span>
                 <span class="value">${data.profissao}</span>
               </div>
             </div>
-
+            
             <div class="section">
               <h3>💭 Motivação</h3>
               <div class="field">
-                <span class="label">🎯 Por que quer se associar:</span>
-                <div style="margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 5px;">
-                  ${data.motivoAssociacao.replace(/\n/g, '<br>')}
-                </div>
+                <span class="label">Motivo para se associar:</span>
+                <div class="value">${data.motivoAssociacao.replace(/\n/g, '<br>')}</div>
               </div>
               <div class="field">
-                <span class="label">📢 Como conheceu a AMO:</span>
-                <div style="margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 5px;">
-                  ${data.comoConheceu.replace(/\n/g, '<br>')}
-                </div>
+                <span class="label">Como conheceu a AMO:</span>
+                <span class="value">${data.comoConheceu}</span>
               </div>
             </div>
             
             <div class="highlight">
-              <strong>⚠️ Ação Necessária:</strong> Analisar solicitação e entrar em contato com o candidato.
+              <strong>⚠️ Ação Necessária:</strong> Analisar solicitação e entrar em contato para próximos passos.
             </div>
           </div>
         </div>
@@ -421,136 +413,96 @@ class EmailService {
       </html>
     `;
   }
-  async enviarFormularioDenuncia(data: DenunciaData): Promise<boolean> {
-  try {
-    console.log('🚨 [EMAIL] Enviando formulário de denúncia...');
-    console.log('📸 [EMAIL] Fotos anexadas:', data.fotos.length);
-    
-    const htmlContent = this.gerarHTMLDenuncia(data);
-    
-    const mailOptions: any = {
-      from: process.env.EMAIL_FROM,
-      to: process.env.EMAIL_TO,
-      subject: `🚨 Nova Denúncia de Descarte Irregular - ${data.nomeCompleto}`,
-      html: htmlContent,
-      replyTo: data.email
-    };
 
-    // ANEXAR FOTOS SE EXISTIREM
-    if (data.fotos.length > 0) {
-      mailOptions.attachments = data.fotos.map((foto, index) => ({
-        filename: `denuncia-foto-${index + 1}.jpg`,
-        path: foto,
-        cid: `foto-denuncia-${index + 1}`
-      }));
-      console.log('📎 [EMAIL] Anexos adicionados:', data.fotos.length);
-    }
-
-    const result = await this.transporter.sendMail(mailOptions);
-    console.log('✅ [EMAIL] Email de denúncia enviado:', result.messageId);
-    return true;
-  } catch (error) {
-    console.error('❌ [EMAIL] Erro ao enviar email de denúncia:', error);
-    return false;
+  gerarHTMLDenuncia(data) {
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <style>
+          body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background: #E74C3C; color: white; padding: 20px; text-align: center; border-radius: 10px 10px 0 0; }
+          .content { background: #f9f9f9; padding: 20px; border-radius: 0 0 10px 10px; }
+          .field { margin-bottom: 15px; }
+          .label { font-weight: bold; color: #E74C3C; }
+          .value { margin-left: 10px; }
+          .highlight { background: #ffebee; padding: 10px; border-left: 4px solid #E74C3C; margin: 15px 0; }
+          .section { background: white; padding: 15px; margin: 10px 0; border-radius: 5px; border-left: 4px solid #E74C3C; }
+          .urgent { background: #ffcdd2; padding: 15px; border-radius: 5px; text-align: center; font-weight: bold; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>🚨 Nova Denúncia de Descarte Irregular</h1>
+            <p>AMO Orlândia - Sistema de Denúncias</p>
+          </div>
+          
+          <div class="content">
+            <div class="urgent">
+              ⚠️ DENÚNCIA URGENTE - REQUER AÇÃO IMEDIATA ⚠️
+            </div>
+            
+            <div class="highlight">
+              <strong>Data/Hora:</strong> ${new Date().toLocaleString('pt-BR')}
+            </div>
+            
+            <div class="section">
+              <h3>🚨 Dados da Denúncia</h3>
+              <div class="field">
+                <span class="label">Tipo:</span>
+                <span class="value">${data.tipo}</span>
+              </div>
+              <div class="field">
+                <span class="label">Descrição:</span>
+                <div class="value">${data.descricao.replace(/\n/g, '<br>')}</div>
+              </div>
+              <div class="field">
+                <span class="label">Endereço:</span>
+                <span class="value">${data.endereco}</span>
+              </div>
+              ${data.coordenadas ? `
+              <div class="field">
+                <span class="label">Coordenadas GPS:</span>
+                <span class="value">Lat: ${data.coordenadas.latitude}, Lng: ${data.coordenadas.longitude}</span>
+              </div>
+              ` : ''}
+              ${data.fotos.length > 0 ? `
+              <div class="field">
+                <span class="label">Fotos:</span>
+                <span class="value">${data.fotos.length} foto(s) anexada(s)</span>
+              </div>
+              ` : ''}
+            </div>
+            
+            <div class="section">
+              <h3>👤 Dados do Denunciante</h3>
+              <div class="field">
+                <span class="label">Nome:</span>
+                <span class="value">${data.nomeCompleto}</span>
+              </div>
+              <div class="field">
+                <span class="label">Telefone:</span>
+                <span class="value">${data.telefone}</span>
+              </div>
+              <div class="field">
+                <span class="label">Email:</span>
+                <span class="value">${data.email}</span>
+              </div>
+            </div>
+            
+            <div class="highlight">
+              <strong>⚠️ Ação Necessária:</strong> Verificar local e tomar providências para remoção do descarte irregular.
+            </div>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
   }
 }
 
-// ✅ ADICIONAR ESTA FUNÇÃO PRIVADA (não mexer nas outras)
-private gerarHTMLDenuncia(data: DenunciaData): string {
-  return `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="utf-8">
-      <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-        .header { background: #E74C3C; color: white; padding: 20px; text-align: center; border-radius: 10px 10px 0 0; }
-        .content { background: #f9f9f9; padding: 20px; border-radius: 0 0 10px 10px; }
-        .field { margin-bottom: 15px; }
-        .label { font-weight: bold; color: #E74C3C; }
-        .value { margin-left: 10px; }
-        .highlight { background: #ffebee; padding: 10px; border-left: 4px solid #E74C3C; margin: 15px 0; }
-        .section { background: white; padding: 15px; margin: 10px 0; border-radius: 5px; border-left: 4px solid #E74C3C; }
-        .coordinates { background: #e8f5e8; padding: 10px; border-radius: 5px; font-family: monospace; }
-      </style>
-    </head>
-    <body>
-      <div class="container">
-        <div class="header">
-          <h1>🚨 Nova Denúncia de Descarte Irregular</h1>
-          <p>AMO Orlândia - Sistema de Denúncias</p>
-        </div>
-        
-        <div class="content">
-          <div class="highlight">
-            <strong>Data/Hora:</strong> ${new Date().toLocaleString('pt-BR')}
-          </div>
-          
-          <div class="section">
-            <h3>📋 Dados da Denúncia</h3>
-            <div class="field">
-              <span class="label">🏷️ Tipo:</span>
-              <span class="value">${data.tipo}</span>
-            </div>
-            <div class="field">
-              <span class="label">📝 Descrição:</span>
-              <div style="margin-top: 10px; padding: 10px; background: #f8f9fa; border-radius: 5px;">
-                ${data.descricao.replace(/\n/g, '<br>')}
-              </div>
-            </div>
-            <div class="field">
-              <span class="label">📍 Endereço:</span>
-              <span class="value">${data.endereco}</span>
-            </div>
-            ${data.coordenadas ? `
-            <div class="field">
-              <span class="label">🗺️ Coordenadas GPS:</span>
-              <div class="coordinates">
-                Latitude: ${data.coordenadas.latitude}<br>
-                Longitude: ${data.coordenadas.longitude}
-              </div>
-            </div>
-            ` : ''}
-          </div>
+module.exports = new EmailService();
 
-          <div class="section">
-            <h3>👤 Dados do Denunciante</h3>
-            <div class="field">
-              <span class="label">👤 Nome:</span>
-              <span class="value">${data.nomeCompleto}</span>
-            </div>
-            <div class="field">
-              <span class="label">📱 Telefone:</span>
-              <span class="value">${data.telefone}</span>
-            </div>
-            <div class="field">
-              <span class="label">📧 Email:</span>
-              <span class="value">${data.email}</span>
-            </div>
-          </div>
-
-          ${data.fotos.length > 0 ? `
-          <div class="section">
-            <h3>📷 Fotos Anexadas</h3>
-            <div class="field">
-              <span class="label">📸 Total de fotos:</span>
-              <span class="value">${data.fotos.length}</span>
-            </div>
-            <p><em>As fotos estão anexadas a este email.</em></p>
-          </div>
-          ` : ''}
-          
-          <div class="highlight">
-            <strong>⚠️ Ação Necessária:</strong> Verificar a denúncia e tomar as medidas cabíveis.
-          </div>
-        </div>
-      </div>
-    </body>
-    </html>
-  `;
-}
-
-}
-
-export default new EmailService();

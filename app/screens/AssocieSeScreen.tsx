@@ -266,12 +266,7 @@ export function AssocieSeScreen() {
 
       // 🧪 TESTE DE CONEXÃO PRIMEIRO
       console.log('🧪 [ASSOCIACAO] Testando conexão...');
-      const conexaoOk = await apiService.testarConexao();
       
-      if (!conexaoOk) {
-        mostrarErro('Sem conexão com o servidor. Verifique sua internet.');
-        return;
-      }
 
       console.log('✅ [ASSOCIACAO] Conexão OK, enviando formulário...');
 

@@ -629,7 +629,7 @@ const enviarDenuncia = async () => {
     };
 
     console.log('📧 [DENUNCIA] Enviando via API...');
-    
+    console.log('📤 Dados da denúncia antes do envio:', dadosEnvio);
     const resultado = await apiService.enviarFormularioDenuncia(dadosEnvio);
     
     if (resultado.success) {
