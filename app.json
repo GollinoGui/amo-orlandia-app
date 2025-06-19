@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "AMO Orlândia",
-    "slug": "amo-orlandia-2025-app",
+    "slug": "amo-orlandia-2025-app-pronto",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -98,7 +98,7 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "172f9263-bbba-4090-b5d3-00f5364ac639"
+        "projectId": "24881ed6-bb24-4095-ba70-cee30e39eb20"
       }
     },
     "runtimeVersion": {
