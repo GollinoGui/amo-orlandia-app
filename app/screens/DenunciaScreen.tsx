@@ -36,12 +36,16 @@ interface DenunciaData {
   email: string;
 }
 const patrocinadores = [
-  'MORLAN - Juntos por uma Orlândia sustentável',
-  'Empresa Parceira - Cuidando do meio ambiente',
-  'Patrocinador Local - Por uma cidade mais limpa',
-  'Comércio Local - Apoiando a preservação ambiental',
-  'Parceiro Ambiental - Por um futuro mais verde'
-];
+    'MORLAN - Juntos por uma Orlândia sustentável',
+    'UNIMED - Cuidando do meio ambiente',
+    'INTELLI - Por uma cidade mais limpa',
+    'ZAP - Tecnologia e Sustentabilidade',
+    'BREJEIRO - Cuidando do nosso futuro',
+    'OIMASA - Inovação e Sustentabilidade',
+    'HOTEL SÃO MARCOS - Conforto e Sustentabilidade',
+    'GOLLINO COMERCIAL - Soluções Sustentáveis para Orlândia',
+  ];
+
 
 
 
@@ -75,8 +79,13 @@ export function DenunciaScreen() {
     'MORLAN - Juntos por uma Orlândia sustentável',
     'UNIMED - Cuidando do meio ambiente',
     'INTELLI - Por uma cidade mais limpa',
-    
+    'ZAP - Tecnologia e Sustentabilidade',
+    'BREJEIRO - Cuidando do nosso futuro',
+    'OIMASA - Inovação e Sustentabilidade',
+    'HOTEL SÃO MARCOS - Conforto e Sustentabilidade',
+    'GOLLINO COMERCIAL - Soluções Sustentáveis para Orlândia',
   ];
+
 
   // ✅ FUNÇÕES DE NOTIFICAÇÃO (APÓS OS ESTADOS)
   const mostrarSucesso = (mensagem: string) => {

@@ -71,7 +71,12 @@ export function AssocieSeScreen() {
   const patrocinadores = [
     'MORLAN - Juntos por uma Orlândia sustentável',
     'UNIMED - Cuidando do meio ambiente',
-    'INTELLI - Por uma cidade mais limpa'
+    'INTELLI - Por uma cidade mais limpa',
+    'ZAP - Tecnologia e Sustentabilidade',
+    'BREJEIRO - Cuidando do nosso futuro',
+    'OIMASA - Inovação e Sustentabilidade',
+    'HOTEL SÃO MARCOS - Conforto e Sustentabilidade',
+    'GOLLINO COMERCIAL - Soluções Sustentáveis para Orlândia',
   ];
 
   // ✅ FUNÇÕES DE VALIDAÇÃO
@@ -601,7 +606,7 @@ export function AssocieSeScreen() {
               disabled={enviando}
             >
               <Text style={styles.submitButtonText}>
-                {enviando ? 'Enviando... ⏳' : 'Enviar Solicitação 🤝'}
+                {enviando ? 'Enviando... ' : 'Enviar Solicitação '}
               </Text>
             </TouchableOpacity>
           </View>

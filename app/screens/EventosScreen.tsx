@@ -293,19 +293,25 @@ const styles = StyleSheet.create({
   filtrosContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    gap: 10,
+    gap: 8,
+    flexWrap: 'wrap',
+    paddingHorizontal: 5,
   },
   filtroButton: {
     flex: 1,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 20,
-    borderWidth: 2,
+     paddingVertical: 8, // ✅ REDUZIR: de 8 para 6
+    paddingHorizontal: 8, // ✅ REDUZIR: de 8 para 4
+    borderRadius: 20, // ✅ REDUZIR: de 20 para 15
+    borderWidth: 2, // ✅ REDUZIR: de 2 para 1.5
     alignItems: 'center',
+    minWidth: 60, 
+    
   },
   filtroText: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: 'bold',
+    textAlign: 'center', // ✅ ADICIONAR: Centralizar texto
+    
   },
   listaEventos: {
     paddingHorizontal: 20,

@@ -3,7 +3,7 @@ import { Platform } from 'react-native';
 // 🌐 IP CORRETO CONFIGURADO
 const getApiBaseUrl = () => {
   if (Platform.OS === 'web') {
-    return 'http://localhost:3000/api';
+    return 'https://amo-orlandia-app-production.up.railway.app/api';
   }
     // 🚀 RAILWAY URL - SEMPRE ONLINE
   if (__DEV__) {

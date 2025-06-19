@@ -129,9 +129,15 @@ export function ContatoScreen() {
 
   const patrocinadores = [
     'MORLAN - Juntos por uma Orlândia sustentável',
-    'INTELLI  - Cuidando do meio ambiente',
-    'UNIMED - Por uma cidade mais limpa'
+    'UNIMED - Cuidando do meio ambiente',
+    'INTELLI - Por uma cidade mais limpa',
+    'ZAP - Tecnologia e Sustentabilidade',
+    'BREJEIRO - Cuidando do nosso futuro',
+    'OIMASA - Inovação e Sustentabilidade',
+    'HOTEL SÃO MARCOS - Conforto e Sustentabilidade',
+    'GOLLINO COMERCIAL - Soluções Sustentáveis para Orlândia',
   ];
+
 
   const mostrarSucesso = (mensagem: string) => {
     if (Platform.OS === 'web') {

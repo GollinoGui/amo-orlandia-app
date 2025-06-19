@@ -45,11 +45,17 @@ export function PoliticaReservaScreen() {
   const [sucesso, setSucesso] = useState('');
   const [enviando, setEnviando] = useState(false);
 
-  const patrocinadores = [
+ const patrocinadores = [
     'MORLAN - Juntos por uma Orlândia sustentável',
     'UNIMED - Cuidando do meio ambiente',
-    'INTELLI - Por uma cidade mais limpa'
+    'INTELLI - Por uma cidade mais limpa',
+    'ZAP - Tecnologia e Sustentabilidade',
+    'BREJEIRO - Cuidando do nosso futuro',
+    'OIMASA - Inovação e Sustentabilidade',
+    'HOTEL SÃO MARCOS - Conforto e Sustentabilidade',
+    'GOLLINO COMERCIAL - Soluções Sustentáveis para Orlândia',
   ];
+
 
   // ✅ FUNÇÕES DE VALIDAÇÃO (universais)
   const validarNome = (nome: string) => {
@@ -801,6 +807,7 @@ const styles = StyleSheet.create({
     padding: 12,
     borderWidth: 1,
     borderRadius: 8,
+    minHeight: 50,
   },
   radioCircle: {
     width: 20,
@@ -811,6 +818,8 @@ const styles = StyleSheet.create({
   },
   radioText: {
     fontSize: 16,
+    flexShrink: 0, 
+    minWidth: 60, 
   },
     submitButton: {
     padding: 15,
