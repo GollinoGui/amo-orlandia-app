@@ -4,6 +4,9 @@ import express from 'express';
 import os from 'os';
 import path from 'path';
 
+
+// Resto do código permanece igual...
+
 // 🔧 CARREGAR .env
 const envPath = path.join(__dirname, '../.env');
 console.log('🔍 [ENV] Carregando .env de:', envPath);

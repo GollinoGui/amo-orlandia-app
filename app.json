@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "AMO Orlândia",
-    "slug": "amo-orlandia-app",
+    "slug": "amo-orlandia-2025-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -58,10 +58,6 @@
         "android.permission.CAMERA",
         "android.permission.READ_EXTERNAL_STORAGE",
         "android.permission.WRITE_EXTERNAL_STORAGE",
-        "android.permission.RECORD_AUDIO",
-        "android.permission.CAMERA",
-        "android.permission.READ_EXTERNAL_STORAGE",
-        "android.permission.WRITE_EXTERNAL_STORAGE",
         "android.permission.RECORD_AUDIO"
       ],
       "intentFilters": [
@@ -102,7 +98,7 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "0cc04a71-43bb-4dc0-8173-154172ad1e57"
+        "projectId": "172f9263-bbba-4090-b5d3-00f5364ac639"
       }
     },
     "runtimeVersion": {

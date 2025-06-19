@@ -289,31 +289,62 @@ async enviarFormularioDenuncia(data: FormularioDenunciaData): Promise<{ success:
       formData.append('longitude', data.coordenadas.longitude.toString());
     }
     
-    // ADICIONAR FOTOS
-    for (let i = 0; i < data.fotos.length; i++) {
-      const foto = data.fotos[i];
-      
-      if (foto.startsWith('data:')) {
-        // FOTO BASE64 (web)
-        const response = await fetch(foto);
-        const blob = await response.blob();
-        formData.append('fotos', blob, `denuncia-foto-${i + 1}.jpg`);
-      } else {
-        // FOTO URI (mobile)
-        const response = await fetch(foto);
-        const blob = await response.blob();
-        formData.append('fotos', blob, `denuncia-foto-${i + 1}.jpg`);
+    // ADICIONAR FOTOS SE EXISTIREM
+    if (data.fotos && data.fotos.length > 0) {
+      for (let i = 0; i < data.fotos.length; i++) {
+        const foto = data.fotos[i];
+        
+        try {
+          if (foto.startsWith('data:')) {
+            // FOTO BASE64 (web)
+            const response = await fetch(foto);
+            const blob = await response.blob();
+            formData.append('fotos', blob, `denuncia-foto-${i + 1}.jpg`);
+          } else if (foto.startsWith('file://') || foto.startsWith('content://')) {
+            // FOTO URI (mobile)
+            const fileInfo = {
+              uri: foto,
+              type: 'image/jpeg',
+              name: `denuncia-foto-${i + 1}.jpg`,
+            };
+            formData.append('fotos', fileInfo as any);
+          } else {
+            // FOTO HTTP/HTTPS
+            const response = await fetch(foto);
+            const blob = await response.blob();
+            formData.append('fotos', blob, `denuncia-foto-${i + 1}.jpg`);
+          }
+        } catch (photoError) {
+          console.warn(`⚠️ [API] Erro ao processar foto ${i + 1}:`, photoError);
+          // Continua sem esta foto específica
+        }
       }
     }
+
+    console.log('📤 [API] FormData preparado, enviando...');
 
     const response = await this.fetchWithTimeout(`${API_BASE_URL}/email/denuncia`, {
       method: 'POST',
       body: formData,
+      // NÃO definir Content-Type - deixar o browser definir automaticamente para multipart/form-data
     }, 60000);
 
+    console.log('📥 [API] Status:', response.status);
+
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error('❌ [API] Erro do servidor:', errorText);
+      let errorText = 'Erro desconhecido';
+      try {
+        const errorData = await response.json();
+        errorText = errorData.message || errorText;
+        console.error('❌ [API] Erro do servidor:', errorData);
+      } catch (e) {
+        try {
+          errorText = await response.text();
+          console.error('❌ [API] Erro texto:', errorText);
+        } catch (e2) {
+          console.error('❌ [API] Erro ao ler resposta:', e2);
+        }
+      }
       throw new Error(`HTTP ${response.status}: ${errorText}`);
     }
 
@@ -330,7 +361,7 @@ async enviarFormularioDenuncia(data: FormularioDenunciaData): Promise<{ success:
     if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
       return { 
         success: false, 
-        message: `Erro de conexão. Verifique se o backend está rodando.` 
+        message: `Erro de conexão. Verifique sua internet.` 
       };
     }
     
