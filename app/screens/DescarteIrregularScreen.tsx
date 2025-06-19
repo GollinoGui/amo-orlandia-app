@@ -74,7 +74,7 @@ export function DescarteIrregularScreen() {
   };
 
   const irParaContato = () => {
-    router.push('/contato');
+    router.push('/contato' as any);
   };
 
   const abrirInstagramPrefeitura = async () => {

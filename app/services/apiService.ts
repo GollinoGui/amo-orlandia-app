@@ -8,12 +8,12 @@ const getApiBaseUrl = () => {
     // 🚀 RAILWAY URL - SEMPRE ONLINE
   if (__DEV__) {
     // Em desenvolvimento, pode escolher:
-    return 'https://amo-orlandia-production.up.railway.app/api'; // Online
+    return 'amo-orlandia-app-production.up.railway.app/api'; // Online
     // return 'http://192.168.1.102:3000/api'; // Local (descomente se quiser)
   }
   
   // Em produção, sempre Railway
-  return 'https://amo-orlandia-production.up.railway.app/api';
+  return 'amo-orlandia-app-production.up.railway.app/api';
 };
 
 
