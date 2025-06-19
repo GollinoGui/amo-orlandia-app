@@ -36,31 +36,31 @@ export function QuemSomosScreen() {
   // 📅 TIMELINE DA AMO
   const timeline: TimelineMomento[] = [
     {
-      ano: '2020',
-      titulo: 'Fundação da AMO',
-      descricao: 'A Associação de Moradores de Orlândia foi oficialmente fundada com o objetivo de representar e defender os interesses da comunidade orlandina.',
+      ano: '2023',
+      titulo: 'Idealização da AMO',
+      descricao: 'Grupo de moradores se une para criar a AMO Orlândia, com o objetivo de melhorar a qualidade de vida na cidade.',
+      icone: '💬'
+    },
+    {
+      ano: '2025',
+      titulo: 'Fundação Oficial',
+      descricao: 'AMO Orlândia é oficialmente fundada, com registro e estatuto social, iniciando suas atividades de forma estruturada.',
       icone: '🏛️'
     },
     {
-      ano: '2021',
-      titulo: 'Primeiros Projetos',
-      descricao: 'Início dos primeiros projetos sociais e ambientais, focando na melhoria da qualidade de vida dos moradores.',
-      icone: '🌱'
+      ano: '2025',
+      titulo: 'Primeiros projetos',
+      descricao: 'Lançamento dos primeiros projetos comunitários, incluindo campanhas de limpeza e conscientização ambiental.',
+      icone: '🌍'
     },
     {
-      ano: '2022',
+      ano: '2025',
       titulo: 'Parcerias Estratégicas',
-      descricao: 'Estabelecimento de parcerias com empresas locais como MORLAN, UNIMED e INTELLI para ampliar o alcance dos projetos.',
+      descricao: 'Estabelecimento de parcerias com empresas locais e órgãos públicos para potencializar ações e projetos.',
       icone: '🤝'
     },
     {
-      ano: '2023',
-      titulo: 'Política de Reserva',
-      descricao: 'Implementação da Política de Reserva de Móveis, revolucionando o descarte sustentável na cidade.',
-      icone: '🪑'
-    },
-    {
-      ano: '2024',
+      ano: '2025',
       titulo: 'Projeto Limpai',
       descricao: 'Lançamento do Projeto Limpai, grande iniciativa de conscientização ambiental e limpeza urbana.',
       icone: '🧹'
@@ -253,22 +253,22 @@ export function QuemSomosScreen() {
           
           <View style={styles.numerosGrid}>
             <View style={[styles.numeroCard, { backgroundColor: theme.colors.surface }]}>
-              <Text style={styles.numeroValor}>5+</Text>
+              <Text style={styles.numeroValor}>2</Text>
               <Text style={[styles.numeroLabel, { color: theme.colors.text }]}>Anos de Atuação</Text>
             </View>
             
             <View style={[styles.numeroCard, { backgroundColor: theme.colors.surface }]}>
-              <Text style={styles.numeroValor}>1000+</Text>
+              <Text style={styles.numeroValor}>100+</Text>
               <Text style={[styles.numeroLabel, { color: theme.colors.text }]}>Famílias Atendidas</Text>
             </View>
             
             <View style={[styles.numeroCard, { backgroundColor: theme.colors.surface }]}>
-              <Text style={styles.numeroValor}>50+</Text>
+              <Text style={styles.numeroValor}>10+</Text>
               <Text style={[styles.numeroLabel, { color: theme.colors.text }]}>Projetos Realizados</Text>
             </View>
             
             <View style={[styles.numeroCard, { backgroundColor: theme.colors.surface }]}>
-              <Text style={styles.numeroValor}>3</Text>
+              <Text style={styles.numeroValor}>20+</Text>
               <Text style={[styles.numeroLabel, { color: theme.colors.text }]}>Parcerias Estratégicas</Text>
             </View>
           </View>
@@ -360,7 +360,7 @@ export function QuemSomosScreen() {
           <View style={styles.ctaButtons}>
             <TouchableOpacity 
               style={[styles.ctaButton, { backgroundColor: '#9EBF26' }]}
-              onPress={() => router.push('/associe-se')}
+              onPress={() => router.push('/contato' as any)}
             >
               <Text style={styles.ctaButtonText}>🤝 Associe-se</Text>
             </TouchableOpacity>

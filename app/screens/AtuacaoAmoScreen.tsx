@@ -1,17 +1,17 @@
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
   Image,
   Linking,
   ScrollView,
+  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
-  StatusBar
+  View
 } from 'react-native';
-import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../contexts/ThemeContext';
 
 interface DiretorMembro {
@@ -60,6 +60,7 @@ export function AtuacaoAmoScreen() {
       nome: 'Marcelo Oliveira Fernandes',
       cargo: 'Presidente',
       conselho: 'Diretoria Administrativa',
+      contato: '(16) 99998-2105'
     },
     {
       nome: 'José Antonio da Silva',
@@ -108,12 +109,23 @@ export function AtuacaoAmoScreen() {
       site: 'https://www.intelli.com.br/'
     },
     {
-      nome: 'Parceiro em Potencial 1',
-      descricao: 'Espaço disponível para nova parceria',
+      nome: 'OIMASA',
+      descricao: 'Revendedora de maquinas agricolas',
+      site: 'https://oimasa.com.br/',
     },
     {
-      nome: 'Parceiro em Potencial 2', 
-      descricao: 'Espaço disponível para nova parceria',
+      nome: 'Hotel São Marcos', 
+      descricao: 'Hospedagem e eventos em Orlândia',
+      site: 'https://hotelsaomarcos.com/'
+    },
+    {
+      nome: 'Brejeiro',
+      descricao: 'Produtos Alimentícios',
+      site: 'https://brejeiro.com.br/'
+    },
+    {
+      nome: 'ZAP',
+      descricao: 'Montagens industriais e manutenção',
     }
   ];
 
@@ -126,15 +138,15 @@ export function AtuacaoAmoScreen() {
       ata: 'ata-2025-01'
     },
     {
-      data: '20/12/2024',
+      data: '10/04/2025',
       titulo: 'Balanço do Projeto Limpai',
       resumo: 'Apresentação dos resultados do projeto de conscientização ambiental e planejamento para 2025.',
       ata: 'ata-2024-12'
     },
     {
-      data: '10/11/2024',
-      titulo: 'Novas Parcerias Estratégicas',
-      resumo: 'Formalização de parcerias com empresas locais para ampliar os serviços oferecidos à comunidade.',
+      data: '01/02/2025',
+      titulo: 'Reunião sobre Descartes irregulares',
+      resumo: 'Solicitação do ecoponto à prefeitura municipal e discussão sobre a criação de um sistema de denúncias.',
       ata: 'ata-2024-11'
     }
   ];
@@ -466,14 +478,14 @@ export function AtuacaoAmoScreen() {
           <View style={styles.ctaButtons}>
             <TouchableOpacity 
               style={[styles.ctaButton, { backgroundColor: '#9EBF26' }]}
-              onPress={() => router.push('/associe-se')}
+              onPress={() => router.push('/associe-se' as any)}
             >
               <Text style={styles.ctaButtonText}>🤝 Associe-se</Text>
             </TouchableOpacity>
 
             <TouchableOpacity 
               style={[styles.ctaButton, { backgroundColor: '#F2C335' }]}
-              onPress={() => router.push('/contato')}
+              onPress={() => router.push('/contato' as any)}
             >
               <Text style={styles.ctaButtonText}>📞 Contato</Text>
             </TouchableOpacity>

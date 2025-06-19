@@ -1,21 +1,24 @@
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { Ionicons } from '@expo/vector-icons';
 import { Picker } from '@react-native-picker/picker';
 import * as ImagePicker from 'expo-image-picker';
 import * as Location from 'expo-location';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
-    Alert,
-    Image,
-    Platform,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View
+  Alert,
+  Image,
+  Platform,
+  Pressable,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import apiService from '../services/apiService';
 
 
@@ -48,6 +51,7 @@ export function DenunciaScreen() {
   const textColor = useThemeColor({}, 'text');
   const cardColor = useThemeColor({}, 'card');
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const primaryColor = '#E74C3C';
 
   const [formData, setFormData] = useState<DenunciaData>({
@@ -609,7 +613,7 @@ Nossa equipe analisará sua denúncia e tomará as medidas necessárias.
 
 Obrigado por ajudar a manter Orlândia limpa!
 
-💝 Cortesia da:
+ Cortesia da:
 ${patrocinadorAleatorio}`;
 
       mostrarSucesso(mensagemSucesso);
@@ -633,321 +637,360 @@ ${patrocinadorAleatorio}`;
 };
 
 
-  return (
-    <ScrollView style={[styles.container, { backgroundColor }]}>
-      {/* HEADER */}
-      <View style={[styles.headerCard, { backgroundColor: primaryColor }]}>
-        <Text style={styles.headerTitle}>Nova Denúncia</Text>
-        <Text style={styles.headerSubtitle}>
-          Denuncie descarte irregular com fotos e localização
-        </Text>
-      </View>
-
-      {/* MENSAGENS */}
-      {erro ? (
-        <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>{erro}</Text>
-        </View>
-      ) : null}
-
-      {sucesso ? (
-        <View style={styles.successContainer}>
-          <Text style={styles.successText}>{sucesso}</Text>
-        </View>
-      ) : null}
-
-      {/* FORMULÁRIO */}
-      <View style={[styles.card, { backgroundColor: cardColor }]}>
-        <Text style={[styles.cardTitle, { color: primaryColor }]}>
-          Dados da Denúncia
-        </Text>
-
-        {/* TIPO DE DENÚNCIA */}
-        <Text style={[styles.label, { color: textColor }]}>Tipo de Denúncia: *</Text>
-        {Platform.OS === 'web' ? (
-          <select
-            value={formData.tipo}
-            onChange={e => setFormData({ ...formData, tipo: e.target.value })}
-            style={{
-              borderWidth: 1,
-              borderColor: primaryColor,
-              borderRadius: 8,
-              padding: 12,
-              fontSize: 16,
-              marginBottom: 10,
-              width: '100%',
-              color: textColor,
-              backgroundColor: cardColor,
-            }}
-          >
-            <option value="">Selecione o tipo</option>
-            {tiposDenuncia.map(tipo => (
-              <option key={tipo} value={tipo}>{tipo}</option>
-            ))}
-          </select>
-        ) : (
-          <Picker
-            selectedValue={formData.tipo}
-            onValueChange={(value) => setFormData({ ...formData, tipo: value })}
-            style={[styles.picker, { color: textColor }]}
-          >
-            <Picker.Item label="Selecione o tipo" value="" />
-            {tiposDenuncia.map(tipo => (
-              <Picker.Item key={tipo} label={tipo} value={tipo} />
-            ))}
-          </Picker>
-        )}
-
-        {/* DESCRIÇÃO */}
-        <Text style={[styles.label, { color: textColor }]}>
-          Descrição da Situação: * ({formData.descricao.length}/500)
-        </Text>
-        <TextInput
-          style={[styles.textArea, { borderColor: primaryColor, color: textColor }]}
-          value={formData.descricao}
-          onChangeText={(text) => setFormData({ ...formData, descricao: text })}
-          placeholder="Descreva detalhadamente a situação... (mínimo 10 caracteres)"
-          placeholderTextColor={textColor + '80'}
-          multiline
-          numberOfLines={4}
-          maxLength={500}
-        />
-        {formData.descricao.length > 0 && formData.descricao.length < 10 && (
-          <Text style={styles.fieldErrorText}>Descrição deve ter pelo menos 10 caracteres</Text>
-        )}
-
-        {/* ENDEREÇO COM GPS MELHORADO */}
-        <Text style={[styles.label, { color: textColor }]}>Endereço: *</Text>
-        <TextInput
-          style={[styles.input, { borderColor: primaryColor, color: textColor }]}
-          value={formData.endereco}
-          onChangeText={(text) => setFormData({ ...formData, endereco: text })}
-          placeholder="Digite o endereço completo do descarte irregular"
-          placeholderTextColor={textColor + '80'}
-          multiline
-        />
-        
-        {localizacao && (
-          <Text style={[styles.gpsInfo, { color: '#27AE60' }]}>
-            GPS: {localizacao.coords.latitude.toFixed(6)}, {localizacao.coords.longitude.toFixed(6)}
-          </Text>
-        )}
-
-        <TouchableOpacity
-          style={[
-            styles.gpsButton, 
-            { 
-              backgroundColor: buscandoLocalizacao ? '#95A5A6' : '#27AE60',
-              opacity: buscandoLocalizacao ? 0.7 : 1
-            }
-          ]}
-          onPress={obterLocalizacao}
-          disabled={buscandoLocalizacao}
+   return (
+    <View style={[styles.container, { backgroundColor }]}>
+      {/* ✅ STATUS BAR */}
+      <StatusBar 
+        barStyle="light-content"
+        backgroundColor="#E74C3C"
+      />
+      
+      {/* ✅ HEADER COM SETA DE VOLTAR */}
+      <View style={[
+        styles.header, 
+        { 
+          paddingTop: insets.top + 10,
+          backgroundColor: '#E74C3C'
+        }
+      ]}>
+        <TouchableOpacity 
+          style={styles.backButton} 
+          onPress={() => router.back()}
+          hitSlop={{ top: 15, bottom: 15, left: 15, right: 15 }}
+          activeOpacity={0.7}
         >
-          <Text style={styles.gpsButtonText}>
-            {buscandoLocalizacao ? 'Buscando endereço...' : 'Obter Endereço Automático'}
-          </Text>
+          <Ionicons name="arrow-back" size={26} color="#FFFFFF" />
         </TouchableOpacity>
+        
+        <Text style={styles.headerTitle}>📝 Nova Denúncia</Text>
+        
+        <View style={styles.headerSpacer} />
       </View>
 
-      {/* FOTOS COM BOTÃO DE REMOVER MELHORADO */}
-      <View style={[styles.card, { backgroundColor: cardColor }]}>
-        <Text style={[styles.cardTitle, { color: primaryColor }]}>
-          Fotos da Denúncia ({formData.fotos.length}/5)
-        </Text>
+      {/* ✅ CONTEÚDO */}
+      <ScrollView style={styles.content}>
+        {/* MENSAGENS */}
+        {erro ? (
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorText}>{erro}</Text>
+          </View>
+        ) : null}
 
-        <Text style={[styles.photoInstructions, { color: textColor }]}>
-          Tire fotos claras da situação irregular para fortalecer sua denúncia
-        </Text>
+        {sucesso ? (
+          <View style={styles.successContainer}>
+            <Text style={styles.successText}>{sucesso}</Text>
+          </View>
+        ) : null}
 
-        <View style={styles.photoButtons}>
+        {/* FORMULÁRIO */}
+        <View style={[styles.card, { backgroundColor: cardColor }]}>
+          <Text style={[styles.cardTitle, { color: primaryColor }]}>
+            Dados da Denúncia
+          </Text>
+
+          {/* TIPO DE DENÚNCIA */}
+          <Text style={[styles.label, { color: textColor }]}>Tipo de Denúncia: *</Text>
+          {Platform.OS === 'web' ? (
+            <select
+              value={formData.tipo}
+              onChange={e => setFormData({ ...formData, tipo: e.target.value })}
+              style={{
+                borderWidth: 1,
+                borderColor: primaryColor,
+                borderRadius: 8,
+                padding: 12,
+                fontSize: 16,
+                marginBottom: 10,
+                width: '100%',
+                color: textColor,
+                backgroundColor: cardColor,
+              }}
+            >
+              <option value="">Selecione o tipo</option>
+              {tiposDenuncia.map(tipo => (
+                <option key={tipo} value={tipo}>{tipo}</option>
+              ))}
+            </select>
+          ) : (
+            <Picker
+              selectedValue={formData.tipo}
+              onValueChange={(value) => setFormData({ ...formData, tipo: value })}
+              style={[styles.picker, { color: textColor }]}
+            >
+              <Picker.Item label="Selecione o tipo" value="" />
+              {tiposDenuncia.map(tipo => (
+                <Picker.Item key={tipo} label={tipo} value={tipo} />
+              ))}
+            </Picker>
+          )}
+
+          {/* DESCRIÇÃO */}
+          <Text style={[styles.label, { color: textColor }]}>
+            Descrição da Situação: * ({formData.descricao.length}/500)
+          </Text>
+          <TextInput
+            style={[styles.textArea, { borderColor: primaryColor, color: textColor }]}
+            value={formData.descricao}
+            onChangeText={(text) => setFormData({ ...formData, descricao: text })}
+            placeholder="Descreva detalhadamente a situação... (mínimo 10 caracteres)"
+            placeholderTextColor={textColor + '80'}
+            multiline
+            numberOfLines={4}
+            maxLength={500}
+          />
+          {formData.descricao.length > 0 && formData.descricao.length < 10 && (
+            <Text style={styles.fieldErrorText}>Descrição deve ter pelo menos 10 caracteres</Text>
+          )}
+
+          {/* ENDEREÇO COM GPS MELHORADO */}
+          <Text style={[styles.label, { color: textColor }]}>Endereço: *</Text>
+          <TextInput
+            style={[styles.input, { borderColor: primaryColor, color: textColor }]}
+            value={formData.endereco}
+            onChangeText={(text) => setFormData({ ...formData, endereco: text })}
+            placeholder="Digite o endereço completo do descarte irregular"
+            placeholderTextColor={textColor + '80'}
+            multiline
+          />
+          
+          {localizacao && (
+            <Text style={[styles.gpsInfo, { color: '#27AE60' }]}>
+              GPS: {localizacao.coords.latitude.toFixed(6)}, {localizacao.coords.longitude.toFixed(6)}
+            </Text>
+          )}
+
           <TouchableOpacity
             style={[
-              styles.photoButton, 
+              styles.gpsButton, 
               { 
-                backgroundColor: formData.fotos.length >= 5 ? '#95A5A6' : '#3498DB',
-                opacity: formData.fotos.length >= 5 ? 0.5 : 1
+                backgroundColor: buscandoLocalizacao ? '#95A5A6' : '#27AE60',
+                opacity: buscandoLocalizacao ? 0.7 : 1
               }
             ]}
-            onPress={tirarFoto}
-            disabled={formData.fotos.length >= 5}
+            onPress={obterLocalizacao}
+            disabled={buscandoLocalizacao}
           >
-            <Text style={styles.photoButtonText}>Tirar Foto</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[
-              styles.photoButton, 
-              { 
-                backgroundColor: formData.fotos.length >= 5 ? '#95A5A6' : '#9B59B6',
-                opacity: formData.fotos.length >= 5 ? 0.5 : 1
-              }
-            ]}
-            onPress={escolherFoto}
-            disabled={formData.fotos.length >= 5}
-          >
-            <Text style={styles.photoButtonText}>Galeria</Text>
+            <Text style={styles.gpsButtonText}>
+              {buscandoLocalizacao ? 'Buscando endereço...' : 'Obter Endereço Automático'}
+            </Text>
           </TouchableOpacity>
         </View>
 
-        {formData.fotos.length >= 5 && (
-          <Text style={[styles.maxPhotosText, { color: '#E67E22' }]}>
-            Máximo de 5 fotos atingido
+        {/* FOTOS COM BOTÃO DE REMOVER MELHORADO */}
+        <View style={[styles.card, { backgroundColor: cardColor }]}>
+          <Text style={[styles.cardTitle, { color: primaryColor }]}>
+            Fotos da Denúncia ({formData.fotos.length}/5)
           </Text>
-        )}
 
-        {/* PREVIEW DAS FOTOS COM BOTÃO DE REMOVER MELHORADO */}
-        {formData.fotos.length > 0 && (
-          <View style={styles.photosContainer}>
-            <Text style={[styles.photosTitle, { color: textColor }]}>
-              Fotos Selecionadas ({formData.fotos.length}):
-            </Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              {formData.fotos.map((foto, index) => (
-                <View key={`foto-${index}-${foto.slice(-10)}`} style={styles.photoPreview}>
-                  <Image source={{ uri: foto }} style={styles.photoImage} />
-                  
-                  {/* BOTÃO DE REMOVER MELHORADO COM PRESSABLE */}
-                  <Pressable
-                    style={({ pressed }) => [
-                      styles.removePhotoButton,
-                      { 
-                        opacity: pressed ? 0.7 : 1,
-                        transform: pressed ? [{ scale: 0.95 }] : [{ scale: 1 }]
-                      }
-                    ]}
-                    onPress={() => {
-                      console.log(`[UI] Botão remover pressionado para foto ${index}`);
-                      removerFoto(index);
-                    }}
-                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                  >
-                    <Text style={styles.removePhotoText}>×</Text>
-                  </Pressable>
-                  
-                  <Text style={[styles.photoNumber, { color: textColor }]}>
-                    Foto {index + 1}
-                  </Text>
-                </View>
-              ))}
-            </ScrollView>
-            
-            {/* BOTÃO ALTERNATIVO PARA REMOVER ÚLTIMA FOTO */}
+          <Text style={[styles.photoInstructions, { color: textColor }]}>
+            Tire fotos claras da situação irregular para fortalecer sua denúncia
+          </Text>
+
+          <View style={styles.photoButtons}>
             <TouchableOpacity
-              style={[styles.removeLastPhotoButton, { backgroundColor: '#E74C3C' }]}
-              onPress={() => {
-                console.log('[UI] Botão remover última foto pressionado');
-                removerFoto(formData.fotos.length - 1);
-              }}
-              activeOpacity={0.7}
+              style={[
+                styles.photoButton, 
+                { 
+                  backgroundColor: formData.fotos.length >= 5 ? '#95A5A6' : '#3498DB',
+                  opacity: formData.fotos.length >= 5 ? 0.5 : 1
+                }
+              ]}
+              onPress={tirarFoto}
+              disabled={formData.fotos.length >= 5}
             >
-              <Text style={styles.removeLastPhotoText}>
-                Remover Última Foto
-              </Text>
+              <Text style={styles.photoButtonText}>Tirar Foto</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.photoButton, 
+                { 
+                  backgroundColor: formData.fotos.length >= 5 ? '#95A5A6' : '#9B59B6',
+                  opacity: formData.fotos.length >= 5 ? 0.5 : 1
+                }
+              ]}
+              onPress={escolherFoto}
+              disabled={formData.fotos.length >= 5}
+            >
+              <Text style={styles.photoButtonText}>Galeria</Text>
             </TouchableOpacity>
           </View>
-        )}
-      </View>
 
-      {/* DADOS PESSOAIS */}
-      <View style={[styles.card, { backgroundColor: cardColor }]}>
-        <Text style={[styles.cardTitle, { color: primaryColor }]}>
-          Seus Dados
-        </Text>
+          {formData.fotos.length >= 5 && (
+            <Text style={[styles.maxPhotosText, { color: '#E67E22' }]}>
+              Máximo de 5 fotos atingido
+            </Text>
+          )}
 
-        {/* NOME */}
-        <Text style={[styles.label, { color: textColor }]}>Nome Completo: *</Text>
-        <TextInput
-          style={[styles.input, { borderColor: primaryColor, color: textColor }]}
-          value={formData.nomeCompleto}
-          onChangeText={handleNomeChange}
-          placeholder="Seu nome completo"
-          placeholderTextColor={textColor + '80'}
-          maxLength={50}
-        />
-        {formData.nomeCompleto.length > 0 && !validarNome(formData.nomeCompleto) && (
-          <Text style={styles.fieldErrorText}>Nome deve conter apenas letras</Text>
-        )}
+          {/* PREVIEW DAS FOTOS COM BOTÃO DE REMOVER MELHORADO */}
+          {formData.fotos.length > 0 && (
+            <View style={styles.photosContainer}>
+              <Text style={[styles.photosTitle, { color: textColor }]}>
+                Fotos Selecionadas ({formData.fotos.length}):
+              </Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                {formData.fotos.map((foto, index) => (
+                  <View key={`foto-${index}-${foto.slice(-10)}`} style={styles.photoPreview}>
+                    <Image source={{ uri: foto }} style={styles.photoImage} />
+                    
+                    {/* BOTÃO DE REMOVER MELHORADO COM PRESSABLE */}
+                    <Pressable
+                      style={({ pressed }) => [
+                        styles.removePhotoButton,
+                        { 
+                          opacity: pressed ? 0.7 : 1,
+                          transform: pressed ? [{ scale: 0.95 }] : [{ scale: 1 }]
+                        }
+                      ]}
+                      onPress={() => {
+                        console.log(`[UI] Botão remover pressionado para foto ${index}`);
+                        removerFoto(index);
+                      }}
+                      hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                    >
+                      <Text style={styles.removePhotoText}>×</Text>
+                    </Pressable>
+                    
+                    <Text style={[styles.photoNumber, { color: textColor }]}>
+                      Foto {index + 1}
+                    </Text>
+                  </View>
+                ))}
+              </ScrollView>
+              
+              {/* BOTÃO ALTERNATIVO PARA REMOVER ÚLTIMA FOTO */}
+              <TouchableOpacity
+                style={[styles.removeLastPhotoButton, { backgroundColor: '#E74C3C' }]}
+                onPress={() => {
+                  console.log('[UI] Botão remover última foto pressionado');
+                  removerFoto(formData.fotos.length - 1);
+                }}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.removeLastPhotoText}>
+                  Remover Última Foto
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
 
-        {/* TELEFONE */}
-        <Text style={[styles.label, { color: textColor }]}>
-          Telefone: * ({contarDigitosTelefone(formData.telefone)}/11)
-        </Text>
-        <TextInput
-          style={[styles.input, { borderColor: primaryColor, color: textColor }]}
-          value={formData.telefone}
-          onChangeText={handleTelefoneChange}
-          placeholder="(16) 99999-9999"
-          placeholderTextColor={textColor + '80'}
-          keyboardType="phone-pad"
-          maxLength={15}
-        />
-        {formData.telefone.length > 0 && !validarTelefone(formData.telefone) && (
-          <Text style={styles.fieldErrorText}>Telefone deve ter 10 ou 11 dígitos</Text>
-        )}
+        {/* DADOS PESSOAIS */}
+        <View style={[styles.card, { backgroundColor: cardColor }]}>
+          <Text style={[styles.cardTitle, { color: primaryColor }]}>
+            Seus Dados
+          </Text>
 
-        {/* EMAIL OBRIGATÓRIO */}
-                <Text style={[styles.label, { color: textColor }]}>Email: *</Text>
-        <TextInput
-          style={[styles.input, { borderColor: primaryColor, color: textColor }]}
-          value={formData.email}
-          onChangeText={handleEmailChange}
-          placeholder="seu@email.com"
-          placeholderTextColor={textColor + '80'}
-          keyboardType="email-address"
-          autoCapitalize="none"
-        />
-        {formData.email.length > 0 && !validarEmail(formData.email) && (
-          <Text style={styles.fieldErrorText}>Email inválido</Text>
-        )}
-      </View>
+          {/* NOME */}
+          <Text style={[styles.label, { color: textColor }]}>Nome Completo: *</Text>
+          <TextInput
+            style={[styles.input, { borderColor: primaryColor, color: textColor }]}
+            value={formData.nomeCompleto}
+            onChangeText={handleNomeChange}
+            placeholder="Seu nome completo"
+            placeholderTextColor={textColor + '80'}
+            maxLength={50}
+          />
+          {formData.nomeCompleto.length > 0 && !validarNome(formData.nomeCompleto) && (
+            <Text style={styles.fieldErrorText}>Nome deve conter apenas letras</Text>
+          )}
 
-      {/* BOTÃO DE ENVIO */}
-      <TouchableOpacity
-        style={[
-          styles.submitButton,
-          { 
-            backgroundColor: enviando ? '#95A5A6' : primaryColor,
-            opacity: enviando ? 0.7 : 1
-          }
-        ]}
-        onPress={enviarDenuncia}
-        disabled={enviando}
-      >
-        <Text style={styles.submitButtonText}>
-          {enviando ? 'Enviando...' : 'Enviar Denúncia'}
-        </Text>
-      </TouchableOpacity>
+          {/* TELEFONE */}
+          <Text style={[styles.label, { color: textColor }]}>
+            Telefone: * ({contarDigitosTelefone(formData.telefone)}/11)
+          </Text>
+          <TextInput
+            style={[styles.input, { borderColor: primaryColor, color: textColor }]}
+            value={formData.telefone}
+            onChangeText={handleTelefoneChange}
+            placeholder="(16) 99999-9999"
+            placeholderTextColor={textColor + '80'}
+            keyboardType="phone-pad"
+            maxLength={15}
+          />
+          {formData.telefone.length > 0 && !validarTelefone(formData.telefone) && (
+            <Text style={styles.fieldErrorText}>Telefone deve ter 10 ou 11 dígitos</Text>
+          )}
 
-     
-      
-    </ScrollView>
+          {/* EMAIL OBRIGATÓRIO */}
+          <Text style={[styles.label, { color: textColor }]}>Email: *</Text>
+          <TextInput
+            style={[styles.input, { borderColor: primaryColor, color: textColor }]}
+            value={formData.email}
+            onChangeText={handleEmailChange}
+            placeholder="seu@email.com"
+            placeholderTextColor={textColor + '80'}
+            keyboardType="email-address"
+            autoCapitalize="none"
+          />
+          {formData.email.length > 0 && !validarEmail(formData.email) && (
+            <Text style={styles.fieldErrorText}>Email inválido</Text>
+          )}
+        </View>
+
+        {/* BOTÃO DE ENVIO */}
+        <TouchableOpacity
+          style={[
+            styles.submitButton,
+            { 
+              backgroundColor: enviando ? '#95A5A6' : primaryColor,
+              opacity: enviando ? 0.7 : 1
+            }
+          ]}
+          onPress={enviarDenuncia}
+          disabled={enviando}
+        >
+          <Text style={styles.submitButtonText}>
+            {enviando ? 'Enviando...' : 'Enviar Denúncia'}
+          </Text>
+        </TouchableOpacity>
+
+        {/* ESPAÇAMENTO FINAL */}
+        <View style={{ height: 20 }} />
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 15,
   },
-  headerCard: {
-    padding: 25,
-    borderRadius: 15,
-    marginBottom: 20,
+  // ✅ NOVOS ESTILOS PARA O HEADER
+  header: {
+    flexDirection: 'row',
     alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingBottom: 16,
+    elevation: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    zIndex: 1000,
+  },
+  backButton: {
+    padding: 12,
+    marginRight: 12,
+    borderRadius: 8,
+   
   },
   headerTitle: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
-    color: '#fff',
+    color: '#FFFFFF',
+    flex: 1,
     textAlign: 'center',
-    marginBottom: 10,
+    textShadowColor: 'rgba(0,0,0,0.3)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
   },
-  headerSubtitle: {
-    fontSize: 16,
-    color: 'rgba(255, 255, 255, 0.9)',
-    textAlign: 'center',
-    lineHeight: 22,
+  headerSpacer: {
+    width: 52,
+  },
+  content: {
+    flex: 1,
+    padding: 15,
   },
   card: {
     padding: 20,

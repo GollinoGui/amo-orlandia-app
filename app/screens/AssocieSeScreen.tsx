@@ -52,7 +52,7 @@ export function AssocieSeScreen() {
   // OPÇÕES DOS SELECTS
   const motivosAssociacao = [
     "Quero contribuir para melhorar minha cidade",
-    "Desejo participar de projetos sociais",
+    "Desejo participar de projetos",
     "Interesse em questões ambientais",
     "Quero fazer parte da comunidade ativa",
     "Busco oportunidades de voluntariado",
@@ -266,7 +266,7 @@ export function AssocieSeScreen() {
 
       if (resultado.success) {
         const patrocinadorAleatorio = patrocinadores[Math.floor(Math.random() * patrocinadores.length)];
-        const mensagemSucesso = `Sua solicitação de associação foi enviada com sucesso!\n\nEm breve entraremos em contato para finalizar o processo.\n\n💝 Cortesia da:\n${patrocinadorAleatorio}`;
+        const mensagemSucesso = `Sua solicitação de associação foi enviada com sucesso!\n\nEm breve entraremos em contato para finalizar o processo.\n\n Cortesia da:\n${patrocinadorAleatorio}`;
         mostrarSucesso(mensagemSucesso);
 
         if (Platform.OS === 'web') {
@@ -355,7 +355,7 @@ export function AssocieSeScreen() {
             <View style={styles.beneficioItem}>
               <Text style={styles.beneficioIcon}>🤝</Text>
               <Text style={[styles.beneficioTexto, { color: theme.colors.text }]}>
-                Networking com outros moradores engajados
+                Networking com outros moradores, a fim de encontrar ou propor soluções diversas nos bairros.
               </Text>
             </View>
             
@@ -369,7 +369,7 @@ export function AssocieSeScreen() {
             <View style={styles.beneficioItem}>
               <Text style={styles.beneficioIcon}>🌱</Text>
               <Text style={[styles.beneficioTexto, { color: theme.colors.text }]}>
-                Oportunidades de voluntariado em projetos sociais
+                Oportunidades de voluntariado em diversos projetos
               </Text>
             </View>
           </View>
@@ -654,7 +654,7 @@ export function AssocieSeScreen() {
                 Q: Quais são as obrigações de um associado?
               </Text>
               <Text style={[styles.resposta, { color: theme.colors.text }]}>
-                R: Não há obrigações. A participação em atividades é voluntária.
+                R: Não há obrigações. A participação em atividades é voluntária, porém a AMO sugere participar sempre das reuniões e assembleias quando possível
               </Text>
             </View>
             
@@ -666,6 +666,16 @@ export function AssocieSeScreen() {
                 R: Sim, você pode cancelar a qualquer momento entrando em contato conosco.
               </Text>
             </View>
+
+            <View style={styles.duvidasItem}>
+              <Text style={[styles.pergunta, { color: theme.colors.text }]}>
+                Q: Quais são os deveres de um associado?
+              </Text>
+              <Text style={[styles.resposta, { color: theme.colors.text }]}>
+                R: Não usar imagem da AMO para beneficio próprio, não usar a associação para fins políticos ou participar dos poderes legislativo e executivo.
+              </Text>
+            </View>
+            
           </View>
         </View>
 
@@ -680,7 +690,7 @@ export function AssocieSeScreen() {
             style={[styles.contatoButton, { backgroundColor: '#25D366' }]}
             onPress={() => {
               // Abrir WhatsApp
-              const numero = '5516991737383';
+              const numero = '55 16 99998-2105';
               const mensagem = 'Olá! Tenho dúvidas sobre a associação à AMO Orlândia.';
               const url = `whatsapp://send?phone=${numero}&text=${encodeURIComponent(mensagem)}`;
               
@@ -691,12 +701,12 @@ export function AssocieSeScreen() {
               }
             }}
           >
-            <Text style={styles.contatoButtonText}>💬 WhatsApp: (16) 99173-7383</Text>
+            <Text style={styles.contatoButtonText}>💬 WhatsApp: (16) 99998-2105</Text>
           </TouchableOpacity>
 
           <TouchableOpacity 
             style={[styles.contatoButton, { backgroundColor: '#F2C335' }]}
-            onPress={() => router.push('/contato')}
+            onPress={() => router.push('/contato' as any)}
           >
             <Text style={styles.contatoButtonText}>📝 Formulário de Contato</Text>
           </TouchableOpacity>

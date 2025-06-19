@@ -226,7 +226,7 @@ export function ContatoScreen() {
 
       if (resultado.success) {
         const patrocinadorAleatorio = patrocinadores[Math.floor(Math.random() * patrocinadores.length)];
-        const mensagemSucesso = `Sua mensagem foi enviada com sucesso!\n\n💝 Cortesia da:\n${patrocinadorAleatorio}`;
+        const mensagemSucesso = `Sua mensagem foi enviada com sucesso!\n\n Cortesia da:\n${patrocinadorAleatorio}`;
         mostrarSucesso(mensagemSucesso);
 
         if (Platform.OS === 'web') {

@@ -309,12 +309,12 @@ export function DescarteIrregularScreen() {
             <Text style={[styles.futureFeature, { color: '#27AE60' }]}>✅ Câmera integrada</Text>
             <Text style={[styles.futureFeature, { color: '#27AE60' }]}>✅ GPS automático</Text>
             <Text style={[styles.futureFeature, { color: '#27AE60' }]}>✅ Múltiplas fotos</Text>
-            <Text style={[styles.futureFeature, { color: '#F39C12' }]}>🚧 Envio para autoridades</Text>
+            
           </View>
 
           <TouchableOpacity 
             style={[styles.actionButton, { backgroundColor: '#27AE60', marginTop: 15 }]}
-            onPress={() => router.push('/denuncia')}
+            onPress={() => router.push('/denuncia' as any)}
           >
             <Text style={styles.actionButtonText}>
               🚀 Fazer Denúncia Agora!

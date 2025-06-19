@@ -372,7 +372,7 @@ export function PoliticaReservaScreen() {
       if (resultado.success) {
         const patrocinadorAleatorio = patrocinadores[Math.floor(Math.random() * patrocinadores.length)];
         
-        const mensagemSucesso = `Seu formulário foi enviado com sucesso!\n\n💝 Cortesia da:\n${patrocinadorAleatorio}`;
+        const mensagemSucesso = `Seu formulário foi enviado com sucesso!\n\n Cortesia da:\n${patrocinadorAleatorio}`;
         
         mostrarSucesso(mensagemSucesso);
         

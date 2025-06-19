@@ -42,19 +42,16 @@ const eventos: Evento[] = [
     status: "futuro",
     icone: "🧹",
     cor: "#9EBF26",
-    descricao: "Nosso primeiro grande mutirão de limpeza foi um sucesso! Mais de 100 voluntários participaram e fizeram a diferença em nossa cidade.",
-    local: "Praça Central de Orlândia",
+    descricao: "O Projeto Limpaí é a primeira iniciativa da AMO e tem como objetivo principal combater o descarte irregular de resíduos, especialmente em canteiros centrais eáreas públicas. Por meio de mutirões de limpeza e ações de conscientização nas empresas, rede municipal de ensino, o projeto visa: ",
+    local: "Todos os bairros de Orlândia",
     horario: "08:00 às 12:00",
     organizador: "AMO Orlândia",
     participantes: 0,
-    detalhes: "O Projeto Limpai é uma iniciativa da AMO Orlândia para mobilizar a comunidade na limpeza e preservação dos espaços públicos da cidade. Venha fazer parte desta transformação!",
-    contato: "(16) 99173-7383",
+    detalhes: "• Aplicar a legislação ambiental vigente em Orlândia\n• Estimular o descarte correto por meio de serviços regulares da Prefeitura edo app da AMO \n• Promover educação ambiental e mobilização comunitária pela limpeza urbana e preservação dos espaços públicos.",
+    contato: "(16) 99998-2105",
     instagram: "@amo.orlandia",
     resultados: [
-      "🗑️ 500kg de lixo coletado",
-      "🌳 10 árvores plantadas", 
-      "👥 120 voluntários participaram",
-      "📍 5 praças revitalizadas"
+      
     ]
   },
 ];
@@ -107,7 +104,7 @@ export function EventoDetalhesScreen() {
     if (!evento.contato) return;
     
     const numero = evento.contato.replace(/\D/g, '');
-    const mensagem = `Olá! Gostaria de saber mais sobre o evento: ${evento.titulo}`;
+    const mensagem = `Olá! Gostaria de fazer parte do evento: ${evento.titulo}`;
     const url = `whatsapp://send?phone=55${numero}&text=${encodeURIComponent(mensagem)}`;
     
     try {
@@ -222,14 +219,7 @@ export function EventoDetalhesScreen() {
             </View>
           )}
 
-          {evento.participantes && evento.participantes > 0 && (
-            <View style={styles.infoItem}>
-              <Text style={styles.infoIcon}>🎯</Text>
-              <Text style={[styles.infoText, { color: theme.colors.text }]}>
-                {evento.participantes} participantes confirmados
-              </Text>
-            </View>
-          )}
+          
         </View>
 
         {/* DESCRIÇÃO */}
@@ -303,7 +293,7 @@ export function EventoDetalhesScreen() {
 
           <TouchableOpacity 
             style={[styles.contactButton, { backgroundColor: '#F2C335' }]}
-            onPress={() => router.push('/contato')}
+            onPress={() => router.push('/contato' as any)}
           >
             <Text style={styles.contactIcon}>📝</Text>
             <View style={styles.contactInfo}>

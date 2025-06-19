@@ -35,14 +35,13 @@ const eventos: Evento[] = [
   {
     id: 1,
     titulo: "Projeto Limpai",
-    subtitulo: "Mutirão de Limpeza Urbana",
-    data: "2024-03-15",
+    subtitulo: "Por uma Orlândia mais limpa",
+    data: "2025-06-21",
     status: "futuro",
     icone: "🧹",
     cor: "#9EBF26",
-    descricao: "Nosso primeiro grande mutirão de limpeza foi um sucesso! Mais de 100 voluntários participaram e fizeram a diferença em nossa cidade.",
-    local: "Praça Central de Orlândia",
-    horario: "08:00 às 12:00",
+    descricao: "Participe do Projeto Limpai, uma ação comunitária para limpar e revitalizar as áreas públicas de Orlândia. Traga sua família e amigos!",
+    horario: "07:00 às 12:00",
     organizador: "AMO Orlândia",
     participantes: 0,
   },
@@ -64,7 +63,7 @@ export function EventosScreen() {
   const renderEvento = ({ item }: { item: Evento }) => (
     <TouchableOpacity
       style={[styles.eventoCard, { backgroundColor: theme.colors.card }]}
-      onPress={() => router.push(`/evento-detalhes?id=${item.id}`)}
+      onPress={() => router.push(`/evento-detalhes?id=${item.id}` as any)}
       activeOpacity={0.7}
     >
       <View style={[styles.eventoHeader, { backgroundColor: item.cor }]}>
@@ -221,7 +220,7 @@ export function EventosScreen() {
           </Text>
           <TouchableOpacity
             style={[styles.ctaButton, { backgroundColor: '#39BF24' }]}
-            onPress={() => router.push('/contato')}
+            onPress={() => router.push('/contato' as any)}
           >
             <Text style={styles.ctaButtonText}>📞 Entrar em Contato</Text>
           </TouchableOpacity>
