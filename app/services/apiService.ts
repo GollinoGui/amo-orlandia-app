@@ -202,55 +202,30 @@ async enviarFormularioAssociacao(data: FormularioAssociacaoData): Promise<{ succ
 
   // 🚨 DENÚNCIA
   // Adicione esta função DENTRO da classe ApiService, após a função enviarFormularioAssociacao
-
 async enviarFormularioDenuncia(data: FormularioDenunciaData): Promise<{ success: boolean; message: string }> {
   try {
     console.log('📤 [API] Enviando denúncia para Firebase...');
-    const formData = new FormData();
 
-    formData.append('tipo', data.tipo);
-  formData.append('descricao', data.descricao);
-  formData.append('endereco', data.endereco);
-  formData.append('nomeCompleto', data.nomeCompleto);
-  formData.append('telefone', data.telefone);
-  formData.append('email', data.email);
+    // Remover as fotos (não usadas no backend)
+    const payload = {
+      tipo: data.tipo,
+      descricao: data.descricao,
+      endereco: data.endereco,
+      nomeCompleto: data.nomeCompleto,
+      telefone: data.telefone,
+      email: data.email,
+      coordenadas: data.coordenadas ?? null
+    };
 
-    if (data.coordenadas) {
-       formData.append('latitude', String(data.coordenadas.latitude ?? ''));
-  formData.append('longitude', String(data.coordenadas.longitude ?? ''));
-    }
+    const response = await this.fetchWithTimeout(`${API_BASE_URL}/enviarFormularioDenuncia`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    }, 60000);
 
-    for (let i = 0; i < data.fotos.length; i++) {
-  const uri = data.fotos[i];
-  if (!uri) continue;
-
-  try {
-    const response = await fetch(uri);
-    const blob = await response.blob();
-    formData.append('foto', blob, `foto-${i}.jpg`);
-  } catch (error) {
-    console.warn(`⚠️ Falha ao anexar a foto ${i}:`, error);
-  }
-}
-
-    const headers: any = {
-  Accept: 'application/json'
-}; 
-console.log('[FORM] Dados sendo enviados:', {
-  tipo: data.tipo,
-  descricao: data.descricao,
-  endereco: data.endereco,
-  nomeCompleto: data.nomeCompleto,
-  telefone: data.telefone,
-  email: data.email,
-  fotos: data.fotos.length
-});
-// NÃO coloque Content-Type aqui!
-const response = await fetch(`${API_BASE_URL}/enviarFormularioDenuncia`, {
-  method: 'POST',
-  headers, // ← importante não definir Content-Type!
-  body: formData
-});
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.message || 'Erro ao enviar denúncia');
