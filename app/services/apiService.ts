@@ -1,4 +1,3 @@
-import { Platform } from 'react-native';
 
 // 🔥 FIREBASE FUNCTIONS URL CORRETA
 const getApiBaseUrl = () => {
@@ -74,44 +73,43 @@ class ApiService {
 
   
   // 📧 RESERVA
-  async enviarFormularioReserva(data: FormularioReservaData): Promise<{ success: boolean; message: string }> {
-    try {
-      console.log('📤 [API] Enviando reserva para Firebase...');
-      console.log('🔗 [API] URL:', `${API_BASE_URL}/enviarFormularioReserva`);
-      console.log('📱 [API] Plataforma:', Platform.OS);
-      
-      const response = await this.fetchWithTimeout(`${API_BASE_URL}/enviarFormularioReserva`, {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json'
-        },
-        body: JSON.stringify(data),
-      }, 60000);
+  // 📧 RESERVA
+async enviarFormularioReserva(data: FormularioReservaData): Promise<{ success: boolean; message: string }> {
+  try {
+    console.log('📤 [API] Enviando reserva para Firebase...');
+    
+    const response = await this.fetchWithTimeout(`${API_BASE_URL}/enviarFormularioReserva`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',  // ← CORRIGIDO!
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(data),
+    }, 60000);
 
-      console.log('📥 [API] Status:', response.status);
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('❌ [API] Erro do Firebase:', errorText);
-        throw new Error(`HTTP ${response.status}`);
-      }
-
-      const result = await response.json() as { success: boolean; message: string };
-      console.log('✅ [API] Sucesso Firebase:', result);
-      return result;
-    } catch (error) {
-      console.error('❌ [API] Erro reserva Firebase:', error);
-      
-      if (error instanceof Error && error.name === 'AbortError') {
-        return { success: false, message: 'Timeout: Conexão muito lenta.' };
-      }
-      
-      return { 
-        success: false, 
-        message: `Erro de conexão Firebase (${Platform.OS}). Verifique sua internet.` 
-      };
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('❌ [API] Erro do Firebase:', errorText);
+      throw new Error(`HTTP ${response.status}`);
     }
+
+    const result = await response.json() as { success: boolean; message: string };
+    console.log('✅ [API] Sucesso Firebase:', result);
+    return result;
+  } catch (error) {
+    console.error('❌ [API] Erro reserva Firebase:', error);
+    
+    if (error instanceof Error && error.name === 'AbortError') {
+      return { success: false, message: 'Timeout: Conexão muito lenta.' };
+    }
+    
+    return { 
+      success: false, 
+      message: `Erro de conexão Firebase. Verifique sua internet.` 
+    };
   }
+}
+
 
   // 📞 CONTATO
   async enviarFormularioContato(data: FormularioContatoData): Promise<{ success: boolean; message: string }> {
@@ -153,63 +151,54 @@ class ApiService {
   }
 }
 
+  
   // 🤝 ASSOCIAÇÃO
-  async enviarFormularioAssociacao(data: FormularioAssociacaoData): Promise<{ success: boolean; message: string }> {
-    try {
-      console.log('📤 [API] Enviando associação para Firebase...');
-      console.log('🔗 [API] URL:', `${API_BASE_URL}/enviarFormularioAssociacao`);
-      console.log('📤 [API] Dados:', data);
-      
-      const response = await this.fetchWithTimeout(`${API_BASE_URL}/enviarFormularioAssociacao`, {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json'
-        },
-        body: JSON.stringify(data),
-      }, 60000);
+async enviarFormularioAssociacao(data: FormularioAssociacaoData): Promise<{ success: boolean; message: string }> {
+  try {
+    console.log('📤 [API] Enviando associação para Firebase...');
+    
+    const response = await this.fetchWithTimeout(`${API_BASE_URL}/enviarFormularioAssociacao`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',  // ← CORRIGIDO!
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(data),
+    }, 60000);
 
-      console.log('📥 [API] Status resposta:', response.status);
-
-      if (!response.ok) {
-        let errorText = 'Erro desconhecido';
+    if (!response.ok) {
+      let errorText = 'Erro desconhecido';
+      try {
+        const errorData = await response.json();
+        errorText = errorData.message || errorText;
+      } catch (e) {
         try {
-          const errorData = await response.json();
-          errorText = errorData.message || errorText;
-          console.error('❌ [API] Erro do Firebase:', errorData);
-        } catch (e) {
-          try {
-            errorText = await response.text();
-          } catch (e2) {
-            console.error('❌ [API] Erro ao ler resposta:', e2);
-          }
+          errorText = await response.text();
+        } catch (e2) {
+          console.error('❌ [API] Erro ao ler resposta:', e2);
         }
-        throw new Error(`HTTP ${response.status}: ${errorText}`);
       }
-
-      const result = await response.json();
-      console.log('✅ [API] Sucesso Firebase:', result);
-      return result;
-    } catch (error: unknown) {
-      console.error('❌ [API] Erro associação Firebase:', error);
-      
-      if (error instanceof Error && error.name === 'AbortError') {
-        return { success: false, message: 'Timeout: Conexão muito lenta.' };
-      }
-      
-      if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
-        return { 
-          success: false, 
-          message: `Erro de conexão Firebase. Verifique sua internet.` 
-        };
-      }
-      
-      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
-      return { 
-        success: false, 
-        message: `Erro Firebase: ${errorMessage}` 
-      };
+      throw new Error(`HTTP ${response.status}: ${errorText}`);
     }
+
+    const result = await response.json();
+    console.log('✅ [API] Sucesso Firebase:', result);
+    return result;
+  } catch (error: unknown) {
+    console.error('❌ [API] Erro associação Firebase:', error);
+    
+    if (error instanceof Error && error.name === 'AbortError') {
+      return { success: false, message: 'Timeout: Conexão muito lenta.' };
+    }
+    
+    const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+    return { 
+      success: false, 
+      message: `Erro Firebase: ${errorMessage}` 
+    };
   }
+}
+
 
   // 🚨 DENÚNCIA
   // Adicione esta função DENTRO da classe ApiService, após a função enviarFormularioAssociacao
