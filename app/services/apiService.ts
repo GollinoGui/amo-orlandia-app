@@ -83,8 +83,7 @@ class ApiService {
       const response = await this.fetchWithTimeout(`${API_BASE_URL}/enviarFormularioReserva`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
+          Accept: 'application/json'
         },
         body: JSON.stringify(data),
       }, 60000);
@@ -116,45 +115,43 @@ class ApiService {
 
   // 📞 CONTATO
   async enviarFormularioContato(data: FormularioContatoData): Promise<{ success: boolean; message: string }> {
-    try {
-      console.log('📤 [API] Enviando contato para Firebase...');
-      console.log('🔗 [API] URL:', `${API_BASE_URL}/enviarFormularioContato`);
-      console.log('📱 [API] Plataforma:', Platform.OS);
-      console.log('📤 [API] Dados:', data);
-      
-      const response = await this.fetchWithTimeout(`${API_BASE_URL}/enviarFormularioContato`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: JSON.stringify(data),
-      }, 60000);
+  try {
+    console.log('📤 [API] Enviando contato para Firebase...');
+    console.log('📤 [API] Dados:', data);
+    
+    const response = await this.fetchWithTimeout(`${API_BASE_URL}/enviarFormularioContato`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',  // ← IMPORTANTE!
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(data),
+    }, 60000);
 
-      console.log('📥 [API] Status:', response.status);
+    console.log('📥 [API] Status:', response.status);
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('❌ [API] Erro do Firebase:', errorText);
-        throw new Error(`HTTP ${response.status}`);
-      }
-
-      const result = await response.json() as { success: boolean; message: string };
-      console.log('✅ [API] Sucesso Firebase:', result);
-      return result;
-    } catch (error) {
-      console.error('❌ [API] Erro contato Firebase:', error);
-      
-      if (error instanceof Error && error.name === 'AbortError') {
-        return { success: false, message: 'Timeout: Conexão muito lenta.' };
-      }
-      
-      return { 
-        success: false, 
-        message: `Erro de conexão Firebase (${Platform.OS}). Verifique sua internet.` 
-      };
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('❌ [API] Erro do Firebase:', errorText);
+      throw new Error(`HTTP ${response.status}`);
     }
+
+    const result = await response.json() as { success: boolean; message: string };
+    console.log('✅ [API] Sucesso Firebase:', result);
+    return result;
+  } catch (error) {
+    console.error('❌ [API] Erro contato Firebase:', error);
+    
+    if (error instanceof Error && error.name === 'AbortError') {
+      return { success: false, message: 'Timeout: Conexão muito lenta.' };
+    }
+    
+    return { 
+      success: false, 
+      message: `Erro de conexão Firebase. Verifique sua internet.` 
+    };
   }
+}
 
   // 🤝 ASSOCIAÇÃO
   async enviarFormularioAssociacao(data: FormularioAssociacaoData): Promise<{ success: boolean; message: string }> {
@@ -166,8 +163,7 @@ class ApiService {
       const response = await this.fetchWithTimeout(`${API_BASE_URL}/enviarFormularioAssociacao`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
+          Accept: 'application/json'
         },
         body: JSON.stringify(data),
       }, 60000);
@@ -223,12 +219,12 @@ async enviarFormularioDenuncia(data: FormularioDenunciaData): Promise<{ success:
     console.log('📤 [API] Enviando denúncia para Firebase...');
     const formData = new FormData();
 
-    formData.append('tipo', data.tipo || '');
-    formData.append('descricao', data.descricao || '');
-    formData.append('endereco', data.endereco || '');
-    formData.append('nomeCompleto', data.nomeCompleto || '');
-    formData.append('telefone', data.telefone || '');
-    formData.append('email', data.email || '');
+    formData.append('tipo', data.tipo);
+  formData.append('descricao', data.descricao);
+  formData.append('endereco', data.endereco);
+  formData.append('nomeCompleto', data.nomeCompleto);
+  formData.append('telefone', data.telefone);
+  formData.append('email', data.email);
 
     if (data.coordenadas) {
        formData.append('latitude', String(data.coordenadas.latitude ?? ''));
