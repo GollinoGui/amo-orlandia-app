@@ -51,34 +51,9 @@ const calcularStatusEvento = (dataEvento: string): 'futuro' | 'passado' | 'em_an
   }
 };
 
-const eventosBase: Omit<Evento, 'status'>[] = [
-  {
-    id: 1,
-    titulo: "Projeto Limpai",
-    subtitulo: "Mutirão de Limpeza Urbana",
-    data: "2024-06-21", // ✅ Data de ontem (21/06)
-    icone: "🧹",
-    cor: "#9EBF26",
-    descricao: "O Projeto Limpaí é a primeira iniciativa da AMO e tem como objetivo principal combater o descarte irregular de resíduos, especialmente em canteiros centrais e áreas públicas. Por meio de mutirões de limpeza e ações de conscientização nas empresas, rede municipal de ensino, o projeto visa: ",
-    local: "Todos os bairros de Orlândia",
-    horario: "08:00 às 12:00",
-    organizador: "AMO Orlândia",
-    detalhes: "• Aplicar a legislação ambiental vigente em Orlândia\n• Estimular o descarte correto por meio de serviços regulares da Prefeitura e do app da AMO \n• Promover educação ambiental e mobilização comunitária pela limpeza urbana e preservação dos espaços públicos.",
-    contato: "(16) 99998-2105",
-    instagram: "@amo.orlandia",
-    resultados: [
-      "✅ 50 sacos de lixo coletados",
-      "✅ 3 pontos de descarte irregular limpos",
-      "✅ 25 voluntários participaram"
-    ]
-  },
-];
 
 // ✅ APLICAR STATUS AUTOMÁTICO AOS EVENTOS
-const eventos: Evento[] = eventosBase.map(evento => ({
-  ...evento,
-  status: calcularStatusEvento(evento.data)
-}));
+
 
 export function EventoDetalhesScreen() {
   const router = useRouter();
@@ -86,8 +61,40 @@ export function EventoDetalhesScreen() {
   const { theme } = useTheme();
   const { id } = useLocalSearchParams();
 
-  const evento = eventos.find(e => e.id === parseInt(id as string));
+  const [evento, setEvento] = React.useState<Evento | null>(null);
+const [carregando, setCarregando] = React.useState(true);
 
+React.useEffect(() => {
+  const carregarEvento = async () => {
+    try {
+      const response = await fetch('https://gollinogui.github.io/amo-orlandia-app/docs/eventos.json');
+      const data: Omit<Evento, 'status'>[] = await response.json();
+      const eventosComStatus: Evento[] = data.map(e => ({
+        ...e,
+        status: calcularStatusEvento(e.data),
+      }));
+
+      const eventoEncontrado = eventosComStatus.find(e => e.id === parseInt(id as string));
+      setEvento(eventoEncontrado || null);
+    } catch (error) {
+      console.error('Erro ao carregar evento:', error);
+      setEvento(null);
+    } finally {
+      setCarregando(false);
+    }
+  };
+
+  carregarEvento();
+}, [id]);
+
+  if (carregando) {
+  return (
+    <View style={[styles.container, { backgroundColor: theme.colors.background, justifyContent: 'center', alignItems: 'center' }]}>
+      <StatusBar barStyle={theme.isDark ? "light-content" : "dark-content"} />
+      <Text style={{ color: theme.colors.text, fontSize: 18 }}>Carregando evento...</Text>
+    </View>
+  );
+}
   if (!evento) {
     return (
       <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
@@ -530,7 +537,7 @@ const styles = StyleSheet.create({
   },
   detalhesText: {
     fontSize: 16,
-    lineHeight: 24,
+    lineHeight: 24, 
     textAlign: 'justify',
   },
   // RESULTADOS STYLES
