@@ -1,0 +1,22 @@
+[
+  {
+    "id": 1,
+    "titulo": "Projeto Limpai",
+    "subtitulo": "Por uma Orlândia mais limpa",
+    "data": "2024-06-21",
+    "icone": "🧹",
+    "cor": "#9EBF26",
+    "descricao": "Participe do Projeto Limpai, uma ação comunitária para limpar e revitalizar as áreas públicas de Orlândia. Traga sua família e amigos!",
+    "horario": "07:00 às 12:00",
+    "local": "Todos os bairros de Orlândia",
+    "organizador": "AMO Orlândia",
+    "detalhes": "• Aplicar a legislação ambiental vigente em Orlândia\n• Estimular o descarte correto por meio de serviços regulares da Prefeitura e do app da AMO\n• Promover educação ambiental e mobilização comunitária pela limpeza urbana e preservação dos espaços públicos.",
+    "contato": "(16) 99998-2105",
+    "instagram": "@amo.orlandia",
+    "resultados": [
+      "✅ 50 sacos de lixo coletados",
+      "✅ 3 pontos de descarte irregular limpos",
+      "✅ 25 voluntários participaram"
+    ]
+  }
+]

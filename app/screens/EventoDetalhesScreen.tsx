@@ -33,28 +33,52 @@ interface Evento {
   instagram?: string;
 }
 
-const eventos: Evento[] = [
+// ✅ FUNÇÃO PARA CALCULAR STATUS AUTOMÁTICO
+const calcularStatusEvento = (dataEvento: string): 'futuro' | 'passado' | 'em_andamento' => {
+  const hoje = new Date();
+  const dataDoEvento = new Date(dataEvento);
+  
+  // Zerar as horas para comparar apenas as datas
+  hoje.setHours(0, 0, 0, 0);
+  dataDoEvento.setHours(0, 0, 0, 0);
+  
+  if (dataDoEvento.getTime() === hoje.getTime()) {
+    return 'em_andamento';
+  } else if (dataDoEvento > hoje) {
+    return 'futuro';
+  } else {
+    return 'passado';
+  }
+};
+
+const eventosBase: Omit<Evento, 'status'>[] = [
   {
     id: 1,
     titulo: "Projeto Limpai",
     subtitulo: "Mutirão de Limpeza Urbana",
-    data: "2024-03-15",
-    status: "futuro",
+    data: "2024-06-21", // ✅ Data de ontem (21/06)
     icone: "🧹",
     cor: "#9EBF26",
-    descricao: "O Projeto Limpaí é a primeira iniciativa da AMO e tem como objetivo principal combater o descarte irregular de resíduos, especialmente em canteiros centrais eáreas públicas. Por meio de mutirões de limpeza e ações de conscientização nas empresas, rede municipal de ensino, o projeto visa: ",
+    descricao: "O Projeto Limpaí é a primeira iniciativa da AMO e tem como objetivo principal combater o descarte irregular de resíduos, especialmente em canteiros centrais e áreas públicas. Por meio de mutirões de limpeza e ações de conscientização nas empresas, rede municipal de ensino, o projeto visa: ",
     local: "Todos os bairros de Orlândia",
     horario: "08:00 às 12:00",
     organizador: "AMO Orlândia",
-    participantes: 0,
-    detalhes: "• Aplicar a legislação ambiental vigente em Orlândia\n• Estimular o descarte correto por meio de serviços regulares da Prefeitura edo app da AMO \n• Promover educação ambiental e mobilização comunitária pela limpeza urbana e preservação dos espaços públicos.",
+    detalhes: "• Aplicar a legislação ambiental vigente em Orlândia\n• Estimular o descarte correto por meio de serviços regulares da Prefeitura e do app da AMO \n• Promover educação ambiental e mobilização comunitária pela limpeza urbana e preservação dos espaços públicos.",
     contato: "(16) 99998-2105",
     instagram: "@amo.orlandia",
     resultados: [
-      
+      "✅ 50 sacos de lixo coletados",
+      "✅ 3 pontos de descarte irregular limpos",
+      "✅ 25 voluntários participaram"
     ]
   },
 ];
+
+// ✅ APLICAR STATUS AUTOMÁTICO AOS EVENTOS
+const eventos: Evento[] = eventosBase.map(evento => ({
+  ...evento,
+  status: calcularStatusEvento(evento.data)
+}));
 
 export function EventoDetalhesScreen() {
   const router = useRouter();
@@ -128,13 +152,11 @@ export function EventoDetalhesScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      {/* ✅ STATUS BAR */}
       <StatusBar 
         barStyle={theme.isDark ? "light-content" : "light-content"}
         backgroundColor={evento.cor}
       />
       
-      {/* ✅ HEADER RESPONSIVO */}
       <View style={[
         styles.header, 
         { 
@@ -169,7 +191,7 @@ export function EventoDetalhesScreen() {
           }]}>
             <Text style={styles.statusText}>
               {evento.status === 'futuro' ? 'FUTURO' : 
-               evento.status === 'em_andamento' ? 'AGORA' : 'REALIZADO'}
+               evento.status === 'em_andamento' ? 'HOJE' : 'REALIZADO'}
             </Text>
           </View>
         </View>
@@ -218,8 +240,6 @@ export function EventoDetalhesScreen() {
               </Text>
             </View>
           )}
-
-          
         </View>
 
         {/* DESCRIÇÃO */}
@@ -244,7 +264,7 @@ export function EventoDetalhesScreen() {
         </View>
 
         {/* RESULTADOS (se evento passado) */}
-        {evento.resultados && evento.resultados.length > 0 && (
+        {evento.resultados && evento.resultados.length > 0 && evento.status === 'passado' && (
           <View style={[styles.card, { backgroundColor: theme.colors.card }]}>
             <Text style={[styles.cardTitle, { color: evento.cor }]}>
               🏆 Resultados Alcançados
@@ -312,7 +332,7 @@ export function EventoDetalhesScreen() {
             <Text style={[styles.ctaTitle, { color: '#4CAF50' }]}>
               Participe deste Evento!
             </Text>
-            <Text style={[styles.ctaText, { color: theme.colors.text }]}>
+                        <Text style={[styles.ctaText, { color: theme.colors.text }]}>
               Entre em contato conosco e confirme sua participação. Juntos fazemos a diferença!
             </Text>
             <TouchableOpacity 
@@ -321,6 +341,52 @@ export function EventoDetalhesScreen() {
             >
               <Text style={styles.ctaButtonText}>
                  Confirmar Participação
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
+        {/* CTA PARA EVENTOS PASSADOS */}
+        {evento.status === 'passado' && (
+          <View style={[styles.ctaCard, { 
+            backgroundColor: theme.isDark ? '#2D2D2D' : '#F5F5F5',
+            borderColor: '#757575'
+          }]}>
+            <Text style={[styles.ctaTitle, { color: '#757575' }]}>
+              Evento Realizado!
+            </Text>
+            <Text style={[styles.ctaText, { color: theme.colors.text }]}>
+              Este evento já foi realizado. Confira os resultados acima e fique atento aos próximos eventos!
+            </Text>
+            <TouchableOpacity 
+              style={[styles.ctaButton, { backgroundColor: '#39BF24' }]}
+              onPress={() => router.push('/eventos' as any)}
+            >
+              <Text style={styles.ctaButtonText}>
+                Ver Próximos Eventos
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
+
+        {/* CTA PARA EVENTOS DE HOJE */}
+        {evento.status === 'em_andamento' && (
+          <View style={[styles.ctaCard, { 
+            backgroundColor: theme.isDark ? '#4D3A00' : '#FFF8E1',
+            borderColor: '#FF9800'
+          }]}>
+            <Text style={[styles.ctaTitle, { color: '#FF9800' }]}>
+              Evento Acontecendo HOJE!
+            </Text>
+            <Text style={[styles.ctaText, { color: theme.colors.text }]}>
+              O evento está acontecendo hoje! Entre em contato rapidamente para participar.
+            </Text>
+            <TouchableOpacity 
+              style={[styles.ctaButton, { backgroundColor: '#FF9800' }]}
+              onPress={abrirWhatsApp}
+            >
+              <Text style={styles.ctaButtonText}>
+                Participar Agora!
               </Text>
             </TouchableOpacity>
           </View>
@@ -545,3 +611,4 @@ const styles = StyleSheet.create({
 });
 
 export default EventoDetalhesScreen;
+

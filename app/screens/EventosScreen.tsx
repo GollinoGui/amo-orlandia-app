@@ -31,21 +31,43 @@ interface Evento {
   fotos?: string[];
 }
 
-const eventos: Evento[] = [
+// ✅ FUNÇÃO PARA CALCULAR STATUS AUTOMÁTICO
+const calcularStatusEvento = (dataEvento: string): 'futuro' | 'passado' | 'em_andamento' => {
+  const hoje = new Date();
+  const dataDoEvento = new Date(dataEvento);
+  
+  // Zerar as horas para comparar apenas as datas
+  hoje.setHours(0, 0, 0, 0);
+  dataDoEvento.setHours(0, 0, 0, 0);
+  
+  if (dataDoEvento.getTime() === hoje.getTime()) {
+    return 'em_andamento';
+  } else if (dataDoEvento > hoje) {
+    return 'futuro';
+  } else {
+    return 'passado';
+  }
+};
+
+const eventosBase: Omit<Evento, 'status'>[] = [
   {
     id: 1,
     titulo: "Projeto Limpai",
     subtitulo: "Por uma Orlândia mais limpa",
-    data: "2025-06-21",
-    status: "futuro",
+    data: "2024-06-21", // ✅ Data de ontem (21/06)
     icone: "🧹",
     cor: "#9EBF26",
     descricao: "Participe do Projeto Limpai, uma ação comunitária para limpar e revitalizar as áreas públicas de Orlândia. Traga sua família e amigos!",
     horario: "07:00 às 12:00",
     organizador: "AMO Orlândia",
-    participantes: 0,
   },
 ];
+
+// ✅ APLICAR STATUS AUTOMÁTICO AOS EVENTOS
+const eventos: Evento[] = eventosBase.map(evento => ({
+  ...evento,
+  status: calcularStatusEvento(evento.data)
+}));
 
 export function EventosScreen() {
   const router = useRouter();
@@ -59,6 +81,28 @@ export function EventosScreen() {
     if (filtroAtivo === 'passados') return evento.status === 'passado';
     return true;
   });
+
+  // ✅ FUNÇÃO PARA FORMATAR DATA BRASILEIRA
+  const formatarDataBrasileira = (data: string) => {
+    const dataObj = new Date(data);
+    return dataObj.toLocaleDateString('pt-BR', {
+      weekday: 'long',
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
+  };
+
+  // ✅ FUNÇÃO PARA VERIFICAR SE É HOJE
+  const isHoje = (data: string) => {
+    const hoje = new Date();
+    const dataEvento = new Date(data);
+    
+    hoje.setHours(0, 0, 0, 0);
+    dataEvento.setHours(0, 0, 0, 0);
+    
+    return dataEvento.getTime() === hoje.getTime();
+  };
 
   const renderEvento = ({ item }: { item: Evento }) => (
     <TouchableOpacity
@@ -78,14 +122,15 @@ export function EventosScreen() {
         }]}>
           <Text style={styles.statusText}>
             {item.status === 'futuro' ? 'FUTURO' : 
-             item.status === 'em_andamento' ? 'AGORA' : 'REALIZADO'}
+             item.status === 'em_andamento' ? 'HOJE' : 'REALIZADO'}
           </Text>
         </View>
       </View>
 
       <View style={styles.eventoContent}>
         <Text style={[styles.eventoData, { color: item.cor }]}>
-          📅 {new Date(item.data).toLocaleDateString('pt-BR')}
+          📅 {formatarDataBrasileira(item.data)}
+          {isHoje(item.data) && <Text style={styles.hojeText}> • HOJE!</Text>}
         </Text>
         
         {item.local && (
@@ -104,12 +149,6 @@ export function EventosScreen() {
           {item.descricao}
         </Text>
 
-        {item.participantes && item.participantes > 0 && (
-          <Text style={[styles.eventoParticipantes, { color: item.cor }]}>
-            👥 {item.participantes} participantes
-          </Text>
-        )}
-
         <View style={styles.verMaisContainer}>
           <Text style={[styles.verMaisText, { color: item.cor }]}>
             Ver detalhes →
@@ -121,13 +160,11 @@ export function EventosScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      {/* ✅ NOVO: STATUS BAR */}
       <StatusBar 
         barStyle={theme.isDark ? "light-content" : "light-content"}
         backgroundColor="#F2C335"
       />
       
-      {/* ✅ NOVO: HEADER RESPONSIVO */}
       <View style={[
         styles.header, 
         { 
@@ -148,7 +185,6 @@ export function EventosScreen() {
         <View style={styles.headerSpacer} />
       </View>
 
-      {/* ✅ SEU CONTEÚDO ORIGINAL */}
       <ScrollView style={styles.content}>
         <View style={[styles.headerCard, { backgroundColor: theme.colors.card }]}>
           <Text style={[styles.title, { color: '#F2C335' }]}> Eventos AMO</Text>
@@ -182,7 +218,7 @@ export function EventosScreen() {
               <Text style={[styles.filtroText, { 
                 color: filtroAtivo === 'futuros' ? '#fff' : '#4CAF50' 
               }]}>
-                Futuros ({eventos.filter(e => e.status === 'futuro').length})
+                Futuros ({eventos.filter(e => e.status === 'futuro' || e.status === 'em_andamento').length})
               </Text>
             </TouchableOpacity>
 
@@ -226,7 +262,6 @@ export function EventosScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* ESPAÇAMENTO FINAL */}
         <View style={{ height: 20 }} />
       </ScrollView>
     </View>
@@ -237,7 +272,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  // ✅ NOVOS ESTILOS PARA O HEADER
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -266,7 +300,6 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
   },
-  // ✅ SEUS ESTILOS ORIGINAIS (mantidos iguais)
   headerCard: {
     padding: 20,
     borderRadius: 15,
@@ -299,19 +332,17 @@ const styles = StyleSheet.create({
   },
   filtroButton: {
     flex: 1,
-     paddingVertical: 8, // ✅ REDUZIR: de 8 para 6
-    paddingHorizontal: 8, // ✅ REDUZIR: de 8 para 4
-    borderRadius: 20, // ✅ REDUZIR: de 20 para 15
-    borderWidth: 2, // ✅ REDUZIR: de 2 para 1.5
+    paddingVertical: 8,
+    paddingHorizontal: 8,
+    borderRadius: 20,
+    borderWidth: 2,
     alignItems: 'center',
     minWidth: 60, 
-    
   },
   filtroText: {
     fontSize: 11,
     fontWeight: 'bold',
-    textAlign: 'center', // ✅ ADICIONAR: Centralizar texto
-    
+    textAlign: 'center',
   },
   listaEventos: {
     paddingHorizontal: 20,
@@ -369,12 +400,16 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 5,
   },
+  hojeText: {
+    color: '#FF9800',
+    fontWeight: 'bold',
+  },
   eventoInfo: {
     fontSize: 14,
     marginBottom: 3,
     opacity: 0.8,
   },
-  eventoDescricao: {
+   eventoDescricao: {
     fontSize: 14,
     lineHeight: 20,
     marginVertical: 10,
