@@ -67,7 +67,7 @@ const [carregando, setCarregando] = React.useState(true);
 React.useEffect(() => {
   const carregarEvento = async () => {
     try {
-      const response = await fetch('https://gollinogui.github.io/amo-orlandia-app/docs/eventos.json');
+      const response = await fetch('https://raw.githubusercontent.com/GollinoGui/amo-orlandia-app/main/docs/eventos.json');
       const data: Omit<Evento, 'status'>[] = await response.json();
       const eventosComStatus: Evento[] = data.map(e => ({
         ...e,
@@ -270,8 +270,8 @@ React.useEffect(() => {
           )}
         </View>
 
-        {/* RESULTADOS (se evento passado) */}
-        {evento.resultados && evento.resultados.length > 0 && evento.status === 'passado' && (
+             {Array.isArray(evento.resultados) && evento.resultados.length > 0
+               && evento.status === 'passado' && (
           <View style={[styles.card, { backgroundColor: theme.colors.card }]}>
             <Text style={[styles.cardTitle, { color: evento.cor }]}>
               🏆 Resultados Alcançados

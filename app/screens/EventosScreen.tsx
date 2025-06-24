@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   FlatList,
   ScrollView,
@@ -49,31 +49,33 @@ const calcularStatusEvento = (dataEvento: string): 'futuro' | 'passado' | 'em_an
   }
 };
 
-const eventosBase: Omit<Evento, 'status'>[] = [
-  {
-    id: 1,
-    titulo: "Projeto Limpai",
-    subtitulo: "Por uma Orlândia mais limpa",
-    data: "2024-06-21", // ✅ Data de ontem (21/06)
-    icone: "🧹",
-    cor: "#9EBF26",
-    descricao: "Participe do Projeto Limpai, uma ação comunitária para limpar e revitalizar as áreas públicas de Orlândia. Traga sua família e amigos!",
-    horario: "07:00 às 12:00",
-    organizador: "AMO Orlândia",
-  },
-];
-
-// ✅ APLICAR STATUS AUTOMÁTICO AOS EVENTOS
-const eventos: Evento[] = eventosBase.map(evento => ({
-  ...evento,
-  status: calcularStatusEvento(evento.data)
-}));
 
 export function EventosScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { theme } = useTheme();
+const [eventos, setEventos] = useState<Evento[]>([]);
+const [carregando, setCarregando] = useState(true);
 
+useEffect(() => {
+  const carregarEventos = async () => {
+    try {
+      const response = await fetch('https://raw.githubusercontent.com/GollinoGui/amo-orlandia-app/main/docs/eventos.json');
+      const data: Omit<Evento, 'status'>[] = await response.json();
+      const eventosComStatus: Evento[] = data.map(e => ({
+        ...e,
+        status: calcularStatusEvento(e.data),
+      }));
+      setEventos(eventosComStatus);
+    } catch (error) {
+      console.error('Erro ao carregar eventos:', error);
+    } finally {
+      setCarregando(false);
+    }
+  };
+
+  carregarEventos();
+}, []);
   const [filtroAtivo, setFiltroAtivo] = useState<'todos' | 'futuros' | 'passados'>('todos');
 
   const eventosFiltrados = eventos.filter(evento => {
