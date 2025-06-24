@@ -1,16 +1,16 @@
 [
   {
     "id": 1,
-    "titulo": "Projeto Limpai",
+    "titulo": "Projeto Limpaí",
     "subtitulo": "Mutirão de Limpeza Urbana",
     "data": "2024-06-21",
     "icone": "🧹",
     "cor": "#9EBF26",
-    "descricao": "O Projeto Limpaí é a primeira iniciativa da AMO e tem como objetivo principal combater o descarte irregular de resíduos, especialmente em canteiros centrais e áreas públicas. Por meio de mutirões de limpeza e ações de conscientização nas empresas, rede municipal de ensino, o projeto visa: ",
+    "descricao": "O Projeto Limpaí é a primeira iniciativa da AMO...",
     "local": "Todos os bairros de Orlândia",
-    "horario": "08:00 às 12:00",
+    "horario": "07:00 às 12:00",
     "organizador": "AMO Orlândia",
-    "detalhes": "• Aplicar a legislação ambiental vigente em Orlândia\n• Estimular o descarte correto por meio de serviços regulares da Prefeitura e do app da AMO \n• Promover educação ambiental e mobilização comunitária pela limpeza urbana e preservação dos espaços públicos.",
+    "detalhes": "• Aplicar a legislação ambiental vigente em Orlândia\n• Estimular o descarte correto por meio de serviços regulares da Prefeitura e do app da AMO\n• Promover educação ambiental e mobilização comunitária...",
     "contato": "(16) 99998-2105",
     "instagram": "@amo.orlandia",
     "resultados": [
@@ -18,5 +18,20 @@
       "✅ 3 pontos de descarte irregular limpos",
       "✅ 25 voluntários participaram"
     ]
+  },
+  {
+    "id": 2,
+    "titulo": "Projeto Limpaí — 2ª Edição",
+    "subtitulo": "Mutirão de Limpeza Urbana",
+    "data": "2025-06-28",
+    "icone": "🧹",
+    "cor": "#9EBF26",
+    "descricao": "A segunda edição do Projeto Limpaí continua o esforço coletivo da AMO Orlândia...",
+    "local": "Todos os Bairros de Orlândia",
+    "horario": "07:00 às 12:00",
+    "organizador": "AMO Orlândia",
+    "detalhes": "• Continuação da limpeza urbana\n• Novos pontos mapeados\n• Conscientização nas escolas e comércios locais\n• Apoio dos voluntários e da Prefeitura",
+    "contato": "(16) 99998-2105",
+    "instagram": "@amo.orlandia"
   }
 ]
