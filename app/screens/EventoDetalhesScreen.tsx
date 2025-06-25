@@ -67,7 +67,7 @@ const [carregando, setCarregando] = React.useState(true);
 React.useEffect(() => {
   const carregarEvento = async () => {
     try {
-      const response = await fetch('https://raw.githubusercontent.com/GollinoGui/amo-orlandia-app/main/docs/eventos.json');
+      const response = await fetch('https://raw.githubusercontent.com/GollinoGui/amo-orlandia-app/refs/heads/main/docs/eventos.json');
       const data: Omit<Evento, 'status'>[] = await response.json();
       const eventosComStatus: Evento[] = data.map(e => ({
         ...e,
@@ -467,6 +467,7 @@ const styles = StyleSheet.create({
   },
   eventoTitulo: {
     fontSize: 24,
+    paddingRight: 80,
     fontWeight: 'bold',
     color: '#fff',
     marginBottom: 5,
@@ -479,9 +480,9 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 15,
     right: 15,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 15,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 10,
   },
   statusText: {
     color: '#fff',

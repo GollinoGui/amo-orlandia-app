@@ -177,7 +177,7 @@ export function QuemSomosScreen() {
             Associação de Moradores de Orlândia
           </Text>
           <Text style={[styles.heroDescription, { color: theme.colors.text }]}>
-            Trabalhando juntos por uma Orlândia melhor desde 2020
+            Trabalhando juntos por uma Orlândia melhor desde 2023
           </Text>
         </View>
 
@@ -327,21 +327,7 @@ export function QuemSomosScreen() {
             </View>
           </TouchableOpacity>
           
-          <View style={styles.contatoInfo}>
-            <View style={styles.contatoItem}>
-              <Text style={styles.contatoIcon}>📱</Text>
-              <Text style={[styles.contatoTexto, { color: theme.colors.text }]}>
-                WhatsApp: (16) 99173-7383
-              </Text>
-            </View>
-            
-            <View style={styles.contatoItem}>
-              <Text style={styles.contatoIcon}>📷</Text>
-              <Text style={[styles.contatoTexto, { color: theme.colors.text }]}>
-                Instagram: @amo.orlandia
-              </Text>
-            </View>
-          </View>
+         
         </View>
 
         {/* CALL TO ACTION */}

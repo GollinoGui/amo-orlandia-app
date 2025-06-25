@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
     "scheme": "amo-orlandia",
     "splash": {
       "image": "./assets/images/splash.png",
@@ -14,7 +14,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.amoorlandia.app",
+      "bundleIdentifier": "com.amoorlandia.app2025",
       "infoPlist": {
         "NSCameraUsageDescription": "Este app precisa acessar a câmera para tirar fotos dos móveis.",
         "NSPhotoLibraryUsageDescription": "Este app precisa acessar a galeria para escolher fotos dos móveis.",
@@ -49,7 +49,8 @@
       }
     },
     "android": {
-      "package": "com.amoorlandia.app",
+      "package": "com.amoorlandia.app2025",
+      "versionCode": 4,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#39BF24"

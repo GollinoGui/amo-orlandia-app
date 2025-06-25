@@ -795,8 +795,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 12,
-    borderRadius: 10,
-    gap: 8,
+    borderRadius: 50,
+    gap: 10,
+    flexWrap: 'wrap',
   },
   actionButtonText: {
     color: '#FFFFFF',

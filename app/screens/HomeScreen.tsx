@@ -1,3 +1,4 @@
+import { Feather } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import {
@@ -9,6 +10,7 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
+import { useTheme } from '../contexts/ThemeContext';
 
 // 📱 OBTER DIMENSÕES DA TELA
 const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
@@ -33,7 +35,8 @@ const getResponsiveFontSize = (size: number) => {
 
 export function HomeScreen() {
   const router = useRouter();
-
+  const { isDark, toggleTheme } = useTheme();
+// 📋 ITENS DO MENU
   const menuItems = [
     {
       id: 1,
@@ -105,7 +108,13 @@ export function HomeScreen() {
     <ScrollView style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
+        <View style={styles.themeToggleButton}>
+  <TouchableOpacity onPress={toggleTheme}>
+    <Feather name={isDark ? 'sun' : 'moon'} size={24} color="#fff" />
+  </TouchableOpacity>
+</View>
         <View style={styles.logoContainer}>
+          
           <Image 
             source={require('../../assets/images/logo.jpg')}
             style={styles.logo}
@@ -168,7 +177,7 @@ export function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: theme.colors.background,
   },
   header: {
     paddingTop: getResponsiveSize(60),
@@ -285,6 +294,16 @@ const styles = StyleSheet.create({
     // ✅ ALTURA DE LINHA CONSISTENTE
     lineHeight: getResponsiveFontSize(18),
   },
+  themeToggleButton: {
+  position: 'absolute',
+  top: getResponsiveSize(40),
+  right: getResponsiveSize(20),
+  zIndex: 10,
+  backgroundColor: '#00000030',
+  padding: 10,
+  borderRadius: 20,
+},
+
 });
 
 export default HomeScreen;
