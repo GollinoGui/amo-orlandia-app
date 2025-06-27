@@ -12,31 +12,144 @@ import {
 } from 'react-native';
 import { useTheme } from '../contexts/ThemeContext';
 
-// 📱 OBTER DIMENSÕES DA TELA
-const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+// 📱 DIMENSÕES DA TELA
+const { width: screenWidth } = Dimensions.get('window');
 
-// 🔧 FUNÇÃO PARA RESPONSIVIDADE
-const getResponsiveSize = (size: number) => {
-  const baseWidth = 375; // iPhone SE como base
-  return (screenWidth / baseWidth) * size;
-};
-
-// 🔧 FUNÇÃO PARA TEXTO RESPONSIVO
+// 🔧 FUNÇÕES DE RESPONSIVIDADE
+const getResponsiveSize = (size: number) => (screenWidth / 375) * size;
 const getResponsiveFontSize = (size: number) => {
   const scale = screenWidth / 375;
   const newSize = size * scale;
-  
-  // Limitar tamanhos mínimos e máximos
-  if (newSize < size * 0.8) return size * 0.8;
-  if (newSize > size * 1.2) return size * 1.2;
-  
-  return newSize;
+  return Math.max(size * 0.8, Math.min(newSize, size * 1.2));
 };
 
 export function HomeScreen() {
   const router = useRouter();
-  const { isDark, toggleTheme } = useTheme();
-// 📋 ITENS DO MENU
+  const { theme, toggleTheme } = useTheme();
+
+  const styles = React.useMemo(() => StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.background,
+    },
+    header: {
+      paddingTop: getResponsiveSize(60),
+      paddingBottom: getResponsiveSize(30),
+      paddingHorizontal: getResponsiveSize(20),
+      backgroundColor: theme.colors.primary,
+      borderBottomLeftRadius: 25,
+      borderBottomRightRadius: 25,
+      elevation: 5,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.25,
+      shadowRadius: 3.84,
+    },
+    themeToggleButton: {
+      position: 'absolute',
+      top: getResponsiveSize(40),
+      right: getResponsiveSize(20),
+      zIndex: 10,
+      backgroundColor: '#00000030',
+      padding: 10,
+      borderRadius: 20,
+    },
+    logoContainer: {
+      alignItems: 'center',
+    },
+    logo: {
+      width: getResponsiveSize(100),
+      height: getResponsiveSize(100),
+      borderRadius: getResponsiveSize(50),
+      marginBottom: getResponsiveSize(15),
+      borderWidth: 3,
+      borderColor: '#fff',
+    },
+    title: {
+      fontSize: getResponsiveFontSize(28),
+      fontWeight: 'bold',
+      color: '#fff',
+      textAlign: 'center',
+      marginBottom: getResponsiveSize(5),
+      textShadowColor: 'rgba(0, 0, 0, 0.3)',
+      textShadowOffset: { width: 1, height: 1 },
+      textShadowRadius: 2,
+    },
+    subtitle: {
+      fontSize: getResponsiveFontSize(16),
+      color: 'rgba(255, 255, 255, 0.9)',
+      textAlign: 'center',
+      fontWeight: '500',
+      paddingHorizontal: getResponsiveSize(10),
+      lineHeight: getResponsiveFontSize(20),
+    },
+    menuContainer: {
+      padding: getResponsiveSize(20),
+      paddingTop: getResponsiveSize(30),
+    },
+    menuButton: {
+      marginBottom: getResponsiveSize(15),
+      borderRadius: 15,
+      borderLeftWidth: 5,
+      elevation: 2,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.1,
+      shadowRadius: 2,
+      minHeight: getResponsiveSize(80),
+    },
+    buttonContent: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      padding: getResponsiveSize(20),
+      minHeight: getResponsiveSize(80),
+    },
+    iconContainer: {
+      width: getResponsiveSize(60),
+      height: getResponsiveSize(60),
+      borderRadius: getResponsiveSize(30),
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginRight: getResponsiveSize(15),
+      flexShrink: 0,
+    },
+    emoji: {
+      fontSize: getResponsiveFontSize(28),
+    },
+    textContainer: {
+      flex: 1,
+      paddingRight: getResponsiveSize(10),
+    },
+    buttonTitle: {
+      fontSize: getResponsiveFontSize(18),
+      fontWeight: 'bold',
+      color: theme.colors.text,
+      marginBottom: getResponsiveSize(4),
+      lineHeight: getResponsiveFontSize(22),
+    },
+    buttonSubtitle: {
+      fontSize: getResponsiveFontSize(14),
+      color: theme.colors.textSecondary,
+      lineHeight: getResponsiveFontSize(18),
+    },
+    footer: {
+      backgroundColor: theme.colors.surface,
+      padding: getResponsiveSize(25),
+      marginTop: getResponsiveSize(20),
+      alignItems: 'center',
+      borderTopWidth: 1,
+      borderTopColor: theme.colors.border,
+    },
+    footerText: {
+      fontSize: getResponsiveFontSize(14),
+      color: theme.colors.textSecondary,
+      marginBottom: getResponsiveSize(8),
+      textAlign: 'center',
+      maxWidth: screenWidth - getResponsiveSize(40),
+      lineHeight: getResponsiveFontSize(18),
+    },
+  }), [theme]);
+
   const menuItems = [
     {
       id: 1,
@@ -109,22 +222,18 @@ export function HomeScreen() {
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.themeToggleButton}>
-  <TouchableOpacity onPress={toggleTheme}>
-    <Feather name={isDark ? 'sun' : 'moon'} size={24} color="#fff" />
-  </TouchableOpacity>
-</View>
+          <TouchableOpacity onPress={toggleTheme}>
+            <Feather name={theme.isDark ? 'sun' : 'moon'} size={24} color="#fff" />
+          </TouchableOpacity>
+        </View>
         <View style={styles.logoContainer}>
-          
-          <Image 
+          <Image
             source={require('../../assets/images/logo.jpg')}
             style={styles.logo}
             resizeMode="contain"
           />
-          
           <Text style={styles.title}>AMO Orlândia</Text>
-          <Text style={styles.subtitle}>
-            Associação de Moradores de Orlândia
-          </Text>
+          <Text style={styles.subtitle}>Associação de Moradores de Orlândia</Text>
         </View>
       </View>
 
@@ -134,10 +243,10 @@ export function HomeScreen() {
             key={item.id}
             style={[
               styles.menuButton,
-              { 
+              {
                 backgroundColor: item.color + '15',
                 borderLeftColor: item.color,
-              }
+              },
             ]}
             onPress={() => router.push(item.route as any)}
           >
@@ -165,7 +274,6 @@ export function HomeScreen() {
         <Text style={styles.footerText} numberOfLines={1} adjustsFontSizeToFit>
           📱 WhatsApp: (16) 99173-7383
         </Text>
-        {/* ✅ TEXTO DO INSTAGRAM CORRIGIDO */}
         <Text style={styles.footerText} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.8}>
           📷 @amo.orlandia
         </Text>
@@ -173,137 +281,5 @@ export function HomeScreen() {
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: theme.colors.background,
-  },
-  header: {
-    paddingTop: getResponsiveSize(60),
-    paddingBottom: getResponsiveSize(30),
-    paddingHorizontal: getResponsiveSize(20),
-    backgroundColor: '#39BF24',
-    borderBottomLeftRadius: 25,
-    borderBottomRightRadius: 25,
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-  },
-  logoContainer: {
-    alignItems: 'center',
-  },
-  logo: {
-    width: getResponsiveSize(100),
-    height: getResponsiveSize(100),
-    borderRadius: getResponsiveSize(50),
-    marginBottom: getResponsiveSize(15),
-    borderWidth: 3,
-    borderColor: '#fff',
-  },
-  title: {
-    fontSize: getResponsiveFontSize(28),
-    fontWeight: 'bold',
-    color: '#fff',
-    textAlign: 'center',
-    marginBottom: getResponsiveSize(5),
-    textShadowColor: 'rgba(0, 0, 0, 0.3)',
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
-  },
-  subtitle: {
-    fontSize: getResponsiveFontSize(16),
-    color: 'rgba(255, 255, 255, 0.9)',
-    textAlign: 'center',
-    fontWeight: '500',
-    // ✅ RESPONSIVIDADE PARA TEXTOS LONGOS
-    paddingHorizontal: getResponsiveSize(10),
-    lineHeight: getResponsiveFontSize(20),
-  },
-  menuContainer: {
-    padding: getResponsiveSize(20),
-    paddingTop: getResponsiveSize(30),
-  },
-  menuButton: {
-    marginBottom: getResponsiveSize(15),
-    borderRadius: 15,
-    borderLeftWidth: 5,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    // ✅ ALTURA MÍNIMA PARA CONSISTÊNCIA
-    minHeight: getResponsiveSize(80),
-  },
-  buttonContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: getResponsiveSize(20),
-    // ✅ GARANTIR ALINHAMENTO
-    minHeight: getResponsiveSize(80),
-  },
-  iconContainer: {
-    width: getResponsiveSize(60),
-    height: getResponsiveSize(60),
-    borderRadius: getResponsiveSize(30),
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: getResponsiveSize(15),
-    // ✅ TAMANHO FIXO PARA CONSISTÊNCIA
-    flexShrink: 0,
-  },
-  emoji: {
-    fontSize: getResponsiveFontSize(28),
-  },
-  textContainer: {
-    flex: 1,
-    // ✅ GARANTIR QUE O TEXTO USE TODO O ESPAÇO
-    paddingRight: getResponsiveSize(10),
-  },
-  buttonTitle: {
-    fontSize: getResponsiveFontSize(18),
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: getResponsiveSize(4),
-    // ✅ ALTURA DE LINHA PARA CONSISTÊNCIA
-    lineHeight: getResponsiveFontSize(22),
-  },
-  buttonSubtitle: {
-    fontSize: getResponsiveFontSize(14),
-    color: '#666',
-    lineHeight: getResponsiveFontSize(18),
-  },
-  footer: {
-    backgroundColor: '#f8f9fa',
-    padding: getResponsiveSize(25),
-    marginTop: getResponsiveSize(20),
-    alignItems: 'center',
-    borderTopWidth: 1,
-    borderTopColor: '#e9ecef',
-  },
-  footerText: {
-    fontSize: getResponsiveFontSize(14),
-    color: '#666',
-    marginBottom: getResponsiveSize(8),
-    textAlign: 'center',
-    // ✅ LARGURA MÁXIMA PARA EVITAR CORTES
-    maxWidth: screenWidth - getResponsiveSize(40),
-    // ✅ ALTURA DE LINHA CONSISTENTE
-    lineHeight: getResponsiveFontSize(18),
-  },
-  themeToggleButton: {
-  position: 'absolute',
-  top: getResponsiveSize(40),
-  right: getResponsiveSize(20),
-  zIndex: 10,
-  backgroundColor: '#00000030',
-  padding: 10,
-  borderRadius: 20,
-},
-
-});
 
 export default HomeScreen;
