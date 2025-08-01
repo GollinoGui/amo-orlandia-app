@@ -333,13 +333,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
   },
   filtroButton: {
-    flex: 1,
+    flexGrow: 1,
+    flexBasis: '30%', // permite quebra em colunas
+    maxWidth: 110,     // define um limite para forçar quebra quando apertar
     paddingVertical: 8,
     paddingHorizontal: 8,
     borderRadius: 20,
     borderWidth: 2,
     alignItems: 'center',
-    minWidth: 60, 
+    borderColor: '#ccc',
   },
   filtroText: {
     fontSize: 11,

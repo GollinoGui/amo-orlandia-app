@@ -4,7 +4,6 @@ import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
   Alert,
-  Linking,
   Platform,
   ScrollView,
   StatusBar,
@@ -349,6 +348,7 @@ setTimeout(() => {
       </View>
 
       <ScrollView style={styles.content}>
+        <View style={styles.wrapper}>
         {/* HEADER CARD */}
         <View style={[styles.headerCard, { backgroundColor: theme.colors.card }]}>
           <Text style={[styles.title, { color: '#9EBF26' }]}>Associe-se à AMO Orlândia</Text>
@@ -705,23 +705,7 @@ setTimeout(() => {
             Entre em contato conosco através dos nossos canais oficiais:
           </Text>
           
-          <TouchableOpacity 
-            style={[styles.contatoButton, { backgroundColor: '#25D366' }]}
-            onPress={() => {
-              // Abrir WhatsApp
-              const numero = '55 16 99998-2105';
-              const mensagem = 'Olá! Tenho dúvidas sobre a associação à AMO Orlândia.';
-              const url = `whatsapp://send?phone=${numero}&text=${encodeURIComponent(mensagem)}`;
-              
-              try {
-                Linking.openURL(url);
-              } catch (error) {
-                console.error('Erro ao abrir WhatsApp:', error);
-              }
-            }}
-          >
-            <Text style={styles.contatoButtonText}>💬 WhatsApp: (16) 99998-2105</Text>
-          </TouchableOpacity>
+          
 
           <TouchableOpacity 
             style={[styles.contatoButton, { backgroundColor: '#F2C335' }]}
@@ -733,6 +717,7 @@ setTimeout(() => {
 
         {/* ESPAÇAMENTO FINAL */}
         <View style={{ height: 20 }} />
+        </View>
       </ScrollView>
     </View>
   );
@@ -789,6 +774,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 15,
+  },
+  wrapper: {
+    width: '100%',
+    maxWidth: 700,
+    alignSelf: 'center',
+    paddingHorizontal: 10, 
   },
   description: {
     fontSize: 16,
@@ -893,7 +884,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 12,
     fontSize: 16,
-    minHeight: 80,
+    minHeight: Platform.OS === 'web' ? 100 : 80,
     textAlignVertical: 'top',
   },
   submitButton: {
@@ -901,11 +892,15 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
     marginTop: 20,
+    minHeight: 50,
   },
   submitButtonText: {
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
+    flexWrap: 'wrap',
+    textAlign: 'center',
+    
   },
   fieldErrorText: {
     color: '#E74C3C',
@@ -944,7 +939,8 @@ const styles = StyleSheet.create({
   },
   infoText: {
     fontSize: 14,
-    flex: 1,
+    textAlign: 'center',
+    marginBottom: 15,
     lineHeight: 20,
   },
   // DÚVIDAS CARD
@@ -1007,18 +1003,21 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   contatoButton: {
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 25,
-    marginBottom: 10,
-    minWidth: 200,
+    padding: 15,
+    borderRadius: 10,
     alignItems: 'center',
+    marginTop: 20,
+    minHeight: 50,
   },
   contatoButtonText: {
     color: '#fff',
     fontSize: 14,
     fontWeight: 'bold',
     flexWrap: 'nowrap',
+  },
+    responsiveText: {
+    fontSize: Platform.OS === 'web' ? 16 : 14,
+    lineHeight: 22,
   },
 });
 

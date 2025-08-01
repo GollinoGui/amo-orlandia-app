@@ -783,21 +783,24 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
   },
   modalActions: {
-    flexDirection: 'row',
-    padding: 20,
-    gap: 10,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(0, 0, 0, 0.1)',
+     flexDirection: 'row',
+      flexWrap: 'wrap', // permite quebrar os botões
+      justifyContent: 'space-between',
+      padding: 20,
+      gap: 10,
+      borderTopWidth: 1,
+      borderTopColor: 'rgba(0, 0, 0, 0.1)',
   },
   actionButton: {
-    flex: 1,
+    flexGrow: 1,
+    flexBasis: '30%', // ocupa ~30% da largura (ideal para até 3 botões por linha)
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 12,
     borderRadius: 50,
-    gap: 10,
-    flexWrap: 'wrap',
+    gap: 8,
+    minWidth: 100,
   },
   actionButtonText: {
     color: '#FFFFFF',

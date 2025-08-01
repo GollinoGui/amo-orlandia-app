@@ -2,7 +2,7 @@
   "expo": {
     "name": "AMO Orlândia",
     "slug": "amo-orlandia-2025-app-pronto",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "userInterfaceStyle": "automatic",
@@ -50,7 +50,7 @@
     },
     "android": {
       "package": "com.amoorlandia.app2025",
-      "versionCode": 4,
+      "versionCode": 7,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#39BF24"

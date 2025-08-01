@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react';
 import {
   Animated,
   Dimensions,
+  Image,
+  Platform,
   StyleSheet,
   Text,
-  View,
-  Image,
-  Platform
+  View
 } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
@@ -265,7 +265,7 @@ export function CustomSplashScreen({ onFinish }: CustomSplashScreenProps) {
       </View>
 
       {/* Versão */}
-      <Text style={styles.versionInfo}>v1.0.0</Text>
+      <Text style={styles.versionInfo}>v1.0.2</Text>
     </Animated.View>
   );
 }

@@ -57,7 +57,7 @@ export function QuemSomosScreen() {
       ano: '2025',
       titulo: 'Parcerias Estratégicas',
       descricao: 'Estabelecimento de parcerias com empresas locais e órgãos públicos para potencializar ações e projetos.',
-      icone: '🤝'
+      icone: '🧩'
     },
     {
       ano: '2025',
@@ -84,20 +84,20 @@ export function QuemSomosScreen() {
     {
       titulo: 'Sustentabilidade',
       descricao: 'Promovemos práticas sustentáveis e consciência ambiental em todos os nossos projetos.',
-      icone: '🌱',
-      cor: '#72BF24'
+      icone: '🌿',
+      cor: '#39BF24'
     },
     {
       titulo: 'Participação',
       descricao: 'Incentivamos a participação ativa da comunidade nas decisões e ações da associação.',
       icone: '👥',
-      cor: '#9EBF26'
+      cor: '#39BF24'
     },
     {
       titulo: 'Inovação',
       descricao: 'Buscamos soluções inovadoras para os desafios urbanos e sociais de Orlândia.',
       icone: '💡',
-      cor: '#F2C335'
+      cor: '#39BF24'
     }
   ];
 
@@ -249,7 +249,7 @@ export function QuemSomosScreen() {
 
         {/* NOSSOS NÚMEROS */}
         <View style={[styles.section, { backgroundColor: theme.colors.card }]}>
-          <Text style={[styles.sectionTitle, { color: '#39BF24' }]}>📊 Nossos Números</Text>
+          <Text style={[styles.sectionTitle, { color: '#39BF24' }]}> Nossos Números</Text>
           
           <View style={styles.numerosGrid}>
             <View style={[styles.numeroCard, { backgroundColor: theme.colors.surface }]}>
@@ -276,7 +276,7 @@ export function QuemSomosScreen() {
 
         {/* NOSSO COMPROMISSO */}
         <View style={[styles.section, { backgroundColor: theme.colors.card }]}>
-          <Text style={[styles.sectionTitle, { color: '#72BF24' }]}>🤝 Nosso Compromisso</Text>
+          <Text style={[styles.sectionTitle, { color: '#72BF24' }]}> Nosso Compromisso</Text>
           
           <View style={styles.compromissosList}>
             <View style={styles.compromissoItem}>
@@ -313,7 +313,7 @@ export function QuemSomosScreen() {
 
         {/* ONDE ESTAMOS */}
         <View style={[styles.section, { backgroundColor: theme.colors.card }]}>
-          <Text style={[styles.sectionTitle, { color: '#F2C335' }]}>📍 Onde Estamos</Text>
+          <Text style={[styles.sectionTitle, { color: '#F2C335' }]}> Onde Estamos</Text>
           
           <TouchableOpacity 
             style={[styles.enderecoButton, { backgroundColor: '#39BF24' }]}
@@ -466,11 +466,13 @@ const styles = StyleSheet.create({
   valoresGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 15,
+    gap: 10,
   },
   valorCard: {
     flex: 1,
-    minWidth: '45%',
+    minWidth: 150, // ou 160
+    maxWidth: '48%', // evita que o texto se estenda demais
+    flexGrow: 1,
     padding: 15,
     borderRadius: 12,
     alignItems: 'center',
@@ -495,7 +497,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 8,
-    textAlign: 'center',
+    textAlign: 'left', // ou remova
+    alignSelf: 'center',
   },
   valorDescricao: {
     fontSize: 12,

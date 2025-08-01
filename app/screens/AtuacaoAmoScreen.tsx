@@ -576,6 +576,11 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 15,
     textAlign: 'center',
+    flexWrap: 'wrap',
+    flexShrink: 1,
+    alignSelf: 'center',
+    maxWidth: '90%',
+    minWidth: 0,
   },
   sectionText: {
     fontSize: 16,
@@ -754,10 +759,10 @@ const styles = StyleSheet.create({
   },
   atuacaoItem: {
     width: '48%',
-    padding: 15,
-    borderRadius: 10,
-    marginBottom: 10,
-    alignItems: 'center',
+  padding: 15,
+  borderRadius: 10,
+  marginBottom: 10,
+  alignItems: 'center',
   },
   atuacaoIcon: {
     fontSize: 32,
@@ -765,9 +770,12 @@ const styles = StyleSheet.create({
   },
     atuacaoTitulo: {
     fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 8,
-    textAlign: 'center',
+  fontWeight: 'bold',
+  marginBottom: 8,
+  textAlign: 'center',
+  flexShrink: 1,
+  flexWrap: 'wrap',
+  minWidth: 0,
   },
   atuacaoDescricao: {
     fontSize: 12,
@@ -782,6 +790,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     paddingVertical: 8,
+    flexWrap: 'nowrap', // ou remova, para manter inline
+    gap: 10, // opcional
   },
   conquistaIcon: {
     fontSize: 18,
@@ -790,8 +800,11 @@ const styles = StyleSheet.create({
   },
   conquistaTexto: {
     fontSize: 16,
-    flex: 1,
-    lineHeight: 22,
+  flex: 1,
+  lineHeight: 22,
+  flexShrink: 1,       // Permite encolhimento do texto
+  flexWrap: 'wrap',    // Garante quebra de linha natural
+  minWidth: 0,         // Garante que ele não quebre com largura mínima forçada
   },
   // CTA STYLES
   ctaSection: {
@@ -820,13 +833,15 @@ const styles = StyleSheet.create({
   },
   ctaButtons: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
     gap: 15,
   },
   ctaButton: {
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderRadius: 25,
-    minWidth: 120,
+    minWidth: 140,
     alignItems: 'center',
   },
   ctaButtonText: {

@@ -247,27 +247,9 @@ export function DescarteIrregularScreen() {
             📞 Canais de Denúncia
           </Text>
           
-          <TouchableOpacity 
-            style={[styles.contactButton, { backgroundColor: '#3498DB' }]}
-            onPress={ligarPrefeitura}
-          >
-            <Text style={styles.contactIcon}>📞</Text>
-            <View style={styles.contactInfo}>
-              <Text style={styles.contactTitle}>Prefeitura de Orlândia</Text>
-              <Text style={styles.contactSubtitle}>(16) 3826-3600</Text>
-            </View>
-          </TouchableOpacity>
+          
 
-          <TouchableOpacity 
-            style={[styles.contactButton, { backgroundColor: '#E67E22' }]}
-            onPress={copiarEmail}
-          >
-            <Text style={styles.contactIcon}>📧</Text>
-            <View style={styles.contactInfo}>
-              <Text style={styles.contactTitle}>Email da Prefeitura</Text>
-              <Text style={styles.contactSubtitle}>faleconosco@orlandia.sp.gov.br</Text>
-            </View>
-          </TouchableOpacity>
+          
 
           <TouchableOpacity 
             style={[styles.contactButton, { backgroundColor: '#E4405F' }]}
