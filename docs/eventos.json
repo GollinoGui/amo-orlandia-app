@@ -10,7 +10,7 @@
     "local": "Todos os bairros de Orlândia",
     "horario": "07:00 às 12:00",
     "organizador": "AMO Orlândia",
-    "detalhes": "• Aplicar a legislação ambiental vigente em Orlândia\n• Estimular o descarte correto por meio de serviços regulares da Prefeitura e do app da AMO\n• Promover educação ambiental e mobilização comunitária...",
+    "detalhes": "• Aplicar a legislação ambiental vigente em Orlândia\n• Estimular o descarte correto por meio de serviços regulares do app da AMO\n• Promover educação ambiental e mobilização comunitária...",
     "contato": "(16) 99998-2105",
     "instagram": "@amo.orlandia"
     
@@ -26,7 +26,22 @@
     "local": "Todos os Bairros de Orlândia",
     "horario": "07:00 às 12:00",
     "organizador": "AMO Orlândia",
-    "detalhes": "• Continuação da limpeza urbana\n• Novos pontos mapeados\n• Conscientização nas escolas e comércios locais\n• Apoio dos voluntários e da Prefeitura",
+    "detalhes": "• Continuação da limpeza urbana\n• Novos pontos mapeados\n• Conscientização nas escolas e comércios locais\n• Apoio dos voluntários",
+    "contato": "(16) 99998-2105",
+    "instagram": "@amo.orlandia"
+  },
+  {
+    "id": 3,
+    "titulo": "Projeto Limpaí — 3ª Edição",
+    "subtitulo": "Mutirão de Limpeza Urbana",
+    "data": "2025-08-02",
+    "icone": "🧹",
+    "cor": "#9EBF26",
+    "descricao": "A terceira edição do Projeto Limpaí continua o esforço coletivo da AMO Orlândia...",
+    "local": "Bairros: Santa Rita e Brasão.",
+    "horario": "07:00 às 12:00",
+    "organizador": "AMO Orlândia",
+    "detalhes": "• Continuação da limpeza urbana\n• Novos pontos mapeados\n• Conscientização nas escolas e comércios locais\n• Apoio dos voluntários",
     "contato": "(16) 99998-2105",
     "instagram": "@amo.orlandia"
   }
